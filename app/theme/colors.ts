@@ -1,4 +1,4 @@
-export const palette = { //ponemos la paleta de colores
+export const palette = {
   light: {
     background: '#f8fafc',
     surface: '#ffffff',

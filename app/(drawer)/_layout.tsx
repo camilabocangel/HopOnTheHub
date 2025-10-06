@@ -24,10 +24,31 @@ const DrawerLayout = () => {
         }}
       />
       <Drawer.Screen
+        name="events"
+        options={{
+          title: 'Eventos',
+          drawerLabel: 'Eventos',
+        }}
+      />
+      <Drawer.Screen
+        name="announcements"
+        options={{
+          title: 'Anuncios',
+          drawerLabel: 'Anuncios',
+        }}
+      />
+      <Drawer.Screen
         name="about"
         options={{
-          title: 'Sobre la app',
-          drawerLabel: 'About',
+          title: 'Info',
+          drawerLabel: 'Info',
+        }}
+      />
+      <Drawer.Screen
+        name="profile"
+        options={{
+          title: 'Perfil',
+          drawerLabel: 'Perfil',
         }}
       />
     </Drawer>

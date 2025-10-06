@@ -1,26 +1,49 @@
-import React from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React from "react";
+import { View, Text, Image, TouchableOpacity } from "react-native";
+import eventCardStyles from "../styles/eventCardStyles";
+import { EventCardProps } from "../data/events";
 
-type Props = { title: string };
-
-export default function EventCard({ title }: Props) {
+const EventCard = ({
+  title,
+  date,
+  time,
+  place,
+  category,
+  description,
+  image,
+}: EventCardProps) => {
   return (
-    <View style={styles.card}>
-      <Text style={styles.text}>{title}</Text>
-    </View>
-  );
-}
+    <TouchableOpacity style={eventCardStyles.card}>
+      {image ? (
+        <Image source={{ uri: image }} style={eventCardStyles.image} />
+      ) : (
+        <View style={[eventCardStyles.image, eventCardStyles.placeholderImage]}>
+          <Text style={eventCardStyles.placeholderText}>UPB</Text>
+        </View>
+      )}
 
-const { width } = Dimensions.get('window');
-const styles = StyleSheet.create({
-  card: {
-    width: width * 0.6,
-    height: 120,
-    backgroundColor: '#f3f4f6',
-    borderRadius: 12,
-    marginRight: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  text: { fontWeight: '600' },
-});
+      <View style={eventCardStyles.content}>
+        <Text style={eventCardStyles.category}>{category}</Text>
+        <Text style={eventCardStyles.title} numberOfLines={2}>
+          {title}
+        </Text>
+
+        <View style={eventCardStyles.details}>
+          <Text style={eventCardStyles.detailText}>📅 {date}</Text>
+          <Text style={eventCardStyles.detailText}>🕒 {time}</Text>
+          <Text style={eventCardStyles.detailText} numberOfLines={1}>
+            📍 {place}
+          </Text>
+        </View>
+
+        {description && (
+          <Text style={eventCardStyles.description} numberOfLines={2}>
+            {description}
+          </Text>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+export default EventCard;
