@@ -65,11 +65,7 @@ const careers = [
         subjects: [
           "Electiva I",
           "Aplicaciones con Redes",
-          "Proyecto de Ingeniería de Software",
-          "Certificación II",
-          "Análisis del Entorno",
-          "Métodos y Técnicas de Investigación",
-          "Práctica Interna",
+          "Proyecto de Ingeniería de Software"
         ],
       },
       {

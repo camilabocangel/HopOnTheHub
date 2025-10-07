@@ -1,20 +1,15 @@
 import React from "react";
-import {
-  ScrollView,
-  View,
-  Image,
-  Text,
-  StyleSheet,
-  Dimensions,
-} from "react-native";
+import {ScrollView, View, Image, Text, StyleSheet, Dimensions} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useThemeColors } from "../hooks/useThemeColors";
-import Section from "../components/Section";
-import CampusButton from "../components/CampusButton";
+import { useThemeColors } from "../../hooks/useThemeColors";
+import Section from "../../components/Section";
+import CampusButton from "../../components/CampusCard";
+import users from "../../data/users";
+import careers from "../../data/careers";
+import SubjectCard from "../../components/SubjectCard";
+import CampusCard from "../../components/CampusCard";
 
-import users from "../data/users";
-import careers from "../data/careers";
 
 const { height, width } = Dimensions.get("window");
 
@@ -39,7 +34,7 @@ export default function HomeScreen() {
       <View style={[styles.hero, { height: height - 10 }]}>
         {" "}
         <Image
-          source={require("../../assets/upb.jpg")}
+          source={require("../../../assets/upb.jpg")}
           style={styles.heroImage}
           resizeMode="cover"
         />{" "}
@@ -50,13 +45,10 @@ export default function HomeScreen() {
           style={styles.downIcon}
         />{" "}
       </View>
-      {/* Hoy en tu horario */}
       <Section title="Hoy en tu horario">
         {currentSemester ? (
           currentSemester.subjects.map((subject, index) => (
-            <Text key={index} style={{ color: colors.text, marginVertical: 2 }}>
-              • {subject}
-            </Text>
+            <SubjectCard key={index} subject={subject} />
           ))
         ) : (
           <Text style={{ color: colors.text }}>
@@ -64,22 +56,28 @@ export default function HomeScreen() {
           </Text>
         )}
       </Section>
-      {/* Campus */}
       <Section title="Campus">
-        <View style={styles.row}>
-          <CampusButton
+        <ScrollView 
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 12 }}
+        >
+          <CampusCard
             label="La Paz"
             href="/(drawer)/events?campus=La Paz"
+            image={require("../../../assets/lapaz.jpg")}
           />
-          <CampusButton
+          <CampusCard
             label="Cochabamba"
             href="/(drawer)/events?campus=Cochabamba"
+            image={require("../../../assets/cocha.jpg")}
           />
-          <CampusButton
+          <CampusCard
             label="Santa Cruz"
             href="/(drawer)/events?campus=Santa Cruz"
+            image={require("../../../assets/staCruz.jpg")}
           />
-        </View>
+        </ScrollView>
       </Section>
       {/* Horario */}
       <Section title="Horario">

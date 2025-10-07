@@ -9,7 +9,7 @@ const CustomDrawerContent = (props: any) => {
   const pathname = usePathname();
 
   useEffect(() => {
-    console.log("Current pathname:", pathname);
+    console.log("pathname:", pathname);
   });
 
   return (
@@ -22,7 +22,6 @@ const CustomDrawerContent = (props: any) => {
         onPress={() => {
           router.push('/');
         }}
-
         focused={pathname === '/'}
         activeTintColor={colors.primary}
         inactiveTintColor={colors.muted}
