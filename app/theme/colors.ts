@@ -1,31 +1,34 @@
+// theme/palette.ts
 export const palette = {
   light: {
-    background: '#f8fafc',
-    surface: '#ffffff',
-    text: '#0f172a',
-    subtitle: '#475569',
-    primary: '#2563eb',
-    muted: '#94a3b8',
-    border: '#e2e8f0',
-    tabBarBackground: '#ffffff',
-    drawerBackground: '#ffffff',
-    switchTrackOn: '#3b82f6',
-    switchTrackOff: '#94a3b8',
-    switchThumb: '#f8fafc',
+    background: "#F8F9FA", // blanco hueso
+    surface: "#FFFFFF",
+    text: "#2C2C2C", // texto principal
+    subtitle: "#6C757D", // subtítulo o texto gris medio
+    primary: "#002147", // azul UPB
+    accent: "#FFD43B", // amarillo UPB
+    muted: "#E5E5E5", // gris claro
+    border: "#E2E8F0",
+    tabBarBackground: "#FFFFFF",
+    drawerBackground: "#FFFFFF",
+    switchTrackOn: "#FFD43B",
+    switchTrackOff: "#94A3B8",
+    switchThumb: "#F8F9FA",
   },
   dark: {
-    background: '#0f172a',
-    surface: '#1e293b',
-    text: '#e2e8f0',
-    subtitle: '#cbd5f5',
-    primary: '#60a5fa',
-    muted: '#475569',
-    border: '#334155',
-    tabBarBackground: '#1e293b',
-    drawerBackground: '#0f172a',
-    switchTrackOn: '#3b82f6',
-    switchTrackOff: '#475569',
-    switchThumb: '#1e293b',
+    background: "#0F172A",
+    surface: "#1E293B",
+    text: "#E2E8F0",
+    subtitle: "#CBD5F5",
+    primary: "#60A5FA",
+    accent: "#FFD43B",
+    muted: "#475569",
+    border: "#334155",
+    tabBarBackground: "#1E293B",
+    drawerBackground: "#0F172A",
+    switchTrackOn: "#FFD43B",
+    switchTrackOff: "#475569",
+    switchThumb: "#1E293B",
   },
 } as const;
 

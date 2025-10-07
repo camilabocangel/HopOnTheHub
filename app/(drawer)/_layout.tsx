@@ -1,10 +1,48 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Drawer } from 'expo-router/drawer';
 import { useThemeColors } from '../hooks/useThemeColors';
+import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
+import { router, usePathname } from 'expo-router';
+
+const CustomDrawerContent = (props: any) => {
+  const { colors } = useThemeColors();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    console.log("Current pathname:", pathname);
+  });
+
+  return (
+    <DrawerContentScrollView 
+      {...props}
+      style={{ backgroundColor: colors.drawerBackground }}
+    >
+      <DrawerItem
+        label={"Inicio"}
+        onPress={() => {
+          router.push('/');
+        }}
+
+        focused={pathname === '/'}
+        activeTintColor={colors.primary}
+        inactiveTintColor={colors.muted}
+      />
+      <DrawerItem
+        label={"Perfil"}
+        onPress={() => {
+          router.push('/profile');
+        }}
+        focused={pathname === '/profile'}
+        activeTintColor={colors.primary}
+        inactiveTintColor={colors.muted}
+      />
+    </DrawerContentScrollView>
+  );
+};
 
 const DrawerLayout = () => {
   const { colors } = useThemeColors();
-
+  
   return (
     <Drawer
       screenOptions={{
@@ -15,43 +53,9 @@ const DrawerLayout = () => {
         drawerActiveTintColor: colors.primary,
         drawerInactiveTintColor: colors.muted,
       }}
-    >
-      <Drawer.Screen
-        name="index"
-        options={{
-          title: 'Inicio',
-          drawerLabel: 'Inicio',
-        }}
-      />
-      <Drawer.Screen
-        name="events"
-        options={{
-          title: 'Eventos',
-          drawerLabel: 'Eventos',
-        }}
-      />
-      <Drawer.Screen
-        name="announcements"
-        options={{
-          title: 'Anuncios',
-          drawerLabel: 'Anuncios',
-        }}
-      />
-      <Drawer.Screen
-        name="about"
-        options={{
-          title: 'Info',
-          drawerLabel: 'Info',
-        }}
-      />
-      <Drawer.Screen
-        name="profile"
-        options={{
-          title: 'Perfil',
-          drawerLabel: 'Perfil',
-        }}
-      />
-    </Drawer>
+      drawerContent={(props) => <CustomDrawerContent {...props} 
+      />}
+    />
   );
 };
 

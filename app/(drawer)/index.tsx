@@ -69,15 +69,15 @@ export default function HomeScreen() {
         <View style={styles.row}>
           <CampusButton
             label="La Paz"
-            onPress={() => router.push("/(drawer)/events?campus=La Paz")}
+            href="/(drawer)/events?campus=La Paz"
           />
           <CampusButton
             label="Cochabamba"
-            onPress={() => router.push("/(drawer)/events?campus=Cochabamba")}
+            href="/(drawer)/events?campus=Cochabamba"
           />
           <CampusButton
             label="Santa Cruz"
-            onPress={() => router.push("/(drawer)/events?campus=Santa Cruz")}
+            href="/(drawer)/events?campus=Santa Cruz"
           />
         </View>
       </Section>
