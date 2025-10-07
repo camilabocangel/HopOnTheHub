@@ -103,6 +103,46 @@ const careers = [
       },
     ],
   },
+  {
+    name: "Ingeniería Industrial",
+    semesters: [
+      {
+        semester: 1,
+        subjects: [
+          "Matemáticas I",
+          "Introducción a la Ingeniería",
+          "Química General",
+          "Física I",
+          "Dibujo Técnico",
+        ],
+      },
+      {
+        semester: 2,
+        subjects: [
+          "Matemáticas II",
+          "Estadística",
+          "Física II",
+          "Economía",
+          "Materiales y Procesos",
+        ],
+      },
+      // ... más semestres
+    ],
+  },
+  {
+    name: "Arquitectura",
+    semesters: [
+      {
+        semester: 1,
+        subjects: ["Dibujo Arquitectónico", "Historia de la Arquitectura I", "Matemáticas I", "Materiales", "Taller de Diseño I"],
+      },
+      {
+        semester: 2,
+        subjects: ["Diseño Arquitectónico II", "Historia de la Arquitectura II", "Matemáticas II", "Estructuras I", "Taller de Diseño II"],
+      },
+    ],
+  },
 ];
+
 
 export default careers;
