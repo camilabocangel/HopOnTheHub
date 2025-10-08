@@ -19,7 +19,7 @@ export interface Announcement {
 export const announcements = [
   {
     id: 1,
-    image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
+    image: "https://th.bing.com/th/id/OIP.srRu7kFApqCXvRq3ST_XMQHaE8?w=258&h=180&c=7&r=0&o=7&cb=12&dpr=1.4&pid=1.7&rm=3",
     description: "Convocatoria a becas de excelencia para el semestre 2025-II.",
     date: "2025-10-05",
     campus: ["Cochabamba", "La Paz", "Santa Cruz"],
@@ -29,7 +29,7 @@ export const announcements = [
   },
   {
     id: 2,
-    image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
+    image: "https://tse2.mm.bing.net/th/id/OIP.fg4SF9oLJJWGEdD06kMWiQHaEK?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
     description: "Inscripciones abiertas para el torneo interno de fútbol.",
     date: "2025-10-10",
     campus: ["Santa Cruz"],
@@ -39,7 +39,7 @@ export const announcements = [
   },
   {
     id: 3,
-    image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
+    image: "https://th.bing.com/th/id/OIP.ddFikjoOUT6YmFQSv7t33AHaE8?w=266&h=180&c=7&r=0&o=7&cb=12&dpr=1.4&pid=1.7&rm=3",
     description: "Ceremonia de graduación programada para diciembre 2025.",
     date: "2025-09-30",
     campus: ["Cochabamba", "La Paz"],
@@ -49,7 +49,7 @@ export const announcements = [
   },
   {
     id: 4,
-    image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
+    image: "https://tse1.explicit.bing.net/th/id/OIP.ahmGzM66Ux13oYsb4zb87QHaE8?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
     description:
       "Se buscan voluntarios para programas de responsabilidad social universitaria.",
     date: "2025-10-12",
@@ -60,7 +60,7 @@ export const announcements = [
   },
   {
     id: 5,
-    image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
+    image: "https://tse2.mm.bing.net/th/id/OIP.w9KlWYeZoEzyVisXjkPIMAHaE8?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
     description:
       "Nueva colección de libros digitales disponible en la biblioteca.",
     date: "2025-10-08",
@@ -81,7 +81,7 @@ export const announcements = [
   },
   {
     id: 7,
-    image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
+    image: "https://res.cloudinary.com/worldpackers/image/upload/c_fill,f_auto,q_auto,w_1024/v1/guides/article_cover/d1tvgb9eds7paawjpzkv",
     description: "Convocatoria para intercambio estudiantil 2026-I.",
     date: "2025-10-18",
     campus: ["Cochabamba", "La Paz"],
@@ -91,7 +91,7 @@ export const announcements = [
   },
   {
     id: 8,
-    image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
+    image: "https://static.vecteezy.com/system/resources/previews/033/485/860/non_2x/concept-of-system-maintenance-program-and-application-update-technology-engineer-error-problem-fix-device-update-software-upgrade-process-system-update-operating-system-update-vector.jpg",
     description: "Mantenimiento programado en la plataforma virtual.",
     date: "2025-10-22",
     campus: ["Santa Cruz", "La Paz"],
@@ -101,7 +101,7 @@ export const announcements = [
   },
   {
     id: 9,
-    image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
+    image: "https://th.bing.com/th/id/OIP._Gg3Ilk7TeK_7Ju8PhTOUAHaE8?w=233&h=180&c=7&r=0&o=7&cb=12&dpr=1.4&pid=1.7&rm=3",
     description:
       "Entrega de carnets universitarios en oficina de Bienestar Estudiantil.",
     date: "2025-09-28",
@@ -112,7 +112,7 @@ export const announcements = [
   },
   {
     id: 10,
-    image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
+    image: "https://th.bing.com/th/id/OIP.luecSj-eBFN0fzzVHZ7jUQHaE8?w=203&h=135&c=7&r=0&o=7&cb=12&dpr=1.4&pid=1.7&rm=3",
     description: "Ampliación de plazo para pago de matrículas.",
     date: "2025-10-15",
     campus: ["Cochabamba", "Santa Cruz"],
@@ -214,7 +214,7 @@ export const announcements = [
   },
   {
     id: 20,
-    image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
+    image: "https://tse3.mm.bing.net/th/id/OIP.PqJOFba8hZ19CaNZVX5sHQHaE8?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
     description: "Examen de clasificación de inglés para nuevos estudiantes.",
     date: "2025-10-18",
     campus: ["La Paz", "Santa Cruz"],
