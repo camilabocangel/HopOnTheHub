@@ -17,13 +17,12 @@ import { useUser } from "../hooks/useUser";
 import { Link, useRouter } from "expo-router";
 
 export default function ProfileScreen() {
-  const {user, logout} = useUser();
+  const { user, logout } = useUser();
 
   const { theme, colors } = useThemeColors();
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
   const styles = profileStyles();
   const router = useRouter();
-
 
   const calculateAge = (birthday: string) => {
     const birthDate = new Date(birthday);
@@ -53,109 +52,112 @@ export default function ProfileScreen() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: colors.background },
-        ]}
-      >
-        <View style={styles.profileSection}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={require("../../assets/joaquin-aguilera-profile-picture.jpg")}
-              style={styles.profileImage}
-              resizeMode="cover"
-            />
+      {user ? (
+        <View
+          style={[styles.container, { backgroundColor: colors.background }]}
+        >
+          <View style={styles.profileSection}>
+            <View style={styles.imageContainer}>
+              <Image
+                source={require("../../assets/joaquin-aguilera-profile-picture.jpg")}
+                style={styles.profileImage}
+                resizeMode="cover"
+              />
+            </View>
+
+            <Text style={[styles.userName, { color: colors.text }]}>
+              {user?.name ?? "Usuario"} {user?.lastName ?? ""}
+            </Text>
+
+            <Text style={[styles.campus, { color: colors.primary }]}>
+              Campus {user?.campus ?? "-"}
+            </Text>
           </View>
 
-          <Text style={[styles.userName, { color: colors.text }]}>
-            {user?.name??"Usuario"} {user?.lastName??""}
-          </Text>
+          <View style={styles.infoSection}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Información Académica
+            </Text>
 
-          <Text style={[styles.campus, { color: colors.primary }]}>
-            Campus {user?.campus??"-"}
-          </Text>
-        </View>
+            <View style={styles.infoCard}>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: colors.text }]}>
+                  Carrera:
+                </Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>
+                  {user?.career ?? "-"}
+                </Text>
+              </View>
 
-        <View style={styles.infoSection}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Información Académica
-          </Text>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: colors.text }]}>
+                  Semestre:
+                </Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>
+                  {user?.semester ? `${user.semester}° Semestre` : "-"}
+                </Text>
+              </View>
 
-          <View style={styles.infoCard}>
-            <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: colors.text }]}>
-                Carrera:
-              </Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>
-                {user?.career??"-"}
-              </Text>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: colors.text }]}>
+                  Campus:
+                </Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>
+                  {user?.campus ?? "-"}
+                </Text>
+              </View>
             </View>
+          </View>
 
-            <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: colors.text }]}>
-                Semestre:
-              </Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>
-                {user?.semester ? `${user.semester}° Semestre` : "-"}
-              </Text>
-            </View>
+          <View style={styles.infoSection}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Información Personal
+            </Text>
 
-            <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: colors.text }]}>
-                Campus:
-              </Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>
-                {user?.campus??"-"}
-              </Text>
+            <View style={styles.infoCard}>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: colors.text }]}>
+                  Nombre completo:
+                </Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>
+                  {user?.name ?? ""} {user?.lastName ?? ""}{" "}
+                  {user?.secondLastName ?? ""}
+                </Text>
+              </View>
+
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: colors.text }]}>
+                  Código:
+                </Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>
+                  {user?.id ?? "-"}
+                </Text>
+              </View>
+
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: colors.text }]}>
+                  Edad:
+                </Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>
+                  {calculateAge(user?.birthday ?? "")} años
+                </Text>
+              </View>
+
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: colors.text }]}>
+                  Fecha de nacimiento:
+                </Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>
+                  {formatDate(user?.birthday ?? "")}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
+      ) : (
+        <View></View>
+      )}
 
-        <View style={styles.infoSection}>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Información Personal
-          </Text>
-
-          <View style={styles.infoCard}>
-            <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: colors.text }]}>
-                Nombre completo:
-              </Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>
-                {user?.name?? ""} {user?.lastName?? ""} {user?.secondLastName?? ""}
-              </Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: colors.text }]}>
-                Código:
-              </Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>
-                {user?.id?? "-"}
-              </Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: colors.text }]}>
-                Edad:
-              </Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>
-                {calculateAge(user?.birthday??"")} años
-              </Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: colors.text }]}>
-                Fecha de nacimiento:
-              </Text>
-              <Text style={[styles.infoValue, { color: colors.text }]}>
-                {formatDate(user?.birthday?? "")}
-              </Text>
-            </View>
-          </View>
-        </View>
-      </View>
       <View style={styles.container}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           Configuraciones
@@ -173,11 +175,10 @@ export default function ProfileScreen() {
           />
         </View>
         <Link href="/auth" asChild>
-          <TouchableOpacity
-            style={styles.logoutCard}
-            onPress={logout}
-          >
-            <Text style={styles.logoutText}>Cerrar sesión</Text>
+          <TouchableOpacity style={styles.logoutCard} onPress={logout}>
+            <Text style={styles.logoutText}>
+              {user ? "Cerrar Sesion" : "Regresar a Log In"}
+            </Text>
           </TouchableOpacity>
         </Link>
       </View>
@@ -210,7 +211,6 @@ const createStyles = (colors: ThemeColors) =>
       color: colors.text,
       fontWeight: "500",
     },
-    
   });
 
 function createColorStyles(

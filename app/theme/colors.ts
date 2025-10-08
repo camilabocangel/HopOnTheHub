@@ -1,13 +1,12 @@
-// theme/palette.ts
 export const palette = {
   light: {
-    background: "#F8F9FA", // blanco hueso
+    background: "#F8F9FA",
     surface: "#FFFFFF",
-    text: "#2C2C2C", // texto principal
-    subtitle: "#6C757D", // subtítulo o texto gris medio
-    primary: "#002147", // azul UPB
-    accent: "#FFD43B", // amarillo UPB
-    muted: "#E5E5E5", // gris claro
+    text: "#2C2C2C",
+    subtitle: "#6C757D",
+    primary: "#002147",
+    accent: "#FFD43B",
+    muted: "#E5E5E5",
     border: "#E2E8F0",
     tabBarBackground: "#FFFFFF",
     drawerBackground: "#FFFFFF",
