@@ -1,80 +1,121 @@
-import React, { useState } from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import React from "react";
+import { TouchableOpacity, View, Text, Image } from "react-native";
+import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import announcementCardStyles from "../styles/announcementCardStyles";
-import { useThemeColors } from "../hooks/useThemeColors";
 import { AnnouncementCardProps } from "../data/announcements";
+import { useThemeColors } from "../hooks/useThemeColors";
+import useLikedAnnouncements from "../hooks/useLikedAnnouncements";
+import announcementCardStyles from "../styles/announcementCardStyles";
 
-const AnnouncementCard = ({
+export default function AnnouncementCard({
   id,
   image,
   description,
   date,
   campus,
-  liked,
   onLikeToggle,
-}: AnnouncementCardProps) => {
+}: AnnouncementCardProps) {
   const { colors } = useThemeColors();
-  const [isLiked, setIsLiked] = useState(liked);
+  const { isLiked } = useLikedAnnouncements();
 
-  const handleLikePress = () => {
-    const newLikeState = !isLiked;
-    setIsLiked(newLikeState);
-    onLikeToggle(id);
-  };
+  const liked = isLiked(id);
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric'
+  const handlePress = () => {
+    console.log("Navigating to singleAnnouncement with id:", id);
+
+    if (!id) {
+      console.error("Announcement ID is undefined");
+      return;
+    }
+
+    router.push({
+      pathname: "/singleAnnouncement",
+      params: {
+        id: id.toString(),
+        description,
+        date,
+        campus: JSON.stringify(campus),
+        image,
+      },
     });
   };
 
   return (
-    <View style={[announcementCardStyles.card]}>
-      {image ? (
-        <Image 
-          source={{ uri: image }} 
-          style={announcementCardStyles.image}
-          resizeMode="cover"
-        />
-      ) : (
-        <View style={[announcementCardStyles.image, announcementCardStyles.placeholderImage]}>
-          <Ionicons name="megaphone" size={32} color={colors.text} />
-        </View>
-      )}
-      
+    <TouchableOpacity
+      style={[announcementCardStyles.card, { backgroundColor: colors.surface }]}
+      onPress={handlePress}
+    >
+      <View style={announcementCardStyles.imageContainer}>
+        {image ? (
+          <Image source={{ uri: image }} style={announcementCardStyles.image} />
+        ) : (
+          <View
+            style={[
+              announcementCardStyles.placeholderImage,
+              { backgroundColor: colors.primary },
+            ]}
+          >
+            <Text style={announcementCardStyles.placeholderText}>Anuncio</Text>
+          </View>
+        )}
+      </View>
+
       <View style={announcementCardStyles.content}>
-        <Text style={[announcementCardStyles.description, { color: colors.text }]}>
+        <Text style={[announcementCardStyles.date, { color: colors.subtitle }]}>
+          📅 {date}
+        </Text>
+
+        <Text
+          style={[announcementCardStyles.description, { color: colors.text }]}
+          numberOfLines={3}
+        >
           {description}
         </Text>
-        
+
         <View style={announcementCardStyles.footer}>
-          <View style={announcementCardStyles.info}>
-            <Text style={[announcementCardStyles.date]}>
-              {formatDate(date)}
-            </Text>
-            <Text style={[announcementCardStyles.campus]}>
-              {campus.join(", ")}
-            </Text>
+          <View style={announcementCardStyles.campusContainer}>
+            {campus.slice(0, 2).map((camp, index) => (
+              <View
+                key={index}
+                style={[
+                  announcementCardStyles.campusTag,
+                  { backgroundColor: colors.muted },
+                ]}
+              >
+                <Text
+                  style={[
+                    announcementCardStyles.campusText,
+                    { color: colors.text },
+                  ]}
+                >
+                  {camp}
+                </Text>
+              </View>
+            ))}
+            {campus.length > 2 && (
+              <Text
+                style={[
+                  announcementCardStyles.moreCampuses,
+                  { color: colors.subtitle },
+                ]}
+              >
+                +{campus.length - 2}
+              </Text>
+            )}
           </View>
-          
-          <TouchableOpacity 
+
+          <View
             style={announcementCardStyles.likeButton}
-            onPress={handleLikePress}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
-            <Ionicons 
-              name={isLiked ? "heart" : "heart-outline"} 
-              size={24} 
-              color={isLiked ? "#ff3b30" : "#4d4d4dff"} 
+            <Ionicons
+              name={liked ? "heart" : "heart-outline"}
+              size={20}
+              color={liked ? colors.accent : colors.subtitle}
             />
-          </TouchableOpacity>
+          </View>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
-};
-
-export default AnnouncementCard;
+}

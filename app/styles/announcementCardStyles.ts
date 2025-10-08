@@ -3,55 +3,82 @@ import { StyleSheet } from "react-native";
 const announcementCardStyles = StyleSheet.create({
   card: {
     width: 280,
-    backgroundColor: 'white',
     borderRadius: 12,
     marginRight: 16,
     marginBottom: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    overflow: 'hidden',
+    overflow: "hidden",
+  },
+  imageContainer: {
+    width: "100%",
+    height: 140,
   },
   image: {
     width: "100%",
-    height: 160,
+    height: "100%",
   },
   placeholderImage: {
-    backgroundColor: "#f0f0f0",
+    width: "100%",
+    height: "100%",
     justifyContent: "center",
     alignItems: "center",
   },
+  placeholderText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
   content: {
-    padding: 16,
+    padding: 12,
+  },
+  date: {
+    fontSize: 12,
+    marginBottom: 8,
+    fontWeight: "500",
   },
   description: {
-    fontSize: 16,
-    lineHeight: 22,
+    fontSize: 14,
+    lineHeight: 20,
     marginBottom: 12,
-    fontWeight: "400",
   },
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-end",
+    alignItems: "center",
   },
-  info: {
+  campusContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
+    flexWrap: "wrap",
   },
-  date: {
-    fontSize: 14,
+  campusTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    marginRight: 6,
     marginBottom: 4,
+  },
+  campusText: {
+    fontSize: 10,
     fontWeight: "500",
   },
-  campus: {
-    fontSize: 12,
-    fontStyle: "italic",
+  moreCampuses: {
+    fontSize: 10,
+    fontWeight: "500",
+    marginLeft: 4,
   },
   likeButton: {
+    flexDirection: "row",
+    alignItems: "center",
     padding: 8,
-    marginLeft: 12,
+  },
+  likeIcon: {
+    fontSize: 16,
   },
 });
 

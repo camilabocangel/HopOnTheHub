@@ -7,18 +7,24 @@ import { events } from "../data/events";
 import users from "../data/users";
 import { useThemeColors } from "../hooks/useThemeColors";
 import eventsStyles from "../styles/eventsStyles";
+import { useUser } from "../hooks/useUser";
 
 export default function EventsScreen() {
   const { colors } = useThemeColors();
   const { campus } = useLocalSearchParams();
 
-  const campusParam = Array.isArray(campus) ? campus[0] : campus;
-  const selectedCampus = campusParam || users[0]?.campus;
+  const { user } = useUser();
 
+  const campusParam = Array.isArray(campus) ? campus[0] : campus;
+  const selectedCampus =
+    campusParam || user?.campus || users[0]?.campus || "Cochabamba";
+
+  // Filtrar eventos por campus - asegurando que selectedCampus es string
   const campusEvents = events.filter((event) =>
-    event.campus.includes(selectedCampus)
+    event.campus.includes(selectedCampus as string)
   );
 
+  // Obtener categorías únicas
   const categories = campusEvents.reduce((acc: string[], event) => {
     if (!acc.includes(event.category)) {
       acc.push(event.category);
@@ -28,7 +34,9 @@ export default function EventsScreen() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={[eventsStyles.container, { backgroundColor: colors.background }]}>
+      <View
+        style={[eventsStyles.container, { backgroundColor: colors.background }]}
+      >
         <Text style={[eventsStyles.title, { color: colors.text }]}>
           Eventos en {selectedCampus}
         </Text>
@@ -46,6 +54,7 @@ export default function EventsScreen() {
                   data={categoryEvents}
                   renderItem={({ item }) => (
                     <EventCard
+                      id={item.id}
                       title={item.title}
                       date={item.date}
                       time={item.time}

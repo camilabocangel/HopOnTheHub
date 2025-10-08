@@ -1,9 +1,12 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity } from "react-native";
-import eventCardStyles from "../styles/eventCardStyles";
+import { TouchableOpacity, View, Text, Image } from "react-native";
+import { router } from "expo-router";
 import { EventCardProps } from "../data/events";
+import { useThemeColors } from "../hooks/useThemeColors";
+import eventCardStyles from "../styles/eventCardStyles";
 
-const EventCard = ({
+export default function EventCard({
+  id,
   title,
   date,
   time,
@@ -11,39 +14,70 @@ const EventCard = ({
   category,
   description,
   image,
-}: EventCardProps) => {
+}: EventCardProps) {
+  const { colors } = useThemeColors();
+
+  const handlePress = () => {
+    router.push({
+      pathname: "/singleEvent",
+      params: {
+        id: id.toString(),
+        title,
+        date,
+        time,
+        place,
+        category,
+        description,
+        image,
+      },
+    });
+  };
+
   return (
-    <TouchableOpacity style={eventCardStyles.card}>
-      {image ? (
-        <Image source={{ uri: image }} style={eventCardStyles.image} />
-      ) : (
-        <View style={[eventCardStyles.image, eventCardStyles.placeholderImage]}>
-          <Text style={eventCardStyles.placeholderText}>UPB</Text>
-        </View>
-      )}
+    <TouchableOpacity
+      style={[eventCardStyles.card, { backgroundColor: colors.surface }]}
+      onPress={handlePress}
+    >
+      <View style={eventCardStyles.imageContainer}>
+        {image ? (
+          <Image source={{ uri: image }} style={eventCardStyles.image} />
+        ) : (
+          <View
+            style={[
+              eventCardStyles.placeholderImage,
+              { backgroundColor: colors.primary },
+            ]}
+          >
+            <Text style={eventCardStyles.placeholderText}>Evento</Text>
+          </View>
+        )}
+      </View>
 
       <View style={eventCardStyles.content}>
-        <Text style={eventCardStyles.category}>{category}</Text>
-        <Text style={eventCardStyles.title} numberOfLines={2}>
+        <Text style={[eventCardStyles.category, { color: colors.primary }]}>
+          {category}
+        </Text>
+        <Text style={[eventCardStyles.title, { color: colors.text }]}>
           {title}
         </Text>
 
-        <View style={eventCardStyles.details}>
-          <Text style={eventCardStyles.detailText}>📅 {date}</Text>
-          <Text style={eventCardStyles.detailText}>🕒 {time}</Text>
-          <Text style={eventCardStyles.detailText} numberOfLines={1}>
-            📍 {place}
-          </Text>
-        </View>
+        <Text style={[eventCardStyles.date, { color: colors.subtitle }]}>
+          📅 {date}
+        </Text>
+        <Text style={[eventCardStyles.time, { color: colors.subtitle }]}>
+          ⏰ {time}
+        </Text>
+        <Text style={[eventCardStyles.place, { color: colors.subtitle }]}>
+          📍 {place}
+        </Text>
 
-        {description && (
-          <Text style={eventCardStyles.description} numberOfLines={2}>
-            {description}
-          </Text>
-        )}
+        <Text
+          style={[eventCardStyles.description, { color: colors.subtitle }]}
+          numberOfLines={2}
+        >
+          {description}
+        </Text>
       </View>
     </TouchableOpacity>
   );
-};
-
-export default EventCard;
+}

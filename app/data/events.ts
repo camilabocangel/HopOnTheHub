@@ -1,7 +1,9 @@
 export type EventProps = {
+  id: number;
   title: string;
   date: string;
   time: string;
+  campus: string[];
   place: string;
   category: string;
   description: string;
@@ -10,6 +12,7 @@ export type EventProps = {
 };
 
 export type EventCardProps = {
+  id: number;
   title: string;
   date: string;
   time: string;
