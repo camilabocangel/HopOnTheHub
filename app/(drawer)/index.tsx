@@ -10,15 +10,15 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useThemeColors } from "../../hooks/useThemeColors";
-import Section from "../../components/Section";
-import CampusButton from "../../components/CampusCard";
-import users from "../../data/users";
-import careers from "../../data/careers";
-import SubjectCard from "../../components/SubjectCard";
-import CampusCard from "../../components/CampusCard";
+import { useThemeColors } from "../hooks/useThemeColors";
+import Section from "../components/Section";
+import CampusButton from "../components/CampusCard";
+import users from "../data/users";
+import careers from "../data/careers";
+import SubjectCard from "../components/SubjectCard";
+import CampusCard from "../components/CampusCard";
 import { Link } from "expo-router";
-import { useUser } from "../../hooks/useUser";
+import { useUser } from "../hooks/useUser";
 
 const { height, width } = Dimensions.get("window");
 
@@ -37,7 +37,7 @@ export default function HomeScreen() {
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[styles.hero, { height: height - 10 }]}>
         <Image
-          source={require("../../../assets/upb.jpg")}
+          source={require("../../assets/upb.jpg")}
           style={styles.heroImage}
           resizeMode="cover"
         />
@@ -70,17 +70,17 @@ export default function HomeScreen() {
           <CampusCard
             label="La Paz"
             href="/(drawer)/campus?campus=La Paz"
-            image={require("../../../assets/lapaz.jpg")}
+            image={require("../../assets/lapaz.jpg")}
           />
           <CampusCard
             label="Cochabamba"
             href="/(drawer)/campus?campus=Cochabamba"
-            image={require("../../../assets/cocha.jpg")}
+            image={require("../../assets/cocha.jpg")}
           />
           <CampusCard
             label="Santa Cruz"
             href="/(drawer)/campus?campus=Santa Cruz"
-            image={require("../../../assets/staCruz.jpg")}
+            image={require("../../assets/staCruz.jpg")}
           />
         </ScrollView>
       </Section>

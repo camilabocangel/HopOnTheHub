@@ -44,6 +44,7 @@ const DrawerLayout = () => {
   return (
     <Drawer
       screenOptions={{
+        headerShown: true,
         headerTitleAlign: 'center',
         headerStyle: { backgroundColor: colors.surface },
         headerTintColor: colors.text,
@@ -69,7 +70,7 @@ const DrawerLayout = () => {
         name="index"
         options={{
           drawerLabel: "Inicio",
-          title: "Inicio",
+          title: "UPBHub",
         }}
       />
       <Drawer.Screen

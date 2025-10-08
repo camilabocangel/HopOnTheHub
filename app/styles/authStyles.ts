@@ -54,6 +54,7 @@ const createStyles = (colors: ThemeColors) =>
     buttonText: {
       fontSize: 18,
       fontWeight: "bold",
+      color: colors.surface,
     },
     errorText: {
       color: "red",

@@ -11,8 +11,10 @@ import { useAuthStyles } from "../styles/authStyles";
 import users from "../data/users";
 import { useUser } from "../hooks/useUser";
 import { Link, useRouter } from "expo-router";
+import { useThemeColors } from "../hooks/useThemeColors";
 
 export default function AuthScreen() {
+  const { colors } = useThemeColors();
   const { setUser } = useUser();
 
   const [userName, setUserName] = useState("");
@@ -20,7 +22,7 @@ export default function AuthScreen() {
   const [error, setError] = useState("");
 
   const router = useRouter();
-  const styles = useAuthStyles();
+  const styles = useAuthStyles(colors);
 
   const handleLogin = () => {
     const foundUser = users.find(

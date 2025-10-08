@@ -6,11 +6,8 @@ export default function RootLayout() {
     <Stack>
       <Stack.Screen name="auth" options={{ headerShown: false }} />
       <Stack.Screen 
-        name="home" 
-        options={{ 
-          headerTitle: "UPB",
-          headerTitleAlign: 'center'
-        }} 
+        name="(drawer)" 
+        options={{ headerShown: false }}  
       />
     </Stack>
   );

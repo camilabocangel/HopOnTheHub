@@ -83,7 +83,7 @@ export default function CampusScreen() {
                     },
                   ]}
                   onPress={() =>
-                    router.push(`/(drawer)/events?campus=${selectedCampus}`)
+                    router.replace(`/(drawer)/events?campus=${selectedCampus}`)
                   }
                 >
                   <Text style={[styles.seeMoreText, { color: colors.primary }]}>
@@ -130,7 +130,7 @@ export default function CampusScreen() {
                     },
                   ]}
                   onPress={() =>
-                    router.push(
+                    router.replace(
                       `/(drawer)/announcements?campus=${selectedCampus}`
                     )
                   }
