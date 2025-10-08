@@ -1,49 +1,137 @@
 import React from "react";
-import { View, Text, FlatList, StyleSheet, ScrollView } from "react-native";
+import { View, Text, FlatList, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
+import Section from "../components/Section";
+import AnnouncementCard from "../components/AnnouncementCard";
 import { announcements } from "../data/announcements";
 import users from "../data/users";
 import { useThemeColors } from "../hooks/useThemeColors";
-import AnnouncementCard from "../components/AnnouncementCard";
+import announcementsStyles from "../styles/announcementsStyles";
+import { useUser } from "../hooks/useUser";
+import useLikedAnnouncements from "../hooks/useLikedAnnouncements";
 
 export default function AnnouncementsScreen() {
   const { colors } = useThemeColors();
   const { campus } = useLocalSearchParams();
+  const { user } = useUser();
+  const { toggleLike } = useLikedAnnouncements();
 
-  const campusParam = Array.isArray(campus) ? campus[0] : campus;
-  const selectedCampus = campusParam || users[0]?.campus || "La Paz";
+  const getSelectedCampus = (): string => {
+    if (Array.isArray(campus)) {
+      return campus[0] || user?.campus || users[0]?.campus || "Cochabamba";
+    }
+    return campus || user?.campus || users[0]?.campus || "Cochabamba";
+  };
+
+  const selectedCampus = getSelectedCampus();
 
   const campusAnnouncements = announcements.filter((announcement) =>
     announcement.campus.includes(selectedCampus)
   );
 
-  const handleLikeToggle = (announcementId: number) => {};
+  const getAnnouncementCategory = (description: string) => {
+    const desc = description.toLowerCase();
+    if (
+      desc.includes("beca") ||
+      desc.includes("convocatoria") ||
+      desc.includes("postulación")
+    )
+      return "Becas y Convocatorias";
+    if (
+      desc.includes("académico") ||
+      desc.includes("clase") ||
+      desc.includes("curso") ||
+      desc.includes("examen")
+    )
+      return "Académico";
+    if (
+      desc.includes("evento") ||
+      desc.includes("actividad") ||
+      desc.includes("feria") ||
+      desc.includes("conferencia")
+    )
+      return "Eventos";
+    if (
+      desc.includes("deporte") ||
+      desc.includes("deportivo") ||
+      desc.includes("competencia") ||
+      desc.includes("torneo")
+    )
+      return "Deportes";
+    if (
+      desc.includes("empleo") ||
+      desc.includes("trabajo") ||
+      desc.includes("pasantía") ||
+      desc.includes("vacante")
+    )
+      return "Empleo y Pasantías";
+    return "General";
+  };
+
+  const announcementsByCategory = campusAnnouncements.reduce(
+    (acc: { [key: string]: any[] }, announcement) => {
+      const category = getAnnouncementCategory(announcement.description);
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(announcement);
+      return acc;
+    },
+    {}
+  );
+
+  const categories = Object.keys(announcementsByCategory);
+
+  const handleAnnouncementLikeToggle = (id: number) => {
+    toggleLike(id);
+  };
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <Text style={[styles.title, { color: colors.text }]}>
+      <View
+        style={[
+          announcementsStyles.container,
+          { backgroundColor: colors.background },
+        ]}
+      >
+        <Text style={[announcementsStyles.title, { color: colors.text }]}>
           Anuncios en {selectedCampus}
         </Text>
 
-        {campusAnnouncements.length > 0 ? (
-          <View style={styles.announcementsList}>
-            {campusAnnouncements.map((announcement) => (
-              <AnnouncementCard
-                key={announcement.id}
-                id={announcement.id}
-                image={announcement.image}
-                description={announcement.description}
-                date={announcement.date}
-                campus={announcement.campus}
-                liked={announcement.like}
-                onLikeToggle={handleLikeToggle}
-              />
-            ))}
-          </View>
+        {categories.length > 0 ? (
+          categories.map((category) => {
+            const categoryAnnouncements = announcementsByCategory[category];
+
+            return (
+              <Section key={category} title={category}>
+                <FlatList
+                  horizontal
+                  data={categoryAnnouncements}
+                  renderItem={({ item }) => (
+                    <AnnouncementCard
+                      id={item.id}
+                      image={item.image}
+                      description={item.description}
+                      date={item.date}
+                      campus={item.campus}
+                      onLikeToggle={handleAnnouncementLikeToggle}
+                    />
+                  )}
+                  keyExtractor={(item) => item.id.toString()}
+                  showsHorizontalScrollIndicator={false}
+                  contentContainerStyle={announcementsStyles.flatListContent}
+                />
+              </Section>
+            );
+          })
         ) : (
-          <View style={styles.noAnnouncementsContainer}>
-            <Text style={[styles.noAnnouncements, { color: colors.text }]}>
+          <View style={announcementsStyles.noAnnouncementsContainer}>
+            <Text
+              style={[
+                announcementsStyles.noAnnouncements,
+                { color: colors.text },
+              ]}
+            >
               No hay anuncios disponibles para {selectedCampus}
             </Text>
           </View>
@@ -52,30 +140,3 @@ export default function AnnouncementsScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  announcementsList: {
-    gap: 16,
-  },
-  noAnnouncementsContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 40,
-  },
-  noAnnouncements: {
-    textAlign: "center",
-    fontSize: 16,
-    fontStyle: "italic",
-  },
-});

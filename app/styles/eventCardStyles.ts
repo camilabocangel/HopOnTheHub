@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 const eventCardStyles = StyleSheet.create({
   card: {
     width: 280,
-    backgroundColor: 'white',
     borderRadius: 12,
     marginRight: 16,
     marginBottom: 8,
@@ -14,12 +13,17 @@ const eventCardStyles = StyleSheet.create({
     elevation: 3,
     overflow: 'hidden',
   },
-  image: {
+  imageContainer: {
     width: '100%',
     height: 140,
   },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
   placeholderImage: {
-    backgroundColor: '#1a1a1a',
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -33,7 +37,6 @@ const eventCardStyles = StyleSheet.create({
   },
   category: {
     fontSize: 12,
-    color: '#666',
     fontWeight: '500',
     marginBottom: 4,
     textTransform: 'uppercase',
@@ -41,21 +44,23 @@ const eventCardStyles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
     marginBottom: 8,
     lineHeight: 20,
   },
-  details: {
-    marginBottom: 8,
-  },
-  detailText: {
+  date: {
     fontSize: 12,
-    color: '#666',
     marginBottom: 2,
+  },
+  time: {
+    fontSize: 12,
+    marginBottom: 2,
+  },
+  place: {
+    fontSize: 12,
+    marginBottom: 8,
   },
   description: {
     fontSize: 12,
-    color: '#888',
     lineHeight: 16,
   },
 });

@@ -1,17 +1,21 @@
 import React from "react";
-import { View, Text, ImageBackground, StyleSheet, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ImageBackground,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { Link } from "expo-router";
 import { useThemeColors } from "../hooks/useThemeColors";
 
 type Props = {
   label: string;
   href: string;
-  image: any; 
+  image: any;
 };
 
 const CampusCard: React.FC<Props> = ({ label, href, image }) => {
-  const { colors } = useThemeColors();
-
   return (
     <Link href={href} asChild>
       <TouchableOpacity activeOpacity={0.8} style={styles.container}>
@@ -20,8 +24,12 @@ const CampusCard: React.FC<Props> = ({ label, href, image }) => {
           style={styles.image}
           imageStyle={{ borderRadius: 12 }}
         >
-          <View style={[styles.overlay, { backgroundColor: "rgba(0,0,0,0.3)" }]} />
-          <Text style={[styles.label, { color: "#fff" }]}>{label.toUpperCase()}</Text>
+          <View
+            style={[styles.overlay, { backgroundColor: "rgba(0,0,0,0.3)" }]}
+          />
+          <Text style={[styles.label, { color: "#fff" }]}>
+            {label.toUpperCase()}
+          </Text>
         </ImageBackground>
       </TouchableOpacity>
     </Link>
@@ -37,6 +45,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     width: 300,
     height: 220,
+    marginTop: 10,
   },
   image: {
     flex: 1,

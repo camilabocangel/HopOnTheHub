@@ -8,14 +8,11 @@ const CustomDrawerContent = (props: any) => {
   const { colors } = useThemeColors();
   const pathname = usePathname();
 
-  useEffect(() => {
-    console.log("pathname:", pathname);
-  });
-
   return (
     <DrawerContentScrollView 
       {...props}
       style={{ backgroundColor: colors.drawerBackground }}
+      contentContainerStyle={{ flex: 1 }}
     >
       <DrawerItem
         label={"Inicio"}
@@ -24,6 +21,8 @@ const CustomDrawerContent = (props: any) => {
         }}
         focused={pathname === '/'}
         activeTintColor={colors.primary}
+        inactiveTintColor={colors.text}
+        labelStyle={{ fontWeight: '600' }}
       />
       <DrawerItem
         label={"Perfil"}
@@ -32,6 +31,8 @@ const CustomDrawerContent = (props: any) => {
         }}
         focused={pathname === '/profile'}
         activeTintColor={colors.primary}
+        inactiveTintColor={colors.text}
+        labelStyle={{ fontWeight: '600' }}
       />
     </DrawerContentScrollView>
   );
@@ -46,13 +47,39 @@ const DrawerLayout = () => {
         headerTitleAlign: 'center',
         headerStyle: { backgroundColor: colors.surface },
         headerTintColor: colors.text,
-        drawerContentStyle: { backgroundColor: colors.drawerBackground },
+        drawerStyle: { 
+          backgroundColor: colors.drawerBackground,
+          width: 280,
+        },
+        drawerContentStyle: { 
+          backgroundColor: colors.drawerBackground,
+        },
         drawerActiveTintColor: colors.primary,
-        drawerInactiveTintColor: colors.muted,
+        drawerInactiveTintColor: colors.text,
+        drawerActiveBackgroundColor: colors.muted + '40',
+        drawerInactiveBackgroundColor: 'transparent',
+        drawerLabelStyle: {
+          fontWeight: '600',
+          fontSize: 16,
+        },        
       }}
-      drawerContent={(props) => <CustomDrawerContent {...props} 
-      />}
-    />
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+    >
+      <Drawer.Screen
+        name="index"
+        options={{
+          drawerLabel: "Inicio",
+          title: "Inicio",
+        }}
+      />
+      <Drawer.Screen
+        name="profile"
+        options={{
+          drawerLabel: "Perfil",
+          title: "Perfil",
+        }}
+      />
+    </Drawer>
   );
 };
 
