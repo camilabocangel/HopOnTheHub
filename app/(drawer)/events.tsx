@@ -19,12 +19,10 @@ export default function EventsScreen() {
   const selectedCampus =
     campusParam || user?.campus || users[0]?.campus || "Cochabamba";
 
-  // Filtrar eventos por campus - asegurando que selectedCampus es string
   const campusEvents = events.filter((event) =>
     event.campus.includes(selectedCampus as string)
   );
 
-  // Obtener categorías únicas
   const categories = campusEvents.reduce((acc: string[], event) => {
     if (!acc.includes(event.category)) {
       acc.push(event.category);

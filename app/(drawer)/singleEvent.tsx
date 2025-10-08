@@ -23,7 +23,7 @@ export default function SingleEventScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={singleEventsStyles.container}>
-        {/* Imagen del evento */}
+
         <View style={singleEventsStyles.imageContainer}>
           {image ? (
             <Image
@@ -45,7 +45,6 @@ export default function SingleEventScreen() {
           )}
         </View>
 
-        {/* Información del evento */}
         <View style={singleEventsStyles.content}>
           <Text style={[singleEventsStyles.title, { color: colors.text }]}>
             {title as string}
@@ -140,7 +139,6 @@ export default function SingleEventScreen() {
             </View>
           </View>
 
-          {/* Descripción */}
           <View style={singleEventsStyles.section}>
             <Text
               style={[singleEventsStyles.sectionTitle, { color: colors.text }]}

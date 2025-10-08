@@ -46,7 +46,6 @@ export default function CampusScreen() {
       .slice(0, 5);
   }, [selectedCampus]);
 
-  // Combinar eventos con el botón "ver más"
   const eventsWithSeeMore = useMemo(() => {
     return [
       ...filteredEvents,
@@ -54,7 +53,6 @@ export default function CampusScreen() {
     ];
   }, [filteredEvents]);
 
-  // Combinar anuncios con el botón "ver más"
   const announcementsWithSeeMore = useMemo(() => {
     return [
       ...filteredAnnouncements,
@@ -81,7 +79,7 @@ export default function CampusScreen() {
                     styles.seeMoreCard,
                     {
                       backgroundColor: colors.surface,
-                      borderColor: colors.primary, // Borde con color primario
+                      borderColor: colors.primary,
                     },
                   ]}
                   onPress={() =>
@@ -128,7 +126,7 @@ export default function CampusScreen() {
                     styles.seeMoreCard,
                     {
                       backgroundColor: colors.surface,
-                      borderColor: colors.primary, // Borde con color primario
+                      borderColor: colors.primary,
                     },
                   ]}
                   onPress={() =>
