@@ -15,6 +15,7 @@ export interface Announcement {
   date: string;
   campus: string[];
   like: boolean;
+  content: string;
 }
 
 export const announcements = [
@@ -25,6 +26,7 @@ export const announcements = [
     date: "2025-10-05",
     campus: ["Cochabamba", "La Paz", "Santa Cruz"],
     like: false,
+    content: "",
   },
   {
     id: 2,
@@ -33,6 +35,7 @@ export const announcements = [
     date: "2025-10-10",
     campus: ["Santa Cruz"],
     like: false,
+    content: "",
   },
   {
     id: 3,
@@ -41,6 +44,7 @@ export const announcements = [
     date: "2025-09-30",
     campus: ["Cochabamba", "La Paz"],
     like: false,
+    content: "",
   },
   {
     id: 4,
@@ -50,6 +54,7 @@ export const announcements = [
     date: "2025-10-12",
     campus: ["Cochabamba"],
     like: false,
+    content: "",
   },
   {
     id: 5,
@@ -59,6 +64,7 @@ export const announcements = [
     date: "2025-10-08",
     campus: ["Cochabamba", "La Paz", "Santa Cruz"],
     like: false,
+    content: "",
   },
   {
     id: 6,
@@ -67,6 +73,7 @@ export const announcements = [
     date: "2025-11-01",
     campus: ["Cochabamba", "La Paz", "Santa Cruz"],
     like: false,
+    content: "",
   },
   {
     id: 7,
@@ -75,6 +82,7 @@ export const announcements = [
     date: "2025-10-18",
     campus: ["Cochabamba", "La Paz"],
     like: false,
+    content: "",
   },
   {
     id: 8,
@@ -83,6 +91,7 @@ export const announcements = [
     date: "2025-10-22",
     campus: ["Santa Cruz", "La Paz"],
     like: false,
+    content: "",
   },
   {
     id: 9,
@@ -92,6 +101,7 @@ export const announcements = [
     date: "2025-09-28",
     campus: ["Cochabamba"],
     like: false,
+    content: "",
   },
   {
     id: 10,
@@ -100,6 +110,7 @@ export const announcements = [
     date: "2025-10-15",
     campus: ["Cochabamba", "Santa Cruz"],
     like: false,
+    content: "",
   },
   {
     id: 11,
@@ -108,6 +119,7 @@ export const announcements = [
     date: "2025-11-10",
     campus: ["La Paz"],
     like: false,
+    content: "",
   },
   {
     id: 12,
@@ -116,6 +128,7 @@ export const announcements = [
     date: "2025-10-28",
     campus: ["Santa Cruz"],
     like: false,
+    content: "",
   },
   {
     id: 13,
@@ -124,6 +137,7 @@ export const announcements = [
     date: "2025-11-05",
     campus: ["Cochabamba"],
     like: false,
+    content: "",
   },
   {
     id: 14,
@@ -132,6 +146,7 @@ export const announcements = [
     date: "2025-11-12",
     campus: ["La Paz"],
     like: false,
+    content: "",
   },
   {
     id: 15,
@@ -140,6 +155,7 @@ export const announcements = [
     date: "2025-10-25",
     campus: ["Cochabamba", "Santa Cruz"],
     like: false,
+    content: "",
   },
   {
     id: 16,
@@ -149,6 +165,7 @@ export const announcements = [
     date: "2025-11-20",
     campus: ["Cochabamba", "La Paz", "Santa Cruz"],
     like: false,
+    content: "",
   },
   {
     id: 17,
@@ -157,6 +174,7 @@ export const announcements = [
     date: "2025-10-30",
     campus: ["Cochabamba"],
     like: false,
+    content: "",
   },
   {
     id: 18,
@@ -166,6 +184,7 @@ export const announcements = [
     date: "2025-12-05",
     campus: ["Santa Cruz", "La Paz"],
     like: false,
+    content: "",
   },
   {
     id: 19,
@@ -174,6 +193,7 @@ export const announcements = [
     date: "2025-11-08",
     campus: ["Cochabamba"],
     like: false,
+    content: "",
   },
   {
     id: 20,
@@ -182,5 +202,6 @@ export const announcements = [
     date: "2025-10-18",
     campus: ["La Paz", "Santa Cruz"],
     like: false,
+    content: "",
   },
 ];

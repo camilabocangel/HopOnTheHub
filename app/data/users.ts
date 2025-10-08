@@ -1,6 +1,8 @@
 const users = [
   {
     id: 78619,
+    userName: "joackagui0408@gmail.com",
+    password: "12345678",
     name: "Joaquin",
     lastName: "Aguilera",
     secondLastName: "Salinas",
@@ -12,6 +14,8 @@ const users = [
   },
   {
     id: 11111,
+    userName: "camikk@gmail.com",
+    password: "12345678",
     name: "Camila",
     lastName: "Bocangel",
     secondLastName: "Ramirez",

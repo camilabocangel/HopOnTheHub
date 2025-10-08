@@ -2,17 +2,17 @@ import { StyleSheet } from "react-native";
 
 const announcementCardStyles = StyleSheet.create({
   card: {
+    width: 280,
+    backgroundColor: 'white',
     borderRadius: 12,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    marginRight: 16,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    overflow: "hidden",
+    overflow: 'hidden',
   },
   image: {
     width: "100%",
