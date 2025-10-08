@@ -108,6 +108,18 @@ const createStyles = (colors: ThemeColors) =>
       color: colors.text,
       fontWeight: "500",
     },
+    logoutCard: {
+      marginTop: 16,
+      paddingVertical: 16,
+      alignItems: "center",
+      borderRadius: 16,
+      backgroundColor: "#EF4444",
+    },
+    logoutText: {
+      color: "white",
+      fontWeight: "600",
+      fontSize: 16,
+    },
   });
 
 export default profileStyles;

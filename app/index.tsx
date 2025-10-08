@@ -7,5 +7,5 @@ export default function HomeRedirect() {
 
   if (!user) return <Redirect href="/(auth)/login" />;
 
-  return <Redirect href="/(drawer)" />;
+  return <Redirect href="/(tabs)" />;
 }

@@ -15,7 +15,7 @@ const EventCard = ({
   return (
     <TouchableOpacity style={eventCardStyles.card}>
       {image ? (
-        <Image source={{ uri: image }} style={eventCardStyles.image} />
+        <Image source={{uri:image}} style={eventCardStyles.image} />
       ) : (
         <View style={[eventCardStyles.image, eventCardStyles.placeholderImage]}>
           <Text style={eventCardStyles.placeholderText}>UPB</Text>

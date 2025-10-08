@@ -6,19 +6,24 @@ import {
   ScrollView,
   Switch,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import { useThemeColors } from "../hooks/useThemeColors";
 import users from "../data/users";
 import { useThemeStore } from "../store/useThemeStore";
 import { ThemeColors } from "../theme/colors";
 import profileStyles from "../styles/profileStyles";
+import { useUser } from "../hooks/useUser";
+import { Link, useRouter } from "expo-router";
 
 export default function ProfileScreen() {
-  const user = users[0];
+  const {user, logout} = useUser();
 
   const { theme, colors } = useThemeColors();
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
   const styles = profileStyles();
+  const router = useRouter();
+
 
   const calculateAge = (birthday: string) => {
     const birthDate = new Date(birthday);
@@ -64,11 +69,11 @@ export default function ProfileScreen() {
           </View>
 
           <Text style={[styles.userName, { color: colors.text }]}>
-            {user.name} {user.lastName}
+            {user?.name??"Usuario"} {user?.lastName??""}
           </Text>
 
           <Text style={[styles.campus, { color: colors.primary }]}>
-            Campus {user.campus}
+            Campus {user?.campus??"-"}
           </Text>
         </View>
 
@@ -83,7 +88,7 @@ export default function ProfileScreen() {
                 Carrera:
               </Text>
               <Text style={[styles.infoValue, { color: colors.text }]}>
-                {user.career}
+                {user?.career??"-"}
               </Text>
             </View>
 
@@ -92,7 +97,7 @@ export default function ProfileScreen() {
                 Semestre:
               </Text>
               <Text style={[styles.infoValue, { color: colors.text }]}>
-                {user.semester}° Semestre
+                {user?.semester ? `${user.semester}° Semestre` : "-"}
               </Text>
             </View>
 
@@ -101,7 +106,7 @@ export default function ProfileScreen() {
                 Campus:
               </Text>
               <Text style={[styles.infoValue, { color: colors.text }]}>
-                {user.campus}
+                {user?.campus??"-"}
               </Text>
             </View>
           </View>
@@ -118,7 +123,7 @@ export default function ProfileScreen() {
                 Nombre completo:
               </Text>
               <Text style={[styles.infoValue, { color: colors.text }]}>
-                {user.name} {user.lastName} {user.secondLastName}
+                {user?.name?? ""} {user?.lastName?? ""} {user?.secondLastName?? ""}
               </Text>
             </View>
 
@@ -127,7 +132,7 @@ export default function ProfileScreen() {
                 Código:
               </Text>
               <Text style={[styles.infoValue, { color: colors.text }]}>
-                {user.id}
+                {user?.id?? "-"}
               </Text>
             </View>
 
@@ -136,7 +141,7 @@ export default function ProfileScreen() {
                 Edad:
               </Text>
               <Text style={[styles.infoValue, { color: colors.text }]}>
-                {calculateAge(user.birthday)} años
+                {calculateAge(user?.birthday??"")} años
               </Text>
             </View>
 
@@ -145,7 +150,7 @@ export default function ProfileScreen() {
                 Fecha de nacimiento:
               </Text>
               <Text style={[styles.infoValue, { color: colors.text }]}>
-                {formatDate(user.birthday)}
+                {formatDate(user?.birthday?? "")}
               </Text>
             </View>
           </View>
@@ -167,6 +172,14 @@ export default function ProfileScreen() {
             thumbColor={theme === "dark" ? colors.switchThumb : "#f4f4f5"}
           />
         </View>
+        <Link href="/auth" asChild>
+          <TouchableOpacity
+            style={styles.logoutCard}
+            onPress={logout}
+          >
+            <Text style={styles.logoutText}>Cerrar sesión</Text>
+          </TouchableOpacity>
+        </Link>
       </View>
     </ScrollView>
   );
@@ -196,7 +209,8 @@ const createStyles = (colors: ThemeColors) =>
       fontSize: 18,
       color: colors.text,
       fontWeight: "500",
-    }
+    },
+    
   });
 
 function createColorStyles(
