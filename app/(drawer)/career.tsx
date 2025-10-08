@@ -7,7 +7,7 @@ import Section from '../components/Section';
 
 export default function CareerScreen() {
   const { colors } = useThemeColors();
-  const { name } = useLocalSearchParams(); // recibimos ?name=
+  const { name } = useLocalSearchParams();
   const careerName = Array.isArray(name) ? name[0] : name;
 
   const career = careers.find(c => c.name === careerName);

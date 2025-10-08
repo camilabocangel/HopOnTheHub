@@ -52,7 +52,7 @@ export default function EventsScreen() {
                       place={item.place}
                       category={item.category}
                       description={item.description}
-                      image={item.coverUri}
+                      image={item.image}
                     />
                   )}
                   keyExtractor={(item) => item.id.toString()}

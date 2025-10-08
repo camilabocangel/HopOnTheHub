@@ -24,7 +24,6 @@ const CustomDrawerContent = (props: any) => {
         }}
         focused={pathname === '/'}
         activeTintColor={colors.primary}
-        inactiveTintColor={colors.muted}
       />
       <DrawerItem
         label={"Perfil"}
@@ -33,7 +32,6 @@ const CustomDrawerContent = (props: any) => {
         }}
         focused={pathname === '/profile'}
         activeTintColor={colors.primary}
-        inactiveTintColor={colors.muted}
       />
     </DrawerContentScrollView>
   );

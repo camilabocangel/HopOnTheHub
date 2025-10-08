@@ -1,5 +1,13 @@
 import React from "react";
-import { ScrollView, View, Image, Text, StyleSheet, Dimensions, TouchableOpacity } from "react-native";
+import {
+  ScrollView,
+  View,
+  Image,
+  Text,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useThemeColors } from "../../hooks/useThemeColors";
@@ -10,22 +18,19 @@ import careers from "../../data/careers";
 import SubjectCard from "../../components/SubjectCard";
 import CampusCard from "../../components/CampusCard";
 import { Link } from "expo-router";
+import { useUser } from "../../hooks/useUser";
 
 const { height, width } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const { colors } = useThemeColors();
-  const router = useRouter();
 
-  const user = users[0];
-  const userCareer = careers.find((c) => c.name === user.career);
+  const { user } = useUser();
 
-  const maxRows = Math.max(
-    ...(userCareer?.semesters.map((s) => s.subjects.length) || [0])
-  );
+  const userCareer = careers.find((c) => c.name === user?.career);
 
   const currentSemester = userCareer?.semesters.find(
-    (s) => s.semester === user.semester
+    (s) => s.semester === user?.semester
   );
 
   return (
@@ -36,25 +41,25 @@ export default function HomeScreen() {
           style={styles.heroImage}
           resizeMode="cover"
         />
-        <Ionicons
-          name="chevron-down"
-          size={32}
-          color="white"
-          style={styles.downIcon}
-        />
       </View>
 
-      <Section title="Hoy en tu horario">
-        {currentSemester ? (
-          currentSemester.subjects.map((subject, index) => (
-            <SubjectCard key={index} subject={subject} />
-          ))
-        ) : (
-          <Text style={{ color: colors.text }}>
-            No se encontraron materias.
-          </Text>
-        )}
-      </Section>
+      {user ? (
+        <Section title="Hoy en tu horario">
+          {currentSemester ? (
+            currentSemester.subjects
+              .slice(0, 3)
+              .map((subject, index) => (
+                <SubjectCard key={index} subject={subject} />
+              ))
+          ) : (
+            <Text style={{ color: colors.text }}>
+              No se encontraron materias.
+            </Text>
+          )}
+        </Section>
+      ) : (
+        <View></View>
+      )}
 
       <Section title="Campus">
         <ScrollView
@@ -64,17 +69,17 @@ export default function HomeScreen() {
         >
           <CampusCard
             label="La Paz"
-            href="/(drawer)/events?campus=La Paz"
+            href="/(drawer)/campus?campus=La Paz"
             image={require("../../../assets/lapaz.jpg")}
           />
           <CampusCard
             label="Cochabamba"
-            href="/(drawer)/events?campus=Cochabamba"
+            href="/(drawer)/campus?campus=Cochabamba"
             image={require("../../../assets/cocha.jpg")}
           />
           <CampusCard
             label="Santa Cruz"
-            href="/(drawer)/events?campus=Santa Cruz"
+            href="/(drawer)/campus?campus=Santa Cruz"
             image={require("../../../assets/staCruz.jpg")}
           />
         </ScrollView>
@@ -98,10 +103,16 @@ export default function HomeScreen() {
                   padding: 16,
                   marginBottom: 12,
                   borderRadius: 12,
-                  alignItems: 'center',
+                  alignItems: "center",
                 }}
               >
-                <Text style={{ color: colors.text, fontWeight: '700', fontSize: 16 }}>
+                <Text
+                  style={{
+                    color: colors.text,
+                    fontWeight: "700",
+                    fontSize: 16,
+                  }}
+                >
                   {career.name}
                 </Text>
               </TouchableOpacity>
@@ -124,9 +135,6 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     width: "100%",
     height: "100%",
-  },
-  downIcon: {
-    marginBottom: 12,
   },
   row: {
     flexDirection: "row",
@@ -163,19 +171,19 @@ const styles = StyleSheet.create({
     width: 220,
     height: 100,
     borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
     padding: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
   },
   careerText: {
-    fontWeight: '700',
+    fontWeight: "700",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
