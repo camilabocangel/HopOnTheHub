@@ -74,7 +74,7 @@ export default function AnnouncementCard({
 
         <View style={announcementCardStyles.footer}>
           <View style={announcementCardStyles.campusContainer}>
-            {campus.slice(0, 2).map((camp, index) => (
+            {campus.map((camp, index) => (
               <View
                 key={index}
                 style={[
@@ -92,16 +92,13 @@ export default function AnnouncementCard({
                 </Text>
               </View>
             ))}
-            {campus.length > 2 && (
               <Text
                 style={[
                   announcementCardStyles.moreCampuses,
                   { color: colors.subtitle },
                 ]}
               >
-                +{campus.length - 2}
               </Text>
-            )}
           </View>
 
           <View
