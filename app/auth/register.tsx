@@ -17,8 +17,11 @@ import { useRegisterStyles } from "@/styles/registerStyles";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import { fetchCareers } from "@/helpers/fetchCareers ";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 export default function RegisterScreen() {
+  const { colors } = useThemeColors();
+
   const styles = useRegisterStyles();
   const router = useRouter();
 
@@ -152,7 +155,7 @@ export default function RegisterScreen() {
         [
           {
             text: "Continuar",
-            onPress: () => router.replace("/auth/index"),
+            onPress: () => router.replace("/(drawer)"),
           },
         ]
       );
@@ -181,7 +184,17 @@ export default function RegisterScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Crear Cuenta</Text>
+      <View style={styles.header}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="arrow-back" size={24} color={colors.text} />
+        </TouchableOpacity>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Crear Cuenta</Text>
+        </View>
+      </View>
 
       <View style={styles.photoSection}>
         <TouchableOpacity onPress={pickImage} style={styles.photoButton}>

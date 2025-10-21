@@ -11,11 +11,20 @@ export type User = {
   semester?: number;
   likedEvents: string[];
   likedAnnouncements: string[];
-  createdAt: any; 
+  createdAt: any;
+};
+
+export type Career = {
+  id: string;
+  name: string;
+  semesters?: {
+    semester: number;
+    subjects: string[];
+  }[];
 };
 
 export interface AnnouncementCardProps {
-  id: string; 
+  id: string;
   image: string;
   description: string;
   date: string;

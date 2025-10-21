@@ -7,18 +7,16 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
+  Alert,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import Section from "../../src/components/Section";
-import CampusButton from "../../src/components/CampusCard";
-import users from "../../src/data/users";
 import careers from "../../src/data/careers";
 import SubjectCard from "../../src/components/SubjectCard";
 import CampusCard from "../../src/components/CampusCard";
 import { Link } from "expo-router";
 import { useUser } from "../../src/hooks/useUser";
+import { importCareersToFirebase } from "@/scripts/importCareersToFirebase";
 
 const { height, width } = Dimensions.get("window");
 
@@ -32,6 +30,15 @@ export default function HomeScreen() {
   const currentSemester = userCareer?.semesters.find(
     (s) => s.semester === user?.semester
   );
+
+  // const handleImport = async () => {
+  //   try {
+  //     await importCareersToFirebase();
+  //     Alert.alert("Éxito", "Carreras importadas correctamente");
+  //   } catch (error) {
+  //     Alert.alert("Error", "No se pudieron importar las carreras");
+  //   }
+  // };
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -120,6 +127,20 @@ export default function HomeScreen() {
           ))}
         </ScrollView>
       </Section>
+      {/* <TouchableOpacity
+        onPress={handleImport}
+        style={{
+          position: "absolute",
+          top: 50,
+          right: 20,
+          backgroundColor: "red",
+          padding: 10,
+          borderRadius: 5,
+          zIndex: 9999,
+        }}
+      >
+        <Text style={{ color: "white", fontSize: 12 }}>Import Carreras</Text>
+      </TouchableOpacity> */}
     </ScrollView>
   );
 }

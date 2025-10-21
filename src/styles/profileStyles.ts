@@ -1,93 +1,87 @@
+// src/styles/profileStyles.ts
 import { StyleSheet } from "react-native";
 import { useMemo } from "react";
-import { useThemeColors } from "@/hooks/useThemeColors";
 import { ThemeColors } from "@/theme/colors";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
-const profileStyles = () => {
+export const useProfileStyles = () => {
   const { colors } = useThemeColors();
-
   return useMemo(() => createStyles(colors), [colors]);
 };
 
 const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
     container: {
-      flex: 1,
-      padding: 20,
-      justifyContent: "center",
-      backgroundColor: colors.background,
+      padding: 10,
     },
     profileSection: {
       alignItems: "center",
       marginBottom: 30,
-      paddingTop: 20,
     },
     imageContainer: {
-      width: 150,
-      height: 150,
-      borderRadius: 75,
-      borderWidth: 4,
-      borderColor: "#1a73e8",
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 8,
-      elevation: 8,
-      marginBottom: 20,
-      overflow: "hidden",
+      width: 120,
+      height: 120,
+      borderRadius: 60,
+      borderWidth: 3,
+      borderColor: colors.primary,
+      padding: 3,
+      marginBottom: 16,
     },
     profileImage: {
       width: "100%",
       height: "100%",
+      borderRadius: 60,
     },
     userName: {
-      fontSize: 28,
+      fontSize: 24,
       fontWeight: "bold",
-      marginBottom: 8,
+      marginBottom: 4,
       textAlign: "center",
-      color: colors.text,
     },
     campus: {
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: "600",
-      textAlign: "center",
+      marginBottom: 8,
+    },
+    roleBadge: {
+      backgroundColor: colors.primary,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 16,
+    },
+    roleText: {
+      color: colors.surface,
+      fontSize: 12,
+      fontWeight: "600",
     },
     infoSection: {
-      marginBottom: 25,
+      marginBottom: 24,
     },
     sectionTitle: {
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: "bold",
-      marginBottom: 15,
-      marginLeft: 5,
-      color: colors.text,
+      marginBottom: 12,
     },
     infoCard: {
       backgroundColor: colors.surface,
       borderRadius: 12,
-      padding: 20,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 3,
+      padding: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
     },
     infoRow: {
       flexDirection: "row",
       justifyContent: "space-between",
-      alignItems: "center",
+      alignItems: "flex-start",
       marginBottom: 12,
-      paddingVertical: 4,
     },
     infoLabel: {
-      fontSize: 16,
-      fontWeight: "600",
+      fontSize: 14,
+      fontWeight: "500",
       flex: 1,
-      color: colors.text,
     },
     infoValue: {
-      fontSize: 16,
-      fontWeight: "400",
+      fontSize: 14,
       flex: 2,
       textAlign: "right",
     },
@@ -105,21 +99,21 @@ const createStyles = (colors: ThemeColors) =>
     },
     preferenceLabel: {
       fontSize: 18,
-      color: colors.text,
       fontWeight: "500",
     },
     logoutCard: {
-      marginTop: 16,
+      backgroundColor: "#ff3b30",
       paddingVertical: 16,
-      alignItems: "center",
+      paddingHorizontal: 20,
       borderRadius: 16,
-      backgroundColor: "#EF4444",
+      alignItems: "center",
+      marginTop: 8,
     },
     logoutText: {
-      color: "white",
+      color: "#ffffff",
+      fontSize: 18,
       fontWeight: "600",
-      fontSize: 16,
     },
   });
 
-export default profileStyles;
+export default useProfileStyles;

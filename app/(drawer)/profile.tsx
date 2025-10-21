@@ -5,24 +5,53 @@ import {
   Image,
   ScrollView,
   Switch,
-  StyleSheet,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
-import users from "../../src/data/users";
-import profileStyles from "../../src/styles/profileStyles";
 import { useUser } from "../../src/hooks/useUser";
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useThemeStore } from "@/store/useThemeStore";
-import { ThemeColors } from "@/theme/colors";
+import profileStyles from "../../src/styles/profileStyles";
+import { signOut } from "firebase/auth";
+import { auth } from "@/config/firebaseConfig";
 
 export default function ProfileScreen() {
   const { user, logout } = useUser();
-
   const { theme, colors } = useThemeColors();
   const toggleTheme = useThemeStore((state) => state.toggleTheme);
   const styles = profileStyles();
   const router = useRouter();
+
+  const handleLogout = async () => {
+    Alert.alert(
+      "Cerrar Sesión",
+      "¿Estás seguro de que quieres cerrar sesión?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel",
+        },
+        {
+          text: "Cerrar Sesión",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await logout();
+              router.replace("/auth");
+            } catch (error) {
+              console.error("Error al cerrar sesión:", error);
+              Alert.alert("Error", "No se pudo cerrar sesión");
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleImageError = (error: any) => {
+    console.log("Error cargando imagen de perfil:", error);
+  };
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -33,55 +62,71 @@ export default function ProfileScreen() {
           <View style={styles.profileSection}>
             <View style={styles.imageContainer}>
               <Image
-                source={require("../../assets/joaquin-aguilera-profile-picture.jpg")}
+                source={
+                  user.picture
+                    ? { uri: user.picture }
+                    : require("../../assets/default-profile-picture.jpg")
+                }
                 style={styles.profileImage}
                 resizeMode="cover"
+                onError={handleImageError}
+                defaultSource={require("../../assets/default-profile-picture.jpg")}
               />
             </View>
 
             <Text style={[styles.userName, { color: colors.text }]}>
-              {user?.name ?? "Usuario"} {user?.lastName ?? ""}
+              {user.name} {user.lastName}
             </Text>
 
             <Text style={[styles.campus, { color: colors.primary }]}>
-              Campus {user?.campus ?? "-"}
-            </Text>
-          </View>
-
-          <View style={styles.infoSection}>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Información Académica
+              Campus {user.campus}
             </Text>
 
-            <View style={styles.infoCard}>
-              <View style={styles.infoRow}>
-                <Text style={[styles.infoLabel, { color: colors.text }]}>
-                  Carrera:
-                </Text>
-                <Text style={[styles.infoValue, { color: colors.text }]}>
-                  {user?.career ?? "-"}
-                </Text>
-              </View>
-
-              <View style={styles.infoRow}>
-                <Text style={[styles.infoLabel, { color: colors.text }]}>
-                  Semestre:
-                </Text>
-                <Text style={[styles.infoValue, { color: colors.text }]}>
-                  {user?.semester ? `${user.semester}° Semestre` : "-"}
-                </Text>
-              </View>
-
-              <View style={styles.infoRow}>
-                <Text style={[styles.infoLabel, { color: colors.text }]}>
-                  Campus:
-                </Text>
-                <Text style={[styles.infoValue, { color: colors.text }]}>
-                  {user?.campus ?? "-"}
-                </Text>
-              </View>
+            <View style={styles.roleBadge}>
+              <Text style={styles.roleText}>
+                {user.role === "admin" ? "Administrador" : "Estudiante"}
+              </Text>
             </View>
           </View>
+
+          {user.role === "normal" && (
+            <View style={styles.infoSection}>
+              <Text style={[styles.sectionTitle, { color: colors.text }]}>
+                Información Académica
+              </Text>
+
+              <View style={styles.infoCard}>
+                <View style={styles.infoRow}>
+                  <Text style={[styles.infoLabel, { color: colors.text }]}>
+                    Carrera:
+                  </Text>
+                  <Text style={[styles.infoValue, { color: colors.text }]}>
+                    {user.career || "No especificada"}
+                  </Text>
+                </View>
+
+                <View style={styles.infoRow}>
+                  <Text style={[styles.infoLabel, { color: colors.text }]}>
+                    Semestre:
+                  </Text>
+                  <Text style={[styles.infoValue, { color: colors.text }]}>
+                    {user.semester
+                      ? `${user.semester}° Semestre`
+                      : "No especificado"}
+                  </Text>
+                </View>
+
+                <View style={styles.infoRow}>
+                  <Text style={[styles.infoLabel, { color: colors.text }]}>
+                    Campus:
+                  </Text>
+                  <Text style={[styles.infoValue, { color: colors.text }]}>
+                    {user.campus}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          )}
 
           <View style={styles.infoSection}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
@@ -94,32 +139,49 @@ export default function ProfileScreen() {
                   Nombre completo:
                 </Text>
                 <Text style={[styles.infoValue, { color: colors.text }]}>
-                  {user?.name ?? ""} {user?.lastName ?? ""}{" "}
-                  {user?.secondLastName ?? ""}
+                  {user.name} {user.lastName} {user.secondLastName || ""}
                 </Text>
               </View>
 
               <View style={styles.infoRow}>
                 <Text style={[styles.infoLabel, { color: colors.text }]}>
-                  Código:
+                  Email:
                 </Text>
                 <Text style={[styles.infoValue, { color: colors.text }]}>
-                  {user?.id ?? "-"}
+                  {user.userName}
                 </Text>
               </View>
             </View>
           </View>
         </View>
       ) : (
-        <View></View>
+        <View
+          style={[
+            styles.container,
+            { alignItems: "center", justifyContent: "center" },
+          ]}
+        >
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            No hay usuario logueado
+          </Text>
+          <TouchableOpacity
+            style={styles.logoutCard}
+            onPress={() => router.replace("/auth")}
+          >
+            <Text style={styles.logoutText}>Iniciar Sesión</Text>
+          </TouchableOpacity>
+        </View>
       )}
 
       <View style={styles.container}>
         <Text style={[styles.sectionTitle, { color: colors.text }]}>
           Configuraciones
         </Text>
+
         <View style={styles.preferenceRow}>
-          <Text style={styles.preferenceLabel}>Modo oscuro</Text>
+          <Text style={[styles.preferenceLabel, { color: colors.text }]}>
+            Modo oscuro
+          </Text>
           <Switch
             value={theme === "dark"}
             onValueChange={toggleTheme}
@@ -130,77 +192,13 @@ export default function ProfileScreen() {
             thumbColor={theme === "dark" ? colors.switchThumb : "#f4f4f5"}
           />
         </View>
-        <Link href="/auth" asChild>
-          <TouchableOpacity style={styles.logoutCard} onPress={logout}>
-            <Text style={styles.logoutText}>
-              {user ? "Cerrar Sesion" : "Regresar a Log In"}
-            </Text>
+
+        {user && (
+          <TouchableOpacity style={styles.logoutCard} onPress={handleLogout}>
+            <Text style={styles.logoutText}>Cerrar Sesión</Text>
           </TouchableOpacity>
-        </Link>
+        )}
       </View>
     </ScrollView>
   );
-}
-
-const createStyles = (colors: ThemeColors) =>
-  StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: "center",
-      padding: 24,
-      backgroundColor: colors.background,
-    },
-    preferenceRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      justifyContent: "space-between",
-      paddingVertical: 16,
-      paddingHorizontal: 20,
-      borderRadius: 16,
-      backgroundColor: colors.surface,
-      borderWidth: StyleSheet.hairlineWidth,
-      borderColor: colors.border,
-      marginBottom: 12,
-    },
-    preferenceLabel: {
-      fontSize: 18,
-      color: colors.text,
-      fontWeight: "500",
-    },
-  });
-
-function createColorStyles(
-  colors:
-    | {
-        readonly background: "#F8F9FA";
-        readonly surface: "#FFFFFF";
-        readonly text: "#2C2C2C";
-        readonly subtitle: "#6C757D";
-        readonly primary: "#002147";
-        readonly accent: "#FFD43B";
-        readonly muted: "#E5E5E5";
-        readonly border: "#E2E8F0";
-        readonly tabBarBackground: "#FFFFFF";
-        readonly drawerBackground: "#FFFFFF";
-        readonly switchTrackOn: "#FFD43B";
-        readonly switchTrackOff: "#94A3B8";
-        readonly switchThumb: "#F8F9FA";
-      }
-    | {
-        readonly background: "#0F172A";
-        readonly surface: "#1E293B";
-        readonly text: "#E2E8F0";
-        readonly subtitle: "#CBD5F5";
-        readonly primary: "#60A5FA";
-        readonly accent: "#FFD43B";
-        readonly muted: "#475569";
-        readonly border: "#334155";
-        readonly tabBarBackground: "#1E293B";
-        readonly drawerBackground: "#0F172A";
-        readonly switchTrackOn: "#FFD43B";
-        readonly switchTrackOff: "#475569";
-        readonly switchThumb: "#1E293B";
-      }
-): any {
-  throw new Error("Function not implemented.");
 }

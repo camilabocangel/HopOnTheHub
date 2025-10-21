@@ -1,4 +1,3 @@
-// src/styles/registerStyles.ts
 import { StyleSheet } from "react-native";
 import { useMemo } from "react";
 import { ThemeColors } from "@/theme/colors";
@@ -11,6 +10,35 @@ export const useRegisterStyles = () => {
 
 const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
+    container: {
+      flexGrow: 1,
+      backgroundColor: colors.background,
+      paddingHorizontal: 20,
+      paddingVertical: 40,
+    },
+    header: {
+      flexDirection: "row",
+      alignItems: "center",
+      width: "100%",
+      marginBottom: 20,
+      position: "relative",
+    },
+    backButton: {
+      padding: 8,
+      position: "absolute",
+      left: 0,
+      zIndex: 1,
+    },
+    titleContainer: {
+      flex: 1,
+      alignItems: "center",
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: "bold",
+      color: colors.text,
+      textAlign: "center",
+    },
     photoSection: {
       alignItems: "center",
       marginBottom: 24,
@@ -50,19 +78,6 @@ const createStyles = (colors: ThemeColors) =>
       backgroundColor: colors.surface,
       borderRadius: 12,
     },
-    container: {
-      flexGrow: 1,
-      backgroundColor: colors.background,
-      paddingHorizontal: 20,
-      paddingVertical: 40,
-    },
-    title: {
-      fontSize: 28,
-      fontWeight: "bold",
-      color: colors.text,
-      textAlign: "center",
-      marginBottom: 30,
-    },
     input: {
       width: "100%",
       height: 50,
@@ -78,14 +93,15 @@ const createStyles = (colors: ThemeColors) =>
     inputWithIcon: {
       flexDirection: "row",
       alignItems: "center",
+      position: "relative",
     },
     passwordInput: {
       flex: 1,
     },
     iconButton: {
-      paddingBottom: 15,
       position: "absolute",
-      right: 10,
+      right: 15,
+      top: 13,
     },
     label: {
       fontSize: 16,
@@ -152,7 +168,8 @@ const createStyles = (colors: ThemeColors) =>
       color: "#ff3b30",
       fontSize: 14,
       marginTop: 5,
-      textAlign: "center",
+      textAlign: "left",
+      marginLeft: 5,
     },
     link: {
       color: colors.primary,
