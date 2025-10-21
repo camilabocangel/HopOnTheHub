@@ -15,7 +15,7 @@ const createStyles = (colors: ThemeColors) =>
       alignItems: "center",
     },
     iconButton: {
-      padding: 10,
+      paddingBottom: 15,
       position: "absolute",
       right: 10,
     },

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -87,8 +87,8 @@ export default function AuthScreen() {
           placeholderTextColor="#888"
           value={password}
           onChangeText={setPassword}
+          secureTextEntry={!showPassword}
           style={styles.input}
-          secureTextEntry
         />
         <TouchableOpacity
           style={styles.iconButton}

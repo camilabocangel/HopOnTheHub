@@ -24,32 +24,6 @@ export default function ProfileScreen() {
   const styles = profileStyles();
   const router = useRouter();
 
-  const calculateAge = (birthday: string) => {
-    const birthDate = new Date(birthday);
-    const today = new Date();
-
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-
-    if (
-      monthDiff < 0 ||
-      (monthDiff === 0 && today.getDate() < birthDate.getDate())
-    ) {
-      age--;
-    }
-
-    return age;
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString("es-ES", {
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-    });
-  };
-
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       {user ? (
@@ -131,24 +105,6 @@ export default function ProfileScreen() {
                 </Text>
                 <Text style={[styles.infoValue, { color: colors.text }]}>
                   {user?.id ?? "-"}
-                </Text>
-              </View>
-
-              <View style={styles.infoRow}>
-                <Text style={[styles.infoLabel, { color: colors.text }]}>
-                  Edad:
-                </Text>
-                <Text style={[styles.infoValue, { color: colors.text }]}>
-                  {calculateAge(user?.birthday ?? "")} años
-                </Text>
-              </View>
-
-              <View style={styles.infoRow}>
-                <Text style={[styles.infoLabel, { color: colors.text }]}>
-                  Fecha de nacimiento:
-                </Text>
-                <Text style={[styles.infoValue, { color: colors.text }]}>
-                  {formatDate(user?.birthday ?? "")}
                 </Text>
               </View>
             </View>

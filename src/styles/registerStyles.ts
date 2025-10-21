@@ -11,6 +11,45 @@ export const useRegisterStyles = () => {
 
 const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
+    photoSection: {
+      alignItems: "center",
+      marginBottom: 24,
+      position: "relative",
+    },
+    photoButton: {
+      width: 120,
+      height: 120,
+      borderRadius: 60,
+      backgroundColor: colors.surface,
+      borderWidth: 2,
+      borderColor: colors.primary,
+      borderStyle: "dashed",
+      justifyContent: "center",
+      alignItems: "center",
+      overflow: "hidden",
+    },
+    photoImage: {
+      width: "100%",
+      height: "100%",
+      borderRadius: 60,
+    },
+    photoPlaceholder: {
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    photoText: {
+      marginTop: 8,
+      color: colors.text,
+      fontSize: 12,
+      textAlign: "center",
+    },
+    removePhotoButton: {
+      position: "absolute",
+      top: 0,
+      right: 100,
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+    },
     container: {
       flexGrow: 1,
       backgroundColor: colors.background,
@@ -44,7 +83,7 @@ const createStyles = (colors: ThemeColors) =>
       flex: 1,
     },
     iconButton: {
-      padding: 10,
+      paddingBottom: 15,
       position: "absolute",
       right: 10,
     },

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   Alert,
   ScrollView,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
@@ -14,6 +15,7 @@ import { auth, db } from "@/config/firebaseConfig";
 import { useRouter } from "expo-router";
 import { useRegisterStyles } from "@/styles/registerStyles";
 import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 import { fetchCareers } from "@/helpers/fetchCareers ";
 
 export default function RegisterScreen() {
@@ -36,6 +38,9 @@ export default function RegisterScreen() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
 
   const campuses = ["La Paz", "Santa Cruz", "Cochabamba"];
 
@@ -74,6 +79,34 @@ export default function RegisterScreen() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const pickImage = useCallback(async () => {
+    try {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== "granted") {
+        Alert.alert(
+          "Permisos requeridos",
+          "Se necesitan permisos para acceder a la galería."
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.8,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        setPhoto(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.error("Error selecting image:", error);
+      Alert.alert("Error", "No se pudo seleccionar la imagen");
+    }
+  }, []);
+
   const handleRegister = async () => {
     if (!validateForm()) return;
 
@@ -89,6 +122,7 @@ export default function RegisterScreen() {
       const userData: any = {
         id: uid,
         role: isAdmin ? "admin" : "normal",
+        picture: "",
         userName: email,
         name,
         lastName,
@@ -96,6 +130,10 @@ export default function RegisterScreen() {
         campus,
         createdAt: serverTimestamp(),
       };
+
+      if (photo) {
+        userData.picture = photo;
+      }
 
       if (!isAdmin) {
         Object.assign(userData, {
@@ -114,7 +152,7 @@ export default function RegisterScreen() {
         [
           {
             text: "Continuar",
-            onPress: () => router.replace("/(drawer)"),
+            onPress: () => router.replace("/auth/index"),
           },
         ]
       );
@@ -144,6 +182,27 @@ export default function RegisterScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Crear Cuenta</Text>
+
+      <View style={styles.photoSection}>
+        <TouchableOpacity onPress={pickImage} style={styles.photoButton}>
+          {photo ? (
+            <Image source={{ uri: photo }} style={styles.photoImage} />
+          ) : (
+            <View style={styles.photoPlaceholder}>
+              <Ionicons name="camera" size={32} color="#888" />
+              <Text style={styles.photoText}>Agregar foto</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+        {photo && (
+          <TouchableOpacity
+            onPress={() => setPhoto(null)}
+            style={styles.removePhotoButton}
+          >
+            <Ionicons name="close-circle" size={28} color="#ff3b30" />
+          </TouchableOpacity>
+        )}
+      </View>
 
       <TextInput
         placeholder="Correo electrónico"
