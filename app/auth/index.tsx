@@ -15,6 +15,7 @@ import {
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import { useAuthStyles } from "../../src/styles/authStyles";
 import { auth } from "../../src/config/firebaseConfig";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function AuthScreen() {
   const { colors } = useThemeColors();
@@ -24,6 +25,7 @@ export default function AuthScreen() {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
@@ -79,14 +81,26 @@ export default function AuthScreen() {
         autoCapitalize="none"
       />
 
-      <TextInput
-        placeholder="Contraseña"
-        placeholderTextColor="#888"
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-        secureTextEntry
-      />
+      <View style={styles.inputWithIcon}>
+        <TextInput
+          placeholder="Contraseña"
+          placeholderTextColor="#888"
+          value={password}
+          onChangeText={setPassword}
+          style={styles.input}
+          secureTextEntry
+        />
+        <TouchableOpacity
+          style={styles.iconButton}
+          onPress={() => setShowPassword(!showPassword)}
+        >
+          <Ionicons
+            name={showPassword ? "eye-off" : "eye"}
+            size={24}
+            color="#888"
+          />
+        </TouchableOpacity>
+      </View>
 
       <TouchableOpacity onPress={handleLogin} style={styles.button}>
         <Text style={styles.buttonText}>Iniciar Sesión</Text>

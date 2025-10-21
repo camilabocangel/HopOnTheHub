@@ -10,6 +10,15 @@ export const useAuthStyles = () => {
 
 const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
+    inputWithIcon: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    iconButton: {
+      padding: 10,
+      position: "absolute",
+      right: 10,
+    },
     link: {
       color: colors.primary,
       fontWeight: "600",
