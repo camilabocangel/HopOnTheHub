@@ -8,14 +8,14 @@ import {
   ScrollView,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { events } from "../data/events";
-import { announcements } from "../data/announcements";
-import { useThemeColors } from "../hooks/useThemeColors";
-import EventCard from "../components/EventCard";
-import AnnouncementCard from "../components/AnnouncementCard";
-import Section from "../components/Section";
-import useLikedAnnouncements from "../hooks/useLikedAnnouncements";
-import campusStyles from "../styles/campusStyles";
+import { events } from "../../src/data/events";
+import { announcements } from "../../src/data/announcements";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import EventCard from "../../src/components/EventCard";
+import AnnouncementCard from "../../src/components/AnnouncementCard";
+import Section from "../../src/components/Section";
+import useLikedAnnouncements from "../../src/hooks/useLikedAnnouncements";
+import campusStyles from "../../src/styles/campusStyles";
 
 const styles = campusStyles;
 

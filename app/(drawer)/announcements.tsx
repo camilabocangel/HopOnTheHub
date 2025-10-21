@@ -1,14 +1,14 @@
 import React from "react";
 import { View, Text, FlatList, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import Section from "../components/Section";
-import AnnouncementCard from "../components/AnnouncementCard";
-import { announcements } from "../data/announcements";
-import users from "../data/users";
-import { useThemeColors } from "../hooks/useThemeColors";
-import announcementsStyles from "../styles/announcementsStyles";
-import { useUser } from "../hooks/useUser";
-import useLikedAnnouncements from "../hooks/useLikedAnnouncements";
+import Section from "../../src/components/Section";
+import AnnouncementCard from "../../src/components/AnnouncementCard";
+import { announcements } from "../../src/data/announcements";
+import users from "../../src/data/users";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import announcementsStyles from "../../src/styles/announcementsStyles";
+import { useUser } from "../../src/hooks/useUser";
+import useLikedAnnouncements from "../../src/hooks/useLikedAnnouncements";
 
 export default function AnnouncementsScreen() {
   const { colors } = useThemeColors();

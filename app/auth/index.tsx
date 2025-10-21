@@ -7,38 +7,60 @@ import {
   Image,
   Alert,
 } from "react-native";
-import { useAuthStyles } from "../styles/authStyles";
-import users from "../data/users";
-import { useUser } from "../hooks/useUser";
-import { Link, useRouter } from "expo-router";
-import { useThemeColors } from "../hooks/useThemeColors";
+import { useRouter } from "expo-router";
+import {
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail,
+} from "firebase/auth";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import { useAuthStyles } from "../../src/styles/authStyles";
+import { auth } from "../../src/config/firebaseConfig";
 
 export default function AuthScreen() {
   const { colors } = useThemeColors();
-  const { setUser } = useUser();
-
-  const [userName, setUserName] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
   const router = useRouter();
-  const styles = useAuthStyles(colors);
+  const styles = useAuthStyles();
 
-  const handleLogin = () => {
-    const foundUser = users.find(
-      (u) => u.userName === userName && u.password === password
-    );
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
 
-    if (foundUser) {
-      setUser(foundUser);
+  const handleLogin = async () => {
+    if (!email || !password) {
+      setError("Por favor completa todos los campos");
+      return;
+    }
+
+    try {
+      setError("");
+      await signInWithEmailAndPassword(auth, email, password);
       router.replace("/(drawer)");
-    } else {
-      setError("Usuario o contraseña incorrectos");
+    } catch (e: any) {
+      console.error("Error login:", e);
+      if (e.code === "auth/invalid-credential") {
+        setError("Usuario o contraseña incorrectos");
+      } else if (e.code === "auth/too-many-requests") {
+        setError("Demasiados intentos. Intenta más tarde");
+      } else {
+        setError("Error al iniciar sesión");
+      }
     }
   };
 
-  const handleNoLogin = () => {
-    router.replace("/(drawer)");
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError("Por favor ingresa tu correo");
+      return;
+    }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      Alert.alert(
+        "Correo enviado",
+        "Se ha enviado un correo de recuperación a tu dirección."
+      );
+    } catch (e) {
+      setError("Error al enviar el correo, verifica tu email.");
+    }
   };
 
   return (
@@ -49,10 +71,10 @@ export default function AuthScreen() {
       />
 
       <TextInput
-        placeholder="Usuario"
+        placeholder="Correo electrónico"
         placeholderTextColor="#888"
-        value={userName}
-        onChangeText={setUserName}
+        value={email}
+        onChangeText={setEmail}
         style={styles.input}
         autoCapitalize="none"
       />
@@ -70,9 +92,13 @@ export default function AuthScreen() {
         <Text style={styles.buttonText}>Iniciar Sesión</Text>
       </TouchableOpacity>
 
-      <Text style={styles.link} onPress={handleNoLogin}>
-        Entrar sin Iniciar Sesión →
-      </Text>
+      <TouchableOpacity onPress={handleForgotPassword}>
+        <Text style={styles.link}>¿Olvidaste tu contraseña?</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.push("/auth/register")}>
+        <Text style={styles.link}>Crear cuenta nueva →</Text>
+      </TouchableOpacity>
 
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>

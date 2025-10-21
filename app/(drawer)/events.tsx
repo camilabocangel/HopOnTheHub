@@ -1,13 +1,13 @@
 import React from "react";
 import { View, Text, FlatList, ScrollView } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import Section from "../components/Section";
-import EventCard from "../components/EventCard";
-import { events } from "../data/events";
-import users from "../data/users";
-import { useThemeColors } from "../hooks/useThemeColors";
-import eventsStyles from "../styles/eventsStyles";
-import { useUser } from "../hooks/useUser";
+import Section from "../../src/components/Section";
+import EventCard from "../../src/components/EventCard";
+import { events } from "../../src/data/events";
+import users from "../../src/data/users";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import eventsStyles from "../../src/styles/eventsStyles";
+import { useUser } from "../../src/hooks/useUser";
 
 export default function EventsScreen() {
   const { colors } = useThemeColors();

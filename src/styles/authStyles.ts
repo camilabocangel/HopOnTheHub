@@ -1,7 +1,7 @@
 import { StyleSheet } from "react-native";
 import { useMemo } from "react";
-import { useThemeColors } from "../hooks/useThemeColors";
-import { ThemeColors } from "../theme/colors";
+import { ThemeColors } from "@/theme/colors";
+import { useThemeColors } from "@/hooks/useThemeColors";
 
 export const useAuthStyles = () => {
   const { colors } = useThemeColors();

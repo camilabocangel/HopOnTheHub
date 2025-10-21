@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text, ScrollView, Image } from "react-native";
 import { useLocalSearchParams } from "expo-router";
-import { useThemeColors } from "../hooks/useThemeColors";
-import singleEventsStyles from "../styles/sinlgeEventStyles";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import singleEventsStyles from "../../src/styles/sinlgeEventStyles";
 
 export default function SingleEventScreen() {
   const { colors } = useThemeColors();
@@ -23,7 +23,6 @@ export default function SingleEventScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={singleEventsStyles.container}>
-
         <View style={singleEventsStyles.imageContainer}>
           {image ? (
             <Image

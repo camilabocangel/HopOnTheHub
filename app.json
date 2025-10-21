@@ -2,6 +2,7 @@
   "expo": {
     "name": "HopOnTheHub",
     "slug": "HopOnTheHub",
+    "scheme": "HopOnTheHub",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

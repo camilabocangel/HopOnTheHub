@@ -2,9 +2,9 @@ import React from "react";
 import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { useThemeColors } from "../hooks/useThemeColors";
-import useLikedAnnouncements from "../hooks/useLikedAnnouncements";
-import singleAnnouncementStyles from "../styles/singleAnnouncementStyles";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import useLikedAnnouncements from "../../src/hooks/useLikedAnnouncements";
+import singleAnnouncementStyles from "../../src/styles/singleAnnouncementStyles";
 
 export default function SingleAnnouncementScreen() {
   const { colors } = useThemeColors();
@@ -26,7 +26,6 @@ export default function SingleAnnouncementScreen() {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={singleAnnouncementStyles.container}>
-
         <View style={singleAnnouncementStyles.imageContainer}>
           {image ? (
             <Image

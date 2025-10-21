@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react';
-import { Drawer } from 'expo-router/drawer';
-import { useThemeColors } from '../hooks/useThemeColors';
-import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
-import { router, usePathname } from 'expo-router';
+import React, { useEffect } from "react";
+import { Drawer } from "expo-router/drawer";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
+import { router, usePathname } from "expo-router";
 
 const CustomDrawerContent = (props: any) => {
   const { colors } = useThemeColors();
   const pathname = usePathname();
 
   return (
-    <DrawerContentScrollView 
+    <DrawerContentScrollView
       {...props}
       style={{ backgroundColor: colors.drawerBackground }}
       contentContainerStyle={{ flex: 1 }}
@@ -17,22 +17,22 @@ const CustomDrawerContent = (props: any) => {
       <DrawerItem
         label={"Inicio"}
         onPress={() => {
-          router.push('/');
+          router.push("/");
         }}
-        focused={pathname === '/'}
+        focused={pathname === "/"}
         activeTintColor={colors.primary}
         inactiveTintColor={colors.text}
-        labelStyle={{ fontWeight: '600' }}
+        labelStyle={{ fontWeight: "600" }}
       />
       <DrawerItem
         label={"Perfil"}
         onPress={() => {
-          router.push('/profile');
+          router.push("/profile");
         }}
-        focused={pathname === '/profile'}
+        focused={pathname === "/profile"}
         activeTintColor={colors.primary}
         inactiveTintColor={colors.text}
-        labelStyle={{ fontWeight: '600' }}
+        labelStyle={{ fontWeight: "600" }}
       />
     </DrawerContentScrollView>
   );
@@ -40,29 +40,29 @@ const CustomDrawerContent = (props: any) => {
 
 const DrawerLayout = () => {
   const { colors } = useThemeColors();
-  
+
   return (
     <Drawer
       screenOptions={{
         headerShown: true,
-        headerTitleAlign: 'center',
+        headerTitleAlign: "center",
         headerStyle: { backgroundColor: colors.surface },
         headerTintColor: colors.text,
-        drawerStyle: { 
+        drawerStyle: {
           backgroundColor: colors.drawerBackground,
           width: 280,
         },
-        drawerContentStyle: { 
+        drawerContentStyle: {
           backgroundColor: colors.drawerBackground,
         },
         drawerActiveTintColor: colors.primary,
         drawerInactiveTintColor: colors.text,
-        drawerActiveBackgroundColor: colors.muted + '40',
-        drawerInactiveBackgroundColor: 'transparent',
+        drawerActiveBackgroundColor: colors.muted + "40",
+        drawerInactiveBackgroundColor: "transparent",
         drawerLabelStyle: {
-          fontWeight: '600',
+          fontWeight: "600",
           fontSize: 16,
-        },        
+        },
       }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >

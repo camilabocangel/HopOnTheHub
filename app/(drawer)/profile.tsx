@@ -8,13 +8,13 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import { useThemeColors } from "../hooks/useThemeColors";
-import users from "../data/users";
-import { useThemeStore } from "../store/useThemeStore";
-import { ThemeColors } from "../theme/colors";
-import profileStyles from "../styles/profileStyles";
-import { useUser } from "../hooks/useUser";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import users from "../../src/data/users";
+import profileStyles from "../../src/styles/profileStyles";
+import { useUser } from "../../src/hooks/useUser";
 import { Link, useRouter } from "expo-router";
+import { useThemeStore } from "@/store/useThemeStore";
+import { ThemeColors } from "@/theme/colors";
 
 export default function ProfileScreen() {
   const { user, logout } = useUser();

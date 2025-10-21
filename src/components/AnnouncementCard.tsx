@@ -92,13 +92,12 @@ export default function AnnouncementCard({
                 </Text>
               </View>
             ))}
-              <Text
-                style={[
-                  announcementCardStyles.moreCampuses,
-                  { color: colors.subtitle },
-                ]}
-              >
-              </Text>
+            <Text
+              style={[
+                announcementCardStyles.moreCampuses,
+                { color: colors.subtitle },
+              ]}
+            ></Text>
           </View>
 
           <View

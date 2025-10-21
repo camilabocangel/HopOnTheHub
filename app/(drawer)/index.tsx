@@ -10,15 +10,15 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useThemeColors } from "../hooks/useThemeColors";
-import Section from "../components/Section";
-import CampusButton from "../components/CampusCard";
-import users from "../data/users";
-import careers from "../data/careers";
-import SubjectCard from "../components/SubjectCard";
-import CampusCard from "../components/CampusCard";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import Section from "../../src/components/Section";
+import CampusButton from "../../src/components/CampusCard";
+import users from "../../src/data/users";
+import careers from "../../src/data/careers";
+import SubjectCard from "../../src/components/SubjectCard";
+import CampusCard from "../../src/components/CampusCard";
 import { Link } from "expo-router";
-import { useUser } from "../hooks/useUser";
+import { useUser } from "../../src/hooks/useUser";
 
 const { height, width } = Dimensions.get("window");
 
