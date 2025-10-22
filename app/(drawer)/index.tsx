@@ -8,34 +8,85 @@ import {
   Dimensions,
   TouchableOpacity,
   Alert,
+  FlatList,
 } from "react-native";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import Section from "../../src/components/Section";
 import SubjectCard from "../../src/components/SubjectCard";
 import CampusCard from "../../src/components/CampusCard";
+import AnnouncementCard from "../../src/components/AnnouncementCard";
+import EventCard from "../../src/components/EventCard";
 import { Link } from "expo-router";
 import { useUser } from "../../src/hooks/useUser";
-import { importCareersToFirebase } from "@/scripts/importCareersToFirebase";
 import { useCareers } from "@/hooks/useCareers";
+import { useAnnouncements } from "@/hooks/useAnnouncements";
+import { useEvents } from "@/hooks/useEvents";
+import { importCareersToFirebase } from "@/scripts/importCareersToFirebase";
+import { importAnnouncementsToFirebase } from "@/scripts/importAnnouncementsToFirebase";
+import { importEventsToFirebase } from "@/scripts/importEventsToFirebase";
+import { homeStyles } from "@/styles/homeStyles";
 
 const { height, width } = Dimensions.get("window");
 
 export default function HomeScreen() {
+  const styles = homeStyles;
   const { colors } = useThemeColors();
   const { user } = useUser();
-  const { careers, loading: careersLoading, getCurrentSemester } = useCareers(); 
+  const { careers, loading: careersLoading, getCurrentSemester } = useCareers();
 
+  const { announcements } = useAnnouncements(user?.campus);
+  const { events } = useEvents(user?.campus);
 
   const currentSemester = getCurrentSemester(user?.career, user?.semester);
 
   // const handleImport = async () => {
   //   try {
   //     await importCareersToFirebase();
-  //     Alert.alert("Éxito", "Carreras importadas correctamente");
+  //     await importAnnouncementsToFirebase();
+  //     await importEventsToFirebase();
+  //     Alert.alert("Éxito", "Importación correcta");
   //   } catch (error) {
-  //     Alert.alert("Error", "No se pudieron importar las carreras");
+  //     Alert.alert("Error", "Importación fallida");
   //   }
   // };
+
+  const upcomingEvents = events
+    .filter((event) => {
+      const eventDate = new Date(event.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      return eventDate >= today;
+    })
+    .slice(0, 5);
+
+  const recentAnnouncements = announcements.slice(0, 5);
+
+  const renderEventItem = ({ item }: { item: any }) => (
+    <View style={styles.horizontalCard}>
+      <EventCard
+        id={item.id}
+        title={item.title}
+        date={item.date}
+        time={item.time}
+        place={item.place}
+        category={item.category}
+        description={item.description}
+        image={item.image}
+      />
+    </View>
+  );
+
+  const renderAnnouncementItem = ({ item }: { item: any }) => (
+    <View style={styles.horizontalCard}>
+      <AnnouncementCard
+        id={item.id}
+        image={item.image}
+        description={item.description}
+        date={item.date}
+        campus={item.campus}
+      />
+    </View>
+  );
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -67,7 +118,39 @@ export default function HomeScreen() {
         <View></View>
       )}
 
-      <Section title="Campus">
+      {/* Próximos Eventos - FlatList Horizontal */}
+      {user && upcomingEvents.length > 0 && (
+        <Section title={`Próximos Eventos (${user.campus})`}>
+          <FlatList
+            horizontal
+            data={upcomingEvents}
+            renderItem={renderEventItem}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalListContent}
+            snapToAlignment="start"
+            decelerationRate="fast"
+          />
+        </Section>
+      )}
+
+      {/* Anuncios Recientes - FlatList Horizontal */}
+      {user && recentAnnouncements.length > 0 && (
+        <Section title={`Anuncios (${user.campus})`}>
+          <FlatList
+            horizontal
+            data={recentAnnouncements}
+            renderItem={renderAnnouncementItem}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalListContent}
+            snapToAlignment="start"
+            decelerationRate="fast"
+          />
+        </Section>
+      )}
+
+      <Section title="Buscar por Campus">
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -91,135 +174,23 @@ export default function HomeScreen() {
         </ScrollView>
       </Section>
 
-      <Section title="Carreras">
-        <ScrollView
-          horizontal={false}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingVertical: 12 }}
+      {/* {__DEV__ && (
+        <TouchableOpacity
+          onPress={handleImport}
+          style={{
+            position: "absolute",
+            top: 50,
+            right: 20,
+            backgroundColor: "red",
+            padding: 10,
+            borderRadius: 5,
+            zIndex: 9999,
+          }}
         >
-          {careersLoading ? (
-            <Text style={{ color: colors.text, textAlign: "center" }}>
-              Cargando carreras...
-            </Text>
-          ) : careers.length > 0 ? (
-            careers.map((career) => (
-              <Link
-                key={career.id}
-                href={{
-                  pathname: "/(drawer)/career",
-                  params: {
-                    name: career.name,
-                    id: career.id,
-                  },
-                }}
-                asChild
-              >
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: colors.surface,
-                    padding: 16,
-                    marginBottom: 12,
-                    borderRadius: 12,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: colors.text,
-                      fontWeight: "700",
-                      fontSize: 16,
-                    }}
-                  >
-                    {career.name}
-                  </Text>
-                </TouchableOpacity>
-              </Link>
-            ))
-          ) : (
-            <Text style={{ color: colors.text, textAlign: "center" }}>
-              No hay carreras disponibles
-            </Text>
-          )}
-        </ScrollView>
-      </Section>
-      {/* <TouchableOpacity
-        onPress={handleImport}
-        style={{
-          position: "absolute",
-          top: 50,
-          right: 20,
-          backgroundColor: "red",
-          padding: 10,
-          borderRadius: 5,
-          zIndex: 9999,
-        }}
-      >
-        <Text style={{ color: "white", fontSize: 12 }}>Import Carreras</Text>
-      </TouchableOpacity> */}
+          <Text style={{ color: "white", fontSize: 12 }}>Import Data</Text>
+        </TouchableOpacity>
+      )} */}
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
-  hero: {
-    height: 200,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#1a1a1a",
-  },
-  heroImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: "100%",
-    height: "100%",
-  },
-  row: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    paddingVertical: 12,
-  },
-  headerRow: {
-    flexDirection: "row",
-    borderBottomWidth: 2,
-    borderColor: "#666",
-    backgroundColor: "#333",
-  },
-  dataRow: {
-    flexDirection: "row",
-    borderBottomWidth: 1,
-    borderColor: "#444",
-  },
-  headerCell: {
-    width: 120,
-    fontWeight: "bold",
-    padding: 12,
-    textAlign: "center",
-    borderRightWidth: 1,
-    borderColor: "#555",
-  },
-  cell: {
-    width: 120,
-    padding: 8,
-    textAlign: "center",
-    borderRightWidth: 1,
-    borderColor: "#444",
-  },
-  careerCard: {
-    width: 220,
-    height: 100,
-    borderRadius: 12,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-    padding: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    elevation: 5,
-  },
-  careerText: {
-    fontWeight: "700",
-    fontSize: 16,
-    textAlign: "center",
-  },
-});

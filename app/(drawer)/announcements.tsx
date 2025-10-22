@@ -1,33 +1,36 @@
-import React from "react";
-import { View, Text, FlatList, ScrollView } from "react-native";
+import React, { useMemo } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import Section from "../../src/components/Section";
 import AnnouncementCard from "../../src/components/AnnouncementCard";
-import { announcements } from "../../src/data/announcements";
-import users from "../../src/data/users";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import announcementsStyles from "../../src/styles/announcementsStyles";
 import { useUser } from "../../src/hooks/useUser";
-import useLikedAnnouncements from "../../src/hooks/useLikedAnnouncements";
+import { useAnnouncements } from "@/hooks/useAnnouncements";
 
 export default function AnnouncementsScreen() {
   const { colors } = useThemeColors();
   const { campus } = useLocalSearchParams();
   const { user } = useUser();
-  const { toggleLike } = useLikedAnnouncements();
 
   const getSelectedCampus = (): string => {
     if (Array.isArray(campus)) {
-      return campus[0] || user?.campus || users[0]?.campus || "Cochabamba";
+      return campus[0] || user?.campus || "Cochabamba";
     }
-    return campus || user?.campus || users[0]?.campus || "Cochabamba";
+    return campus || user?.campus || "Cochabamba";
   };
 
   const selectedCampus = getSelectedCampus();
 
-  const campusAnnouncements = announcements.filter((announcement) =>
-    announcement.campus.includes(selectedCampus)
-  );
+  // Obtener anuncios del campus seleccionado
+  const { announcements: campusAnnouncements, loading } =
+    useAnnouncements(selectedCampus);
 
   const getAnnouncementCategory = (description: string) => {
     const desc = description.toLowerCase();
@@ -68,23 +71,39 @@ export default function AnnouncementsScreen() {
     return "General";
   };
 
-  const announcementsByCategory = campusAnnouncements.reduce(
-    (acc: { [key: string]: any[] }, announcement) => {
-      const category = getAnnouncementCategory(announcement.description);
-      if (!acc[category]) {
-        acc[category] = [];
-      }
-      acc[category].push(announcement);
-      return acc;
-    },
-    {}
-  );
+  const announcementsByCategory = useMemo(() => {
+    return campusAnnouncements.reduce(
+      (acc: { [key: string]: any[] }, announcement) => {
+        const category = getAnnouncementCategory(announcement.description);
+        if (!acc[category]) {
+          acc[category] = [];
+        }
+        acc[category].push(announcement);
+        return acc;
+      },
+      {}
+    );
+  }, [campusAnnouncements]);
 
   const categories = Object.keys(announcementsByCategory);
 
-  const handleAnnouncementLikeToggle = (id: number) => {
-    toggleLike(id);
-  };
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: colors.background,
+        }}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={{ color: colors.text, marginTop: 12 }}>
+          Cargando anuncios...
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -114,10 +133,9 @@ export default function AnnouncementsScreen() {
                       description={item.description}
                       date={item.date}
                       campus={item.campus}
-                      onLikeToggle={handleAnnouncementLikeToggle}
                     />
                   )}
-                  keyExtractor={(item) => item.id.toString()}
+                  keyExtractor={(item) => item.id}
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={announcementsStyles.flatListContent}
                 />

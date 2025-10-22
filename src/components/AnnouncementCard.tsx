@@ -1,11 +1,11 @@
 import React from "react";
-import { TouchableOpacity, View, Text, Image } from "react-native";
+import { TouchableOpacity, View, Text, Image, Alert } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { AnnouncementCardProps } from "../data/announcements";
 import { useThemeColors } from "../hooks/useThemeColors";
-import useLikedAnnouncements from "../hooks/useLikedAnnouncements";
+import { useLikes } from "../hooks/useLikes";
 import announcementCardStyles from "../styles/announcementCardStyles";
+import { AnnouncementCardProps } from "@/types/types";
 
 export default function AnnouncementCard({
   id,
@@ -13,25 +13,18 @@ export default function AnnouncementCard({
   description,
   date,
   campus,
-  onLikeToggle,
 }: AnnouncementCardProps) {
   const { colors } = useThemeColors();
-  const { isLiked } = useLikedAnnouncements();
+  const { isAnnouncementLiked, toggleAnnouncementLikeStatus } = useLikes();
 
-  const liked = isLiked(id);
+  const styles = announcementCardStyles;
+  const liked = isAnnouncementLiked(id);
 
   const handlePress = () => {
-    console.log("Navigating to singleAnnouncement with id:", id);
-
-    if (!id) {
-      console.error("Announcement ID is undefined");
-      return;
-    }
-
     router.push({
       pathname: "/singleAnnouncement",
       params: {
-        id: id.toString(),
+        id,
         description,
         date,
         campus: JSON.stringify(campus),
@@ -40,68 +33,62 @@ export default function AnnouncementCard({
     });
   };
 
+  const handleLikePress = async () => {
+    if (!id) return;
+    
+    const success = await toggleAnnouncementLikeStatus(id);
+    if (!success) {
+      Alert.alert("Error", "No se pudo actualizar el like");
+    }
+  };
+
   return (
     <TouchableOpacity
-      style={[announcementCardStyles.card, { backgroundColor: colors.surface }]}
+      style={[styles.card, { backgroundColor: colors.surface }]}
       onPress={handlePress}
     >
-      <View style={announcementCardStyles.imageContainer}>
+      <View style={styles.imageContainer}>
         {image ? (
-          <Image source={{ uri: image }} style={announcementCardStyles.image} />
+          <Image source={{ uri: image }} style={styles.image} />
         ) : (
           <View
             style={[
-              announcementCardStyles.placeholderImage,
+              styles.placeholderImage,
               { backgroundColor: colors.primary },
             ]}
           >
-            <Text style={announcementCardStyles.placeholderText}>Anuncio</Text>
+            <Text style={styles.placeholderText}>Anuncio</Text>
           </View>
         )}
       </View>
 
-      <View style={announcementCardStyles.content}>
-        <Text style={[announcementCardStyles.date, { color: colors.subtitle }]}>
-          📅 {date}
-        </Text>
+      <View style={styles.content}>
+        <Text style={[styles.date, { color: colors.subtitle }]}>📅 {date}</Text>
 
         <Text
-          style={[announcementCardStyles.description, { color: colors.text }]}
+          style={[styles.description, { color: colors.text }]}
           numberOfLines={3}
         >
           {description}
         </Text>
 
-        <View style={announcementCardStyles.footer}>
-          <View style={announcementCardStyles.campusContainer}>
+        <View style={styles.footer}>
+          <View style={styles.campusContainer}>
             {campus.map((camp, index) => (
               <View
                 key={index}
-                style={[
-                  announcementCardStyles.campusTag,
-                  { backgroundColor: colors.muted },
-                ]}
+                style={[styles.campusTag, { backgroundColor: colors.muted }]}
               >
-                <Text
-                  style={[
-                    announcementCardStyles.campusText,
-                    { color: colors.text },
-                  ]}
-                >
+                <Text style={[styles.campusText, { color: colors.text }]}>
                   {camp}
                 </Text>
               </View>
             ))}
-            <Text
-              style={[
-                announcementCardStyles.moreCampuses,
-                { color: colors.subtitle },
-              ]}
-            ></Text>
           </View>
 
-          <View
-            style={announcementCardStyles.likeButton}
+          <TouchableOpacity
+            onPress={handleLikePress}
+            style={styles.likeButton}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Ionicons
@@ -109,7 +96,7 @@ export default function AnnouncementCard({
               size={20}
               color={liked ? colors.accent : colors.subtitle}
             />
-          </View>
+          </TouchableOpacity>
         </View>
       </View>
     </TouchableOpacity>

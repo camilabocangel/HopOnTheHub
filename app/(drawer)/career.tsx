@@ -1,4 +1,3 @@
-// app/(drawer)/career.tsx
 import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, ActivityIndicator } from "react-native";
 import { useLocalSearchParams } from "expo-router";

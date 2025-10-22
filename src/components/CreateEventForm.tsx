@@ -60,7 +60,7 @@ export default function CreateEventForm({ onSubmit, onCancel }: Props) {
   };
 
   const handleTimeChange = (event: any, selectedTime?: Date) => {
-    setShowTimePicker(false); // Cerramos el picker después de seleccionar
+    setShowTimePicker(false);
     
     if (selectedTime) {
       const hours = selectedTime.getHours().toString().padStart(2, '0');

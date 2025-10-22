@@ -59,7 +59,6 @@ const createEventStyles = StyleSheet.create({
   dateTimeText: {
     fontSize: 16,
   },
-  // Modal styles
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',

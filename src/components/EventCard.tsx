@@ -1,9 +1,11 @@
 import React from "react";
-import { TouchableOpacity, View, Text, Image } from "react-native";
+import { TouchableOpacity, View, Text, Image, Alert } from "react-native";
 import { router } from "expo-router";
-import { EventCardProps } from "../data/events";
+import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../hooks/useThemeColors";
+import { useLikes } from "../hooks/useLikes";
 import eventCardStyles from "../styles/eventCardStyles";
+import { EventCardProps } from "@/types/types";
 
 export default function EventCard({
   id,
@@ -16,12 +18,13 @@ export default function EventCard({
   image,
 }: EventCardProps) {
   const { colors } = useThemeColors();
+  const { isEventLiked, toggleEventLikeStatus } = useLikes();
 
   const handlePress = () => {
     router.push({
       pathname: "/singleEvent",
       params: {
-        id: id.toString(),
+        id,
         title,
         date,
         time,
@@ -32,6 +35,17 @@ export default function EventCard({
       },
     });
   };
+
+  const handleLikePress = async () => {
+    if (!id) return;
+
+    const success = await toggleEventLikeStatus(id);
+    if (!success) {
+      Alert.alert("Error", "No se pudo actualizar el like");
+    }
+  };
+
+  const liked = isEventLiked(id);
 
   return (
     <TouchableOpacity
@@ -77,6 +91,23 @@ export default function EventCard({
         >
           {description}
         </Text>
+
+        <TouchableOpacity
+          onPress={handleLikePress}
+          style={{
+            position: "absolute",
+            top: 10,
+            right: 10,
+            padding: 5,
+          }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Ionicons
+            name={liked ? "heart" : "heart-outline"}
+            size={20}
+            color={liked ? colors.accent : colors.subtitle}
+          />
+        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );

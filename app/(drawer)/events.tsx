@@ -1,34 +1,66 @@
-import React from "react";
-import { View, Text, FlatList, ScrollView } from "react-native";
+import React, { useMemo } from "react";
+import {
+  View,
+  Text,
+  FlatList,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import Section from "../../src/components/Section";
 import EventCard from "../../src/components/EventCard";
-import { events } from "../../src/data/events";
-import users from "../../src/data/users";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import eventsStyles from "../../src/styles/eventsStyles";
 import { useUser } from "../../src/hooks/useUser";
+import { useEvents } from "@/hooks/useEvents";
 
 export default function EventsScreen() {
   const { colors } = useThemeColors();
   const { campus } = useLocalSearchParams();
-
   const { user } = useUser();
 
   const campusParam = Array.isArray(campus) ? campus[0] : campus;
-  const selectedCampus =
-    campusParam || user?.campus || users[0]?.campus || "Cochabamba";
+  const selectedCampus = campusParam || user?.campus || "Cochabamba";
 
-  const campusEvents = events.filter((event) =>
-    event.campus.includes(selectedCampus as string)
-  );
+  // Obtener eventos del campus seleccionado
+  const { events: campusEvents, loading } = useEvents(selectedCampus);
 
-  const categories = campusEvents.reduce((acc: string[], event) => {
-    if (!acc.includes(event.category)) {
-      acc.push(event.category);
-    }
-    return acc;
-  }, []);
+  const categories = useMemo(() => {
+    return campusEvents.reduce((acc: string[], event) => {
+      if (!acc.includes(event.category)) {
+        acc.push(event.category);
+      }
+      return acc;
+    }, []);
+  }, [campusEvents]);
+
+  // Filtrar eventos por categoría
+  const eventsByCategory = useMemo(() => {
+    return categories.reduce((acc: { [key: string]: any[] }, category) => {
+      acc[category] = campusEvents.filter(
+        (event) => event.category === category
+      );
+      return acc;
+    }, {});
+  }, [campusEvents, categories]);
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: colors.background,
+        }}
+      >
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={{ color: colors.text, marginTop: 12 }}>
+          Cargando eventos...
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -41,9 +73,7 @@ export default function EventsScreen() {
 
         {categories.length > 0 ? (
           categories.map((category) => {
-            const categoryEvents = campusEvents.filter(
-              (event) => event.category === category
-            );
+            const categoryEvents = eventsByCategory[category];
 
             return (
               <Section key={category} title={category}>
@@ -62,7 +92,7 @@ export default function EventsScreen() {
                       image={item.image}
                     />
                   )}
-                  keyExtractor={(item) => item.id.toString()}
+                  keyExtractor={(item) => item.id}
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={eventsStyles.flatListContent}
                 />

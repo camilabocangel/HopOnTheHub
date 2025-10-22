@@ -27,24 +27,52 @@ export type Semester = {
 };
 
 export interface AnnouncementCardProps {
-  id: string;
+  id: string; 
   image: string;
   description: string;
   date: string;
   campus: string[];
-  onLikeToggle: (id: string) => void;
 }
 
-export interface Announcement {
+export type Announcement = {
   id: string;
+  status: string;
   image: string;
   description: string;
   date: string;
   campus: string[];
   content: string;
   likes: string[];
-  createdAt: any;
-}
+  createdAt?: any;
+};
+
+export type Event = {
+  id: string;
+  status: string;
+  title: string;
+  date: string;
+  time: string;
+  campus: string[];
+  place: string;
+  category: string;
+  description: string;
+  image: string;
+  content: string;
+  attendees: string[];
+  likes: string[];
+  createdAt?: any;
+};
+
+export type EventCardProps = {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  place: string;
+  category: string;
+  description: string;
+  image: string;
+};
 
 export interface RegisterFormData {
   email: string;

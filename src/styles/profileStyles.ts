@@ -1,4 +1,3 @@
-// src/styles/profileStyles.ts
 import { StyleSheet } from "react-native";
 import { useMemo } from "react";
 import { ThemeColors } from "@/theme/colors";

@@ -29,8 +29,6 @@ const createStyles = (colors: ThemeColors) =>
       color: colors.text,
       fontSize: 16,
     },
-
-    // Estilos para modales
     modalOverlay: {
       flex: 1,
       backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -178,7 +176,7 @@ const createStyles = (colors: ThemeColors) =>
       marginBottom: 8,
       marginTop: 8,
     },
-    
+
     checkboxContainer: {
       flexDirection: "row",
       alignItems: "center",

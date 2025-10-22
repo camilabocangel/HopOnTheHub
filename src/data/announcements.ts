@@ -1,24 +1,7 @@
-export interface AnnouncementCardProps {
-  id: number;
-  image: string;
-  description: string;
-  date: string;
-  campus: string[];
-  onLikeToggle: (id: number) => void;
-}
-
-export interface Announcement {
-  id: number;
-  image: string;
-  description: string;
-  date: string;
-  campus: string[];
-  content: string;
-}
-
-export const announcements = [
+const announcements = [
   {
     id: 1,
+    status: "accepted",
     image: "https://th.bing.com/th/id/OIP.srRu7kFApqCXvRq3ST_XMQHaE8?w=258&h=180&c=7&r=0&o=7&cb=12&dpr=1.4&pid=1.7&rm=3",
     description: "Convocatoria a becas de excelencia para el semestre 2025-II.",
     date: "2025-10-05",
@@ -29,6 +12,7 @@ export const announcements = [
   },
   {
     id: 2,
+    status: "accepted",
     image: "https://tse2.mm.bing.net/th/id/OIP.fg4SF9oLJJWGEdD06kMWiQHaEK?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
     description: "Inscripciones abiertas para el torneo interno de fútbol.",
     date: "2025-10-10",
@@ -39,6 +23,7 @@ export const announcements = [
   },
   {
     id: 3,
+    status: "accepted",
     image: "https://th.bing.com/th/id/OIP.ddFikjoOUT6YmFQSv7t33AHaE8?w=266&h=180&c=7&r=0&o=7&cb=12&dpr=1.4&pid=1.7&rm=3",
     description: "Ceremonia de graduación programada para diciembre 2025.",
     date: "2025-09-30",
@@ -49,6 +34,7 @@ export const announcements = [
   },
   {
     id: 4,
+    status: "accepted",
     image: "https://tse1.explicit.bing.net/th/id/OIP.ahmGzM66Ux13oYsb4zb87QHaE8?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
     description:
       "Se buscan voluntarios para programas de responsabilidad social universitaria.",
@@ -60,6 +46,7 @@ export const announcements = [
   },
   {
     id: 5,
+    status: "accepted",
     image: "https://tse2.mm.bing.net/th/id/OIP.w9KlWYeZoEzyVisXjkPIMAHaE8?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
     description:
       "Nueva colección de libros digitales disponible en la biblioteca.",
@@ -71,6 +58,7 @@ export const announcements = [
   },
   {
     id: 6,
+    status: "accepted",
     image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
     description: "Receso académico por Todos Santos.",
     date: "2025-11-01",
@@ -81,6 +69,7 @@ export const announcements = [
   },
   {
     id: 7,
+    status: "accepted",
     image: "https://res.cloudinary.com/worldpackers/image/upload/c_fill,f_auto,q_auto,w_1024/v1/guides/article_cover/d1tvgb9eds7paawjpzkv",
     description: "Convocatoria para intercambio estudiantil 2026-I.",
     date: "2025-10-18",
@@ -91,6 +80,7 @@ export const announcements = [
   },
   {
     id: 8,
+    status: "accepted",
     image: "https://static.vecteezy.com/system/resources/previews/033/485/860/non_2x/concept-of-system-maintenance-program-and-application-update-technology-engineer-error-problem-fix-device-update-software-upgrade-process-system-update-operating-system-update-vector.jpg",
     description: "Mantenimiento programado en la plataforma virtual.",
     date: "2025-10-22",
@@ -101,6 +91,7 @@ export const announcements = [
   },
   {
     id: 9,
+    status: "accepted",
     image: "https://th.bing.com/th/id/OIP._Gg3Ilk7TeK_7Ju8PhTOUAHaE8?w=233&h=180&c=7&r=0&o=7&cb=12&dpr=1.4&pid=1.7&rm=3",
     description:
       "Entrega de carnets universitarios en oficina de Bienestar Estudiantil.",
@@ -112,6 +103,7 @@ export const announcements = [
   },
   {
     id: 10,
+    status: "accepted",
     image: "https://th.bing.com/th/id/OIP.luecSj-eBFN0fzzVHZ7jUQHaE8?w=203&h=135&c=7&r=0&o=7&cb=12&dpr=1.4&pid=1.7&rm=3",
     description: "Ampliación de plazo para pago de matrículas.",
     date: "2025-10-15",
@@ -122,6 +114,7 @@ export const announcements = [
   },
   {
     id: 11,
+    status: "accepted",
     image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
     description: "Exposición de proyectos de arquitectura abierta al público.",
     date: "2025-11-10",
@@ -132,6 +125,7 @@ export const announcements = [
   },
   {
     id: 12,
+    status: "accepted",
     image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
     description: "Taller gratuito de redacción académica.",
     date: "2025-10-28",
@@ -142,6 +136,7 @@ export const announcements = [
   },
   {
     id: 13,
+    status: "accepted",
     image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
     description: "Convocatoria para asistentes de investigación 2025-II.",
     date: "2025-11-05",
@@ -152,6 +147,7 @@ export const announcements = [
   },
   {
     id: 14,
+    status: "accepted",
     image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
     description: "Viaje de estudio a Tiwanaku para la carrera de Historia.",
     date: "2025-11-12",
@@ -162,6 +158,7 @@ export const announcements = [
   },
   {
     id: 15,
+    status: "accepted",
     image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
     description: "Nueva área de coworking disponible en biblioteca central.",
     date: "2025-10-25",
@@ -172,6 +169,7 @@ export const announcements = [
   },
   {
     id: 16,
+    status: "accepted",
     image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
     description:
       "Concurso de fotografía universitaria abierto a todas las carreras.",
@@ -183,6 +181,7 @@ export const announcements = [
   },
   {
     id: 17,
+    status: "accepted",
     image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
     description: "Entrega de certificados de inglés internacional TOEFL.",
     date: "2025-10-30",
@@ -193,6 +192,7 @@ export const announcements = [
   },
   {
     id: 18,
+    status: "accepted",
     image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
     description:
       "Se habilitan inscripciones para materias electivas de verano.",
@@ -204,6 +204,7 @@ export const announcements = [
   },
   {
     id: 19,
+    status: "accepted",
     image: "https://img.freepik.com/foto-gratis/ilustracion-concepto-ciberseguridad_23-2151883573.jpg",
     description: "Charlas de prevención de estrés académico.",
     date: "2025-11-08",
@@ -214,6 +215,7 @@ export const announcements = [
   },
   {
     id: 20,
+    status: "accepted",
     image: "https://tse3.mm.bing.net/th/id/OIP.PqJOFba8hZ19CaNZVX5sHQHaE8?cb=12&rs=1&pid=ImgDetMain&o=7&rm=3",
     description: "Examen de clasificación de inglés para nuevos estudiantes.",
     date: "2025-10-18",
@@ -223,3 +225,5 @@ export const announcements = [
       "El examen se realizará de forma virtual y presencial (opcional) el 18 de octubre. Los detalles de acceso al examen virtual serán enviados a su correo electrónico institucional. Es fundamental participar en esta evaluación para poder inscribirte en las materias de idioma. Para cualquier duda, contacta al Centro de Idiomas de tu campus.",
   },
 ];
+
+export default announcements;
