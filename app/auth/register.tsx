@@ -21,6 +21,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { fetchCareers } from "@/helpers/fetchCareers ";
 import { useCareers } from "@/hooks/useCareers";  
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function RegisterScreen() {
   const { colors } = useThemeColors();
@@ -48,6 +49,9 @@ export default function RegisterScreen() {
 
   const [showCampusModal, setShowCampusModal] = useState(false);
   const [showCareerModal, setShowCareerModal] = useState(false);
+  const [showSemesterModal, setShowSemesterModal] = useState(false);
+  const semesters = Array.from({ length: 10 }, (_, i) => i + 1);
+
 
   const campuses = ["La Paz", "Santa Cruz", "Cochabamba"];
 
@@ -271,9 +275,60 @@ export default function RegisterScreen() {
       </View>
     </Modal>
   );
+  const SemesterModal = () => (
+    <Modal
+      visible={showSemesterModal}
+    animationType="slide"
+    transparent={true}
+    onRequestClose={() => setShowSemesterModal(false)}
+  >
+    <View style={styles.modalOverlay}>
+      <View style={styles.modalContent}>
+        <View style={styles.modalHeader}>
+          <Text style={styles.modalTitle}>Seleccionar Semestre</Text>
+          <TouchableOpacity
+            onPress={() => setShowSemesterModal(false)}
+            style={styles.closeButton}
+          >
+            <Ionicons name="close" size={24} color={colors.text} />
+          </TouchableOpacity>
+        </View>
+        <FlatList
+          data={semesters}
+          keyExtractor={(item) => item.toString()}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[
+                styles.modalItem,
+                semester === item && styles.modalItemSelected,
+              ]}
+              onPress={() => {
+                setSemester(item);
+                setShowSemesterModal(false);
+              }}
+            >
+              <Text
+                style={[
+                  styles.modalItemText,
+                  semester === item && styles.modalItemTextSelected,
+                ]}
+              >
+                Semestre {item}
+              </Text>
+              {semester === item && (
+                <Ionicons name="checkmark" size={20} color={colors.primary} />
+              )}
+            </TouchableOpacity>
+          )}
+        />
+      </View>
+    </View>
+    </Modal>
+  );
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+      <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backButton}
@@ -429,14 +484,16 @@ export default function RegisterScreen() {
             <Text style={styles.errorText}>{errors.career}</Text>
           )}
 
-          <TextInput
-            placeholder="Semestre (1-10)"
-            placeholderTextColor="#888"
-            style={styles.input}
-            keyboardType="numeric"
-            value={semester?.toString() || ""}
-            onChangeText={(v) => setSemester(v ? Number(v) : null)}
-          />
+          <Text style={styles.label}>Semestre</Text>
+          <TouchableOpacity
+            style={styles.select}
+            onPress={() => setShowSemesterModal(true)}
+          >
+            <Text style={styles.selectText}>
+              {semester ? `Semestre ${semester}` : "Seleccionar semestre"}
+            </Text>
+            <Ionicons name="chevron-down" size={20} color="#888" />
+          </TouchableOpacity>
           {errors.semester && (
             <Text style={styles.errorText}>{errors.semester}</Text>
           )}
@@ -455,12 +512,14 @@ export default function RegisterScreen() {
         )}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => router.back()}>
+      <TouchableOpacity onPress={() => router.back()} style={{marginTop: 0}}>
         <Text style={styles.link}>Volver al inicio de sesión</Text>
       </TouchableOpacity>
 
       <CampusModal />
       <CareerModal />
+      <SemesterModal/>
     </ScrollView>
+    </SafeAreaView>
   );
 }
