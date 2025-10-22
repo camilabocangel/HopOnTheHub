@@ -8,6 +8,8 @@ import {
   ScrollView,
   ActivityIndicator,
   Image,
+  Modal,
+  FlatList,
 } from "react-native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
@@ -16,12 +18,12 @@ import { useRouter } from "expo-router";
 import { useRegisterStyles } from "@/styles/registerStyles";
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
-import { fetchCareers } from "@/helpers/fetchCareers ";
 import { useThemeColors } from "@/hooks/useThemeColors";
+import { fetchCareers } from "@/helpers/fetchCareers ";
+import { useCareers } from "@/hooks/useCareers";  
 
 export default function RegisterScreen() {
   const { colors } = useThemeColors();
-
   const styles = useRegisterStyles();
   const router = useRouter();
 
@@ -36,27 +38,18 @@ export default function RegisterScreen() {
   const [career, setCareer] = useState("");
   const [semester, setSemester] = useState<number | null>(null);
 
-  const [careers, setCareers] = useState<{ id: string; name: string }[]>([]);
+  const { careers, loading: careersLoading } = useCareers();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   const [photo, setPhoto] = useState<string | null>(null);
-  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+  const [showCampusModal, setShowCampusModal] = useState(false);
+  const [showCareerModal, setShowCareerModal] = useState(false);
 
   const campuses = ["La Paz", "Santa Cruz", "Cochabamba"];
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await fetchCareers();
-        setCareers(data as any);
-      } catch (error) {
-        console.error("Error fetching careers:", error);
-      }
-    })();
-  }, []);
 
   const validateForm = () => {
     const newErrors: { [key: string]: string } = {};
@@ -177,10 +170,107 @@ export default function RegisterScreen() {
     }
   };
 
-  const nextOption = (current: string, options: string[]) => {
-    const currentIndex = options.indexOf(current);
-    return options[(currentIndex + 1) % options.length];
-  };
+  const CampusModal = () => (
+    <Modal
+      visible={showCampusModal}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={() => setShowCampusModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Seleccionar Campus</Text>
+            <TouchableOpacity
+              onPress={() => setShowCampusModal(false)}
+              style={styles.closeButton}
+            >
+              <Ionicons name="close" size={24} color={colors.text} />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={campuses}
+            keyExtractor={(item) => item}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={[
+                  styles.modalItem,
+                  campus === item && styles.modalItemSelected,
+                ]}
+                onPress={() => {
+                  setCampus(item);
+                  setShowCampusModal(false);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.modalItemText,
+                    campus === item && styles.modalItemTextSelected,
+                  ]}
+                >
+                  {item}
+                </Text>
+                {campus === item && (
+                  <Ionicons name="checkmark" size={20} color={colors.primary} />
+                )}
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      </View>
+    </Modal>
+  );
+
+  const CareerModal = () => (
+    <Modal
+      visible={showCareerModal}
+      animationType="slide"
+      transparent={true}
+      onRequestClose={() => setShowCareerModal(false)}
+    >
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContent}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Seleccionar Carrera</Text>
+            <TouchableOpacity
+              onPress={() => setShowCareerModal(false)}
+              style={styles.closeButton}
+            >
+              <Ionicons name="close" size={24} color={colors.text} />
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={careers}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={[
+                  styles.modalItem,
+                  career === item.name && styles.modalItemSelected,
+                ]}
+                onPress={() => {
+                  setCareer(item.name);
+                  setShowCareerModal(false);
+                }}
+              >
+                <Text
+                  style={[
+                    styles.modalItemText,
+                    career === item.name && styles.modalItemTextSelected,
+                  ]}
+                >
+                  {item.name}
+                </Text>
+                {career === item.name && (
+                  <Ionicons name="checkmark" size={20} color={colors.primary} />
+                )}
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      </View>
+    </Modal>
+  );
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -315,25 +405,25 @@ export default function RegisterScreen() {
       </TouchableOpacity>
 
       <Text style={styles.label}>Campus</Text>
-      <TouchableOpacity onPress={() => setCampus(nextOption(campus, campuses))}>
-        <Text style={styles.select}>{campus}</Text>
+      <TouchableOpacity
+        style={styles.select}
+        onPress={() => setShowCampusModal(true)}
+      >
+        <Text style={styles.selectText}>{campus}</Text>
+        <Ionicons name="chevron-down" size={20} color="#888" />
       </TouchableOpacity>
 
       {!isAdmin && (
         <>
           <Text style={styles.label}>Carrera</Text>
           <TouchableOpacity
-            onPress={() => {
-              if (careers.length > 0) {
-                const next = nextOption(
-                  career,
-                  careers.map((c) => c.name)
-                );
-                setCareer(next);
-              }
-            }}
+            style={styles.select}
+            onPress={() => setShowCareerModal(true)}
           >
-            <Text style={styles.select}>{career || "Seleccionar carrera"}</Text>
+            <Text style={styles.selectText}>
+              {career || "Seleccionar carrera"}
+            </Text>
+            <Ionicons name="chevron-down" size={20} color="#888" />
           </TouchableOpacity>
           {errors.career && (
             <Text style={styles.errorText}>{errors.career}</Text>
@@ -366,8 +456,11 @@ export default function RegisterScreen() {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.back()}>
-        <Text style={styles.link}>← Volver al inicio de sesión</Text>
+        <Text style={styles.link}>Volver al inicio de sesión</Text>
       </TouchableOpacity>
+
+      <CampusModal />
+      <CareerModal />
     </ScrollView>
   );
 }

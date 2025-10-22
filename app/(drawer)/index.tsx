@@ -11,25 +11,22 @@ import {
 } from "react-native";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import Section from "../../src/components/Section";
-import careers from "../../src/data/careers";
 import SubjectCard from "../../src/components/SubjectCard";
 import CampusCard from "../../src/components/CampusCard";
 import { Link } from "expo-router";
 import { useUser } from "../../src/hooks/useUser";
 import { importCareersToFirebase } from "@/scripts/importCareersToFirebase";
+import { useCareers } from "@/hooks/useCareers";
 
 const { height, width } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const { colors } = useThemeColors();
-
   const { user } = useUser();
+  const { careers, loading: careersLoading, getCurrentSemester } = useCareers(); 
 
-  const userCareer = careers.find((c) => c.name === user?.career);
 
-  const currentSemester = userCareer?.semesters.find(
-    (s) => s.semester === user?.semester
-  );
+  const currentSemester = getCurrentSemester(user?.career, user?.semester);
 
   // const handleImport = async () => {
   //   try {
@@ -60,7 +57,9 @@ export default function HomeScreen() {
               ))
           ) : (
             <Text style={{ color: colors.text }}>
-              No se encontraron materias.
+              {user.career && user.semester
+                ? `No se encontraron materias para ${user.career} - Semestre ${user.semester}`
+                : "Completa tu información académica en tu perfil"}
             </Text>
           )}
         </Section>
@@ -98,33 +97,49 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingVertical: 12 }}
         >
-          {careers.map((career) => (
-            <Link
-              key={career.name}
-              href={`/(drawer)/career?name=${encodeURIComponent(career.name)}`}
-              asChild
-            >
-              <TouchableOpacity
-                style={{
-                  backgroundColor: colors.surface,
-                  padding: 16,
-                  marginBottom: 12,
-                  borderRadius: 12,
-                  alignItems: "center",
+          {careersLoading ? (
+            <Text style={{ color: colors.text, textAlign: "center" }}>
+              Cargando carreras...
+            </Text>
+          ) : careers.length > 0 ? (
+            careers.map((career) => (
+              <Link
+                key={career.id}
+                href={{
+                  pathname: "/(drawer)/career",
+                  params: {
+                    name: career.name,
+                    id: career.id,
+                  },
                 }}
+                asChild
               >
-                <Text
+                <TouchableOpacity
                   style={{
-                    color: colors.text,
-                    fontWeight: "700",
-                    fontSize: 16,
+                    backgroundColor: colors.surface,
+                    padding: 16,
+                    marginBottom: 12,
+                    borderRadius: 12,
+                    alignItems: "center",
                   }}
                 >
-                  {career.name}
-                </Text>
-              </TouchableOpacity>
-            </Link>
-          ))}
+                  <Text
+                    style={{
+                      color: colors.text,
+                      fontWeight: "700",
+                      fontSize: 16,
+                    }}
+                  >
+                    {career.name}
+                  </Text>
+                </TouchableOpacity>
+              </Link>
+            ))
+          ) : (
+            <Text style={{ color: colors.text, textAlign: "center" }}>
+              No hay carreras disponibles
+            </Text>
+          )}
         </ScrollView>
       </Section>
       {/* <TouchableOpacity

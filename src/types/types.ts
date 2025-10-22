@@ -17,10 +17,13 @@ export type User = {
 export type Career = {
   id: string;
   name: string;
-  semesters?: {
-    semester: number;
-    subjects: string[];
-  }[];
+  semesters?: Semester[];
+  createdAt?: any;
+};
+
+export type Semester = {
+  semester: number;
+  subjects: string[];
 };
 
 export interface AnnouncementCardProps {

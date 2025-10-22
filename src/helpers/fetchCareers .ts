@@ -1,10 +1,6 @@
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
-
-export interface Career {
-  id: string;
-  name: string;
-}
+import { Career } from "@/types/types";
 
 export const fetchCareers = async (): Promise<Career[]> => {
   try {
@@ -13,8 +9,8 @@ export const fetchCareers = async (): Promise<Career[]> => {
 
     return snapshot.docs.map((doc) => ({
       id: doc.id,
-      name: doc.data().name,
-    }));
+      ...doc.data(),
+    })) as Career[];
   } catch (error) {
     console.error("Error fetching careers:", error);
     return [];

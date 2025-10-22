@@ -111,7 +111,7 @@ export default function AuthScreen() {
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push("/auth/register")}>
-        <Text style={styles.link}>Crear cuenta nueva →</Text>
+        <Text style={styles.link}>Crear cuenta nueva</Text>
       </TouchableOpacity>
 
       {error ? <Text style={styles.errorText}>{error}</Text> : null}

@@ -10,6 +10,74 @@ export const useRegisterStyles = () => {
 
 const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
+    select: {
+      width: "100%",
+      height: 50,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: colors.border,
+      paddingHorizontal: 15,
+      fontSize: 16,
+      color: colors.text,
+      backgroundColor: colors.surface,
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 16,
+    },
+    selectText: {
+      color: colors.text,
+      fontSize: 16,
+    },
+
+    // Estilos para modales
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      justifyContent: "flex-end",
+    },
+    modalContent: {
+      backgroundColor: colors.background,
+      borderTopLeftRadius: 20,
+      borderTopRightRadius: 20,
+      maxHeight: "80%",
+    },
+    modalHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    modalTitle: {
+      fontSize: 18,
+      fontWeight: "bold",
+      color: colors.text,
+    },
+    closeButton: {
+      padding: 4,
+    },
+    modalItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      padding: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    modalItemSelected: {
+      backgroundColor: colors.primary + "20",
+    },
+    modalItemText: {
+      fontSize: 16,
+      color: colors.text,
+      flex: 1,
+    },
+    modalItemTextSelected: {
+      color: colors.primary,
+      fontWeight: "600",
+    },
     container: {
       flexGrow: 1,
       backgroundColor: colors.background,
@@ -110,19 +178,7 @@ const createStyles = (colors: ThemeColors) =>
       marginBottom: 8,
       marginTop: 8,
     },
-    select: {
-      width: "100%",
-      height: 50,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: colors.border,
-      paddingHorizontal: 15,
-      fontSize: 16,
-      color: colors.text,
-      backgroundColor: colors.surface,
-      textAlignVertical: "center",
-      marginBottom: 16,
-    },
+    
     checkboxContainer: {
       flexDirection: "row",
       alignItems: "center",
