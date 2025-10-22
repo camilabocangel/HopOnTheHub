@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Image } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import singleEventsStyles from "../../src/styles/sinlgeEventStyles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SingleEventScreen() {
   const { colors } = useThemeColors();
@@ -21,7 +22,8 @@ export default function SingleEventScreen() {
   } = params;
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={singleEventsStyles.container}>
         <View style={singleEventsStyles.imageContainer}>
           {image ? (
@@ -156,5 +158,7 @@ export default function SingleEventScreen() {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
+    
   );
 }

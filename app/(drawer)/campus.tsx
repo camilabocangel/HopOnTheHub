@@ -17,6 +17,7 @@ import Section from "../../src/components/Section";
 import useLikedAnnouncements from "../../src/hooks/useLikedAnnouncements";
 import campusStyles from "../../src/styles/campusStyles";
 import SeeMoreCreateCard from "@/components/seeMoreCreateCard";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = campusStyles;
 
@@ -66,7 +67,8 @@ export default function CampusScreen() {
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <Section title={`Eventos en ${selectedCampus}`}>
         <FlatList
           horizontal
@@ -130,5 +132,6 @@ export default function CampusScreen() {
         />
       </Section>
     </ScrollView>
+    </SafeAreaView>
   );
 }

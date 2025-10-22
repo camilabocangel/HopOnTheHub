@@ -3,13 +3,15 @@ import { ScrollView, TouchableOpacity, Text } from "react-native";
 import { useThemeColors } from "@/hooks/useThemeColors";
 import { useCareers } from "@/hooks/useCareers";
 import { Link } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CareersScreen() {
   const { colors } = useThemeColors();
   const { careers, loading: careersLoading } = useCareers();
 
   return (
-    <ScrollView
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+        <ScrollView
       style={{ flex: 1, backgroundColor: colors.background }}
       contentContainerStyle={{ padding: 16 }}
     >
@@ -57,5 +59,7 @@ export default function CareersScreen() {
         </Text>
       )}
     </ScrollView>
+    </SafeAreaView>
+    
   );
 }

@@ -7,6 +7,7 @@ import Section from "../../src/components/Section";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
 import { Career } from "@/types/types";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CareerScreen() {
   const { colors } = useThemeColors();
@@ -69,7 +70,8 @@ export default function CareerScreen() {
   }
 
   return (
-    <ScrollView
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+      <ScrollView
       style={{ flex: 1, backgroundColor: colors.background, padding: 16 }}
     >
       <Text
@@ -113,5 +115,7 @@ export default function CareerScreen() {
         </Text>
       )}
     </ScrollView>
+    </SafeAreaView>
+    
   );
 }

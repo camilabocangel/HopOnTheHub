@@ -17,6 +17,7 @@ import { Link } from "expo-router";
 import { useUser } from "../../src/hooks/useUser";
 import { importCareersToFirebase } from "@/scripts/importCareersToFirebase";
 import { useCareers } from "@/hooks/useCareers";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { height, width } = Dimensions.get("window");
 
@@ -38,7 +39,8 @@ export default function HomeScreen() {
   // };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[styles.hero, { height: height - 10 }]}>
         <Image
           source={require("../../assets/upb.jpg")}
@@ -107,6 +109,8 @@ export default function HomeScreen() {
         <Text style={{ color: "white", fontSize: 12 }}>Import Carreras</Text>
       </TouchableOpacity> */}
     </ScrollView>
+
+    </SafeAreaView>
   );
 }
 
