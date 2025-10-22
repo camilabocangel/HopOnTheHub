@@ -91,57 +91,7 @@ export default function HomeScreen() {
         </ScrollView>
       </Section>
 
-      <Section title="Carreras">
-        <ScrollView
-          horizontal={false}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingVertical: 12 }}
-        >
-          {careersLoading ? (
-            <Text style={{ color: colors.text, textAlign: "center" }}>
-              Cargando carreras...
-            </Text>
-          ) : careers.length > 0 ? (
-            careers.map((career) => (
-              <Link
-                key={career.id}
-                href={{
-                  pathname: "/(drawer)/career",
-                  params: {
-                    name: career.name,
-                    id: career.id,
-                  },
-                }}
-                asChild
-              >
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: colors.surface,
-                    padding: 16,
-                    marginBottom: 12,
-                    borderRadius: 12,
-                    alignItems: "center",
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: colors.text,
-                      fontWeight: "700",
-                      fontSize: 16,
-                    }}
-                  >
-                    {career.name}
-                  </Text>
-                </TouchableOpacity>
-              </Link>
-            ))
-          ) : (
-            <Text style={{ color: colors.text, textAlign: "center" }}>
-              No hay carreras disponibles
-            </Text>
-          )}
-        </ScrollView>
-      </Section>
+      
       {/* <TouchableOpacity
         onPress={handleImport}
         style={{
