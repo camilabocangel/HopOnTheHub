@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 const eventCardStyles = StyleSheet.create({
   card: {
     width: 280,
+    minHeight: 300,
     borderRadius: 12,
     marginRight: 16,
     marginBottom: 8,

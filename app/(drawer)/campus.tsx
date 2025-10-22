@@ -16,6 +16,7 @@ import AnnouncementCard from "../../src/components/AnnouncementCard";
 import Section from "../../src/components/Section";
 import useLikedAnnouncements from "../../src/hooks/useLikedAnnouncements";
 import campusStyles from "../../src/styles/campusStyles";
+import SeeMoreCreateCard from "@/components/seeMoreCreateCard";
 
 const styles = campusStyles;
 
@@ -66,7 +67,6 @@ export default function CampusScreen() {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-      {/* Eventos */}
       <Section title={`Eventos en ${selectedCampus}`}>
         <FlatList
           horizontal
@@ -74,23 +74,10 @@ export default function CampusScreen() {
           renderItem={({ item }) => {
             if ("type" in item && item.type === "see-more") {
               return (
-                <TouchableOpacity
-                  style={[
-                    styles.seeMoreCard,
-                    {
-                      backgroundColor: colors.surface,
-                      borderColor: colors.primary,
-                    },
-                  ]}
-                  onPress={() =>
-                    router.replace(`/(drawer)/events?campus=${selectedCampus}`)
-                  }
-                >
-                  <Text style={[styles.seeMoreText, { color: colors.primary }]}>
-                    Ver más{"\n"}eventos →
-                  </Text>
-                </TouchableOpacity>
+                <SeeMoreCreateCard selectedCampus={selectedCampus} type="events"/>
               );
+                  
+                
             } else {
               const event = item as (typeof events)[0];
               return (
@@ -113,7 +100,6 @@ export default function CampusScreen() {
         />
       </Section>
 
-      {/* Anuncios */}
       <Section title={`Anuncios en ${selectedCampus}`}>
         <FlatList
           horizontal
@@ -121,24 +107,8 @@ export default function CampusScreen() {
           renderItem={({ item }) => {
             if ("type" in item && item.type === "see-more") {
               return (
-                <TouchableOpacity
-                  style={[
-                    styles.seeMoreCard,
-                    {
-                      backgroundColor: colors.surface,
-                      borderColor: colors.primary,
-                    },
-                  ]}
-                  onPress={() =>
-                    router.replace(
-                      `/(drawer)/announcements?campus=${selectedCampus}`
-                    )
-                  }
-                >
-                  <Text style={[styles.seeMoreText, { color: colors.primary }]}>
-                    Ver más{"\n"}anuncios →
-                  </Text>
-                </TouchableOpacity>
+                <SeeMoreCreateCard selectedCampus={selectedCampus} type="announcements"/>
+
               );
             } else {
               const announcement = item as (typeof announcements)[0];
