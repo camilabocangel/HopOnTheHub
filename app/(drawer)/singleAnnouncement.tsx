@@ -5,6 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import useLikedAnnouncements from "../../src/hooks/useLikedAnnouncements";
 import singleAnnouncementStyles from "../../src/styles/singleAnnouncementStyles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function SingleAnnouncementScreen() {
   const { colors } = useThemeColors();
@@ -24,7 +25,8 @@ export default function SingleAnnouncementScreen() {
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={singleAnnouncementStyles.container}>
         <View style={singleAnnouncementStyles.imageContainer}>
           {image ? (
@@ -155,5 +157,7 @@ export default function SingleAnnouncementScreen() {
         </View>
       </View>
     </ScrollView>
+    </SafeAreaView>
+    
   );
 }

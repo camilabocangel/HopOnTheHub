@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import CreateAnnouncementForm from "@/components/CreateAnnouncementForm";
 import createAnnouncementStyles from "@/styles/createAnnouncementStyles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = createAnnouncementStyles;
 
@@ -21,7 +22,8 @@ export default function CreateEventScreen() {
   };
 
   return (
-    <ScrollView 
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+        <ScrollView 
       style={{ 
         flex: 1, 
         backgroundColor: colors.background 
@@ -33,5 +35,6 @@ export default function CreateEventScreen() {
         onCancel={handleCancel}
       />
     </ScrollView>
+    </SafeAreaView>
   );
 }

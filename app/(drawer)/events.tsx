@@ -13,6 +13,7 @@ import { useThemeColors } from "../../src/hooks/useThemeColors";
 import eventsStyles from "../../src/styles/eventsStyles";
 import { useUser } from "../../src/hooks/useUser";
 import { useEvents } from "@/hooks/useEvents";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function EventsScreen() {
   const { colors } = useThemeColors();
@@ -63,7 +64,8 @@ export default function EventsScreen() {
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View
         style={[eventsStyles.container, { backgroundColor: colors.background }]}
       >
@@ -108,5 +110,7 @@ export default function EventsScreen() {
         )}
       </View>
     </ScrollView>
+    </SafeAreaView>
+    
   );
 }

@@ -15,6 +15,7 @@ import { useThemeStore } from "@/store/useThemeStore";
 import profileStyles from "../../src/styles/profileStyles";
 import { signOut } from "firebase/auth";
 import { auth } from "@/config/firebaseConfig";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ProfileScreen() {
   const { user, logout } = useUser();
@@ -54,7 +55,8 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       {user ? (
         <View
           style={[styles.container, { backgroundColor: colors.background }]}
@@ -200,5 +202,6 @@ export default function ProfileScreen() {
         )}
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }

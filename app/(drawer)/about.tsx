@@ -1,14 +1,20 @@
 import React from "react";
 import { View, Text, FlatList, StyleSheet } from "react-native";
 import { useLocalSearchParams } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+
 
 export default function AboutScreen() {
   const { campus } = useLocalSearchParams();
-
+  const { colors } = useThemeColors();
+  
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>¿Quiénes somos? {campus}</Text>
-    </View>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+      <View style={styles.container}>
+        <Text style={styles.title}>¿Quiénes somos? {campus}</Text>
+      </View>
+    </SafeAreaView>
   );
 }
 

@@ -13,6 +13,8 @@ import { useThemeColors } from "../../src/hooks/useThemeColors";
 import announcementsStyles from "../../src/styles/announcementsStyles";
 import { useUser } from "../../src/hooks/useUser";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
+import useLikedAnnouncements from "../../src/hooks/useLikedAnnouncements";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AnnouncementsScreen() {
   const { colors } = useThemeColors();
@@ -106,7 +108,8 @@ export default function AnnouncementsScreen() {
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View
         style={[
           announcementsStyles.container,
@@ -156,5 +159,7 @@ export default function AnnouncementsScreen() {
         )}
       </View>
     </ScrollView>
+    </SafeAreaView>
+    
   );
 }

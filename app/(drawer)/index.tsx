@@ -25,6 +25,7 @@ import { importCareersToFirebase } from "@/scripts/importCareersToFirebase";
 import { importAnnouncementsToFirebase } from "@/scripts/importAnnouncementsToFirebase";
 import { importEventsToFirebase } from "@/scripts/importEventsToFirebase";
 import { homeStyles } from "@/styles/homeStyles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const { height, width } = Dimensions.get("window");
 
@@ -89,7 +90,8 @@ export default function HomeScreen() {
   );
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
       <View style={[styles.hero, { height: height - 10 }]}>
         <Image
           source={require("../../assets/upb.jpg")}
@@ -191,6 +193,8 @@ export default function HomeScreen() {
         </TouchableOpacity>
       )} */}
     </ScrollView>
+
+    </SafeAreaView>
   );
 }
 
