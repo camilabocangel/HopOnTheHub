@@ -1,14 +1,19 @@
-import React from "react";
-import { View, Text, ScrollView, Image } from "react-native";
+import React, { useState, useMemo } from "react";
+import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import singleEventsStyles from "../../src/styles/sinlgeEventStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import MapModal from "@/components/MapModal";
+import { Ionicons } from "@expo/vector-icons";
+import MapView, { Marker } from "react-native-maps";
+import { parseCampuses, getCampusesCoordinates, getMapRegionForCampuses } from "@/utils/campusUtils";
 
 export default function SingleEventScreen() {
   const { colors } = useThemeColors();
   const params = useLocalSearchParams();
-
+  const [showMapModal, setShowMapModal] = useState(false);
+  
   const {
     id,
     title,
@@ -19,146 +24,264 @@ export default function SingleEventScreen() {
     description,
     image,
     content,
+    campus
   } = params;
+
+  // Parse campuses from the campus parameter
+  const eventCampuses = useMemo(() => {
+    return parseCampuses(campus as string || 'la paz');
+  }, [campus]);
+
+  const campusesCoordinates = useMemo(() => {
+    return getCampusesCoordinates(eventCampuses);
+  }, [eventCampuses]);
+
+  const mapRegion = useMemo(() => {
+    return getMapRegionForCampuses(eventCampuses);
+  }, [eventCampuses]);
+
+  // Format campus display text
+  const campusDisplayText = useMemo(() => {
+    if (eventCampuses.length === 3) return "Todos los campus";
+    if (eventCampuses.length === 2) {
+      return eventCampuses.map(campus => 
+        campus.charAt(0).toUpperCase() + campus.slice(1)
+      ).join(' y ');
+    }
+    return eventCampuses[0].charAt(0).toUpperCase() + eventCampuses[0].slice(1);
+  }, [eventCampuses]);
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
       <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={singleEventsStyles.container}>
-        <View style={singleEventsStyles.imageContainer}>
-          {image ? (
-            <Image
-              source={{ uri: image as string }}
-              style={singleEventsStyles.image}
-              resizeMode="cover"
-            />
-          ) : (
-            <View
-              style={[
-                singleEventsStyles.placeholderImage,
-                { backgroundColor: colors.primary },
-              ]}
-            >
-              <Text style={singleEventsStyles.placeholderText}>
-                {title as string}
+        <View style={singleEventsStyles.container}>
+          <View style={singleEventsStyles.imageContainer}>
+            {image ? (
+              <Image
+                source={{ uri: image as string }}
+                style={singleEventsStyles.image}
+                resizeMode="cover"
+              />
+            ) : (
+              <View
+                style={[
+                  singleEventsStyles.placeholderImage,
+                  { backgroundColor: colors.primary },
+                ]}
+              >
+                <Text style={singleEventsStyles.placeholderText}>
+                  {title as string}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          <View style={singleEventsStyles.content}>
+            <Text style={[singleEventsStyles.title, { color: colors.text }]}>
+              {title as string}
+            </Text>
+
+            <View style={singleEventsStyles.detailsContainer}>
+              <View
+                style={[
+                  singleEventsStyles.detailRow,
+                  { borderBottomColor: colors.border },
+                ]}
+              >
+                <Text
+                  style={[
+                    singleEventsStyles.detailLabel,
+                    { color: colors.subtitle },
+                  ]}
+                >
+                  Fecha:
+                </Text>
+                <Text
+                  style={[singleEventsStyles.detailValue, { color: colors.text }]}
+                >
+                  {date as string}
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  singleEventsStyles.detailRow,
+                  { borderBottomColor: colors.border },
+                ]}
+              >
+                <Text
+                  style={[
+                    singleEventsStyles.detailLabel,
+                    { color: colors.subtitle },
+                  ]}
+                >
+                  Hora:
+                </Text>
+                <Text
+                  style={[singleEventsStyles.detailValue, { color: colors.text }]}
+                >
+                  {time as string}
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  singleEventsStyles.detailRow,
+                  { borderBottomColor: colors.border },
+                ]}
+              >
+                <Text
+                  style={[
+                    singleEventsStyles.detailLabel,
+                    { color: colors.subtitle },
+                  ]}
+                >
+                  Lugar:
+                </Text>
+                <Text
+                  style={[singleEventsStyles.detailValue, { color: colors.text }]}
+                >
+                  {place as string}
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  singleEventsStyles.detailRow,
+                  { borderBottomColor: colors.border },
+                ]}
+              >
+                <Text
+                  style={[
+                    singleEventsStyles.detailLabel,
+                    { color: colors.subtitle },
+                  ]}
+                >
+                  Campus:
+                </Text>
+                <Text
+                  style={[
+                    singleEventsStyles.detailValue,
+                    { color: colors.primary },
+                    eventCampuses.length > 1 && { fontWeight: 'bold' }
+                  ]}
+                >
+                  {campusDisplayText}
+                </Text>
+              </View>
+
+              <View
+                style={[
+                  singleEventsStyles.detailRow,
+                  { borderBottomColor: colors.border },
+                ]}
+              >
+                <Text
+                  style={[
+                    singleEventsStyles.detailLabel,
+                    { color: colors.subtitle },
+                  ]}
+                >
+                  Categoría:
+                </Text>
+                <Text
+                  style={[
+                    singleEventsStyles.detailValue,
+                    { color: colors.primary },
+                  ]}
+                >
+                  {category as string}
+                </Text>
+              </View>
+            </View>
+
+            {/* Map Section */}
+            <View style={singleEventsStyles.section}>
+              <Text
+                style={[singleEventsStyles.sectionTitle, { color: colors.text }]}
+              >
+                Ubicación
+              </Text>
+              {eventCampuses.length > 1 && (
+                <Text style={[singleEventsStyles.sectionContent, { 
+                  color: colors.primary, 
+                  marginBottom: 8,
+                  fontWeight: '600',
+                  fontSize: 14 
+                }]}>
+                  📍 Este evento se realiza en {eventCampuses.length} campus
+                </Text>
+              )}
+              <View style={singleEventsStyles.mapContainer}>
+                <MapView
+                  style={singleEventsStyles.smallMap}
+                  initialRegion={mapRegion}
+                  scrollEnabled={false}
+                  zoomEnabled={false}
+                  rotateEnabled={false}
+                  pitchEnabled={false}
+                >
+                  {campusesCoordinates.map((campusCoord, index) => (
+                    <Marker
+                      key={index}
+                      coordinate={{
+                        latitude: campusCoord.latitude,
+                        longitude: campusCoord.longitude,
+                      }}
+                      title={campusCoord.title}
+                      description={place as string}
+                    />
+                  ))}
+                </MapView>
+                
+                <TouchableOpacity
+                  style={[singleEventsStyles.expandButton, { backgroundColor: colors.primary }]}
+                  onPress={() => setShowMapModal(true)}
+                >
+                  <Ionicons name="expand" size={20} color="white" />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={singleEventsStyles.section}>
+              <Text
+                style={[singleEventsStyles.sectionTitle, { color: colors.text }]}
+              >
+                Descripción
+              </Text>
+              <Text
+                style={[
+                  singleEventsStyles.sectionContent,
+                  { color: colors.text },
+                ]}
+              >
+                {description as string}
               </Text>
             </View>
-          )}
-        </View>
 
-        <View style={singleEventsStyles.content}>
-          <Text style={[singleEventsStyles.title, { color: colors.text }]}>
-            {title as string}
-          </Text>
-
-          <View style={singleEventsStyles.detailsContainer}>
-            <View
-              style={[
-                singleEventsStyles.detailRow,
-                { borderBottomColor: colors.border },
-              ]}
-            >
+            <View style={singleEventsStyles.section}>
               <Text
-                style={[
-                  singleEventsStyles.detailLabel,
-                  { color: colors.subtitle },
-                ]}
+                style={[singleEventsStyles.sectionTitle, { color: colors.text }]}
               >
-                Fecha:
+                Contenido
               </Text>
               <Text
-                style={[singleEventsStyles.detailValue, { color: colors.text }]}
+                style={[singleEventsStyles.sectionContent, { color: colors.text }]}
               >
-                {date as string}
-              </Text>
-            </View>
-
-            <View
-              style={[
-                singleEventsStyles.detailRow,
-                { borderBottomColor: colors.border },
-              ]}
-            >
-              <Text
-                style={[
-                  singleEventsStyles.detailLabel,
-                  { color: colors.subtitle },
-                ]}
-              >
-                Hora:
-              </Text>
-              <Text
-                style={[singleEventsStyles.detailValue, { color: colors.text }]}
-              >
-                {time as string}
-              </Text>
-            </View>
-
-            <View
-              style={[
-                singleEventsStyles.detailRow,
-                { borderBottomColor: colors.border },
-              ]}
-            >
-              <Text
-                style={[
-                  singleEventsStyles.detailLabel,
-                  { color: colors.subtitle },
-                ]}
-              >
-                Lugar:
-              </Text>
-              <Text
-                style={[singleEventsStyles.detailValue, { color: colors.text }]}
-              >
-                {place as string}
-              </Text>
-            </View>
-
-            <View
-              style={[
-                singleEventsStyles.detailRow,
-                { borderBottomColor: colors.border },
-              ]}
-            >
-              <Text
-                style={[
-                  singleEventsStyles.detailLabel,
-                  { color: colors.subtitle },
-                ]}
-              >
-                Categoría:
-              </Text>
-              <Text
-                style={[
-                  singleEventsStyles.detailValue,
-                  { color: colors.primary },
-                ]}
-              >
-                {category as string}
+                {content as string}
               </Text>
             </View>
           </View>
-
-          <View style={singleEventsStyles.section}>
-            <Text
-              style={[singleEventsStyles.sectionTitle, { color: colors.text }]}
-            >
-              Descripción
-            </Text>
-            <Text
-              style={[
-                singleEventsStyles.sectionContent,
-                { color: colors.text },
-              ]}
-            >
-              {description as string}
-            </Text>
-          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+
+      <MapModal
+        visible={showMapModal}
+        onClose={() => setShowMapModal(false)}
+        campuses={campusesCoordinates}
+        place={place as string}
+        isMultiCampus={eventCampuses.length > 1}
+      />
     </SafeAreaView>
-    
   );
 }

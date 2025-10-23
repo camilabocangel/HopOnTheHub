@@ -88,6 +88,36 @@ const singleAnnouncementStyles = StyleSheet.create({
     alignItems: "center",
     padding: 8,
   },
+  mapContainer: {
+    position: 'relative',
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginTop: 8,
+  },
+  smallMap: {
+    height: 150,
+    width: '100%',
+  },
+  expandButton: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  campusSubtitle: {
+    fontSize: 12,
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
 });
 
 export default singleAnnouncementStyles;
