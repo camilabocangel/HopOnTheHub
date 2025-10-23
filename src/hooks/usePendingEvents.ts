@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
-import { fetchAcceptedEvents, fetchEventsByCampus } from "@/helpers/fetchEvents";
+import { fetchPendingEvents } from "@/helpers/fetchEvents";
 import { Event } from "@/types/types";
 
-export const useEvents = (campus?: string) => {
+export const usePendingEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,18 +12,15 @@ export const useEvents = (campus?: string) => {
       setLoading(true);
       setError(null);
       
-      const eventsData = campus 
-        ? await fetchEventsByCampus(campus)
-        : await fetchAcceptedEvents();
-        
+      const eventsData = await fetchPendingEvents();
       setEvents(eventsData);
     } catch (err) {
-      setError("Error al cargar los eventos");
-      console.error("Error loading events:", err);
+      setError("Error al cargar los eventos pendientes");
+      console.error("Error loading pending events:", err);
     } finally {
       setLoading(false);
     }
-  }, [campus]);
+  }, []);
 
   useEffect(() => {
     loadEvents();

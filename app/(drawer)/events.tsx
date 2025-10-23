@@ -23,7 +23,6 @@ export default function EventsScreen() {
   const campusParam = Array.isArray(campus) ? campus[0] : campus;
   const selectedCampus = campusParam || user?.campus || "Cochabamba";
 
-  // Obtener eventos del campus seleccionado
   const { events: campusEvents, loading } = useEvents(selectedCampus);
 
   const categories = useMemo(() => {
@@ -35,7 +34,6 @@ export default function EventsScreen() {
     }, []);
   }, [campusEvents]);
 
-  // Filtrar eventos por categoría
   const eventsByCategory = useMemo(() => {
     return categories.reduce((acc: { [key: string]: any[] }, category) => {
       acc[category] = campusEvents.filter(

@@ -36,7 +36,7 @@ export interface AnnouncementCardProps {
 
 export type Announcement = {
   id: string;
-  status: string;
+  status: "pending" | "accepted" | "rejected" | "passed";
   image: string;
   description: string;
   date: string;
@@ -48,7 +48,7 @@ export type Announcement = {
 
 export type Event = {
   id: string;
-  status: string;
+  status: "pending" | "accepted" | "rejected";
   title: string;
   date: string;
   time: string;

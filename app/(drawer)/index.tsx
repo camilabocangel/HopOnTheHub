@@ -35,32 +35,19 @@ export default function HomeScreen() {
   const { user } = useUser();
   const { careers, loading: careersLoading, getCurrentSemester } = useCareers();
 
-  const { announcements } = useAnnouncements(user?.campus);
-  const { events } = useEvents(user?.campus);
+  // SOLUCIÓN: Usar nombres diferentes para las variables
+  const { events: allEvents, loading: eventsLoading } = useEvents(user?.campus);
+  const { announcements: allAnnouncements, loading: announcementsLoading } =
+    useAnnouncements(user?.campus);
 
   const currentSemester = getCurrentSemester(user?.career, user?.semester);
 
-  // const handleImport = async () => {
-  //   try {
-  //     await importCareersToFirebase();
-  //     await importAnnouncementsToFirebase();
-  //     await importEventsToFirebase();
-  //     Alert.alert("Éxito", "Importación correcta");
-  //   } catch (error) {
-  //     Alert.alert("Error", "Importación fallida");
-  //   }
-  // };
+  // Ya no necesitas este filtro porque el hook ya trae solo eventos futuros y aprobados
+  // const upcomingEvents = events.filter(...) // ELIMINA ESTO
 
-  const upcomingEvents = events
-    .filter((event) => {
-      const eventDate = new Date(event.date);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      return eventDate >= today;
-    })
-    .slice(0, 5);
-
-  const recentAnnouncements = announcements.slice(0, 5);
+  // Si quieres limitar a 5 elementos, hazlo aquí:
+  const upcomingEvents = allEvents.slice(0, 5);
+  const recentAnnouncements = allAnnouncements.slice(0, 5);
 
   const renderEventItem = ({ item }: { item: any }) => (
     <View style={styles.horizontalCard}>
@@ -89,93 +76,102 @@ export default function HomeScreen() {
     </View>
   );
 
+  // const handleImport = async () => {
+  //   try {
+  //     await importCareersToFirebase();
+  //     await importAnnouncementsToFirebase();
+  //     await importEventsToFirebase();
+  //     Alert.alert("Éxito", "Importación correcta");
+  //   } catch (error) {
+  //     Alert.alert("Error", "Importación fallida");
+  //   }
+  // };
+
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-      <View style={[styles.hero, { height: height - 10 }]}>
-        <Image
-          source={require("../../assets/upb.jpg")}
-          style={styles.heroImage}
-          resizeMode="cover"
-        />
-      </View>
+        <View style={[styles.hero, { height: height - 10 }]}>
+          <Image
+            source={require("../../assets/upb.jpg")}
+            style={styles.heroImage}
+            resizeMode="cover"
+          />
+        </View>
 
-      {user ? (
-        <Section title="Hoy en tu horario">
-          {currentSemester ? (
-            currentSemester.subjects
-              .slice(0, 3)
-              .map((subject, index) => (
-                <SubjectCard key={index} subject={subject} />
-              ))
-          ) : (
-            <Text style={{ color: colors.text }}>
-              {user.career && user.semester
-                ? `No se encontraron materias para ${user.career} - Semestre ${user.semester}`
-                : "Completa tu información académica en tu perfil"}
-            </Text>
-          )}
-        </Section>
-      ) : (
-        <View></View>
-      )}
+        {user ? (
+          <Section title="Hoy en tu horario">
+            {currentSemester ? (
+              currentSemester.subjects
+                .slice(0, 3)
+                .map((subject, index) => (
+                  <SubjectCard key={index} subject={subject} />
+                ))
+            ) : (
+              <Text style={{ color: colors.text }}>
+                {user.career && user.semester
+                  ? `No se encontraron materias para ${user.career} - Semestre ${user.semester}`
+                  : "Completa tu información académica en tu perfil"}
+              </Text>
+            )}
+          </Section>
+        ) : (
+          <View></View>
+        )}
 
-      {user && upcomingEvents.length > 0 && (
-        <Section title={`Próximos Eventos (${user.campus})`}>
-          <FlatList
+        {user && upcomingEvents.length > 0 && (
+          <Section title={`Próximos Eventos (${user.campus})`}>
+            <FlatList
+              horizontal
+              data={upcomingEvents}
+              renderItem={renderEventItem}
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalListContent}
+              snapToAlignment="start"
+              decelerationRate="fast"
+            />
+          </Section>
+        )}
+
+        {user && recentAnnouncements.length > 0 && (
+          <Section title={`Anuncios (${user.campus})`}>
+            <FlatList
+              horizontal
+              data={recentAnnouncements}
+              renderItem={renderAnnouncementItem}
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalListContent}
+              snapToAlignment="start"
+              decelerationRate="fast"
+            />
+          </Section>
+        )}
+
+        <Section title="Buscar por Campus">
+          <ScrollView
             horizontal
-            data={upcomingEvents}
-            renderItem={renderEventItem}
-            keyExtractor={(item) => item.id}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.horizontalListContent}
-            snapToAlignment="start"
-            decelerationRate="fast"
-          />
+            contentContainerStyle={{ paddingHorizontal: 12 }}
+          >
+            <CampusCard
+              label="La Paz"
+              href="/(drawer)/campus?campus=La Paz"
+              image={require("../../assets/lapaz.jpg")}
+            />
+            <CampusCard
+              label="Cochabamba"
+              href="/(drawer)/campus?campus=Cochabamba"
+              image={require("../../assets/cocha.jpg")}
+            />
+            <CampusCard
+              label="Santa Cruz"
+              href="/(drawer)/campus?campus=Santa Cruz"
+              image={require("../../assets/staCruz.jpg")}
+            />
+          </ScrollView>
         </Section>
-      )}
-
-      {/* Anuncios Recientes - FlatList Horizontal */}
-      {user && recentAnnouncements.length > 0 && (
-        <Section title={`Anuncios (${user.campus})`}>
-          <FlatList
-            horizontal
-            data={recentAnnouncements}
-            renderItem={renderAnnouncementItem}
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.horizontalListContent}
-            snapToAlignment="start"
-            decelerationRate="fast"
-          />
-        </Section>
-      )}
-
-      <Section title="Buscar por Campus">
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ paddingHorizontal: 12 }}
-        >
-          <CampusCard
-            label="La Paz"
-            href="/(drawer)/campus?campus=La Paz"
-            image={require("../../assets/lapaz.jpg")}
-          />
-          <CampusCard
-            label="Cochabamba"
-            href="/(drawer)/campus?campus=Cochabamba"
-            image={require("../../assets/cocha.jpg")}
-          />
-          <CampusCard
-            label="Santa Cruz"
-            href="/(drawer)/campus?campus=Santa Cruz"
-            image={require("../../assets/staCruz.jpg")}
-          />
-        </ScrollView>
-      </Section>
-
-      {/* {__DEV__ && (
+        {/* {__DEV__ && (
         <TouchableOpacity
           onPress={handleImport}
           style={{
@@ -191,9 +187,7 @@ export default function HomeScreen() {
           <Text style={{ color: "white", fontSize: 12 }}>Import Data</Text>
         </TouchableOpacity>
       )} */}
-    </ScrollView>
-
+      </ScrollView>
     </SafeAreaView>
   );
 }
-

@@ -30,7 +30,6 @@ export default function CampusScreen() {
 
   const selectedCampus = Array.isArray(campus) ? campus[0] : campus;
 
-  // Obtener eventos y anuncios del campus seleccionado
   const { events: allEvents, loading: eventsLoading } =
     useEvents(selectedCampus);
   const { announcements: allAnnouncements, loading: announcementsLoading } =

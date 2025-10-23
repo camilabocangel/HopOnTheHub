@@ -1,4 +1,3 @@
-// src/helpers/likeHelpers.ts
 import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
 

@@ -5,307 +5,205 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  Modal
+  ScrollView,
+  ActivityIndicator,
 } from "react-native";
-import { useThemeColors } from "../hooks/useThemeColors";
-import createAnnouncementStyles from "@/styles/createAnnouncementStyles";
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Calendar } from "react-native-calendars";
+import { useThemeColors } from "@/hooks/useThemeColors";
+import { useUser } from "@/hooks/useUser";
+import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "@/config/firebaseConfig";
+import useCreateAnnouncementStyles from "@/styles/createAnnouncementStyles";
 
-const styles = createAnnouncementStyles;
-
-type AnnouncementFormData = {
-  title: string;
-  description: string;
-  date: string;
-  time: string;
-  place: string;
-  category: string;
-};
-
-type Props = {
-  onSubmit: (data: AnnouncementFormData) => void;
+interface CreateAnnouncementFormProps {
+  onSubmit: (announcementData: any) => void;
   onCancel: () => void;
-};
+}
 
-export default function CreateAnnouncementForm({ onSubmit, onCancel }: Props) {
+const CUSTOM_ANNOUNCEMENT_IMAGE = "https://png.pngtree.com/png-clipart/20230804/original/pngtree-vector-custom-made-stamp-customized-grunge-customs-vector-picture-image_9515922.png";
+
+const allCampuses = ["La Paz", "Santa Cruz", "Cochabamba"];
+
+export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnnouncementFormProps) {
   const { colors } = useThemeColors();
-  const [formData, setFormData] = useState<AnnouncementFormData>({
-    title: "",
-    description: "",
-    date: "",
-    time: "",
-    place: "",
-    category: "",
-  });
+  const { user } = useUser();
+  const styles = useCreateAnnouncementStyles();
 
+  const [description, setDescription] = useState("");
+  const [content, setContent] = useState("");
+  const [selectedCampuses, setSelectedCampuses] = useState<string[]>([user?.campus || "La Paz"]);
+  const [date, setDate] = useState(new Date());
+  const [loading, setLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showTimePicker, setShowTimePicker] = useState(false);
 
-  const handleSubmit = () => {
-    if (!formData.title.trim() || !formData.date || !formData.place.trim()) {
-      Alert.alert("Error", "Por favor completa los campos obligatorios");
+  const handleCampusToggle = (campus: string) => {
+    if (selectedCampuses.includes(campus)) {
+      if (selectedCampuses.length > 1) {
+        setSelectedCampuses(selectedCampuses.filter(c => c !== campus));
+      }
+    } else {
+      setSelectedCampuses([...selectedCampuses, campus]);
+    }
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toISOString().split('T')[0];
+  };
+
+  const handleSubmit = async () => {
+    if (!description.trim() || selectedCampuses.length === 0) {
+      Alert.alert("Error", "Por favor completa todos los campos obligatorios");
       return;
     }
-    onSubmit(formData);
-  };
 
-  const updateField = (field: keyof AnnouncementFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
-  const handleDateSelect = (day: any) => {
-    const dateString = day.dateString; 
-    setFormData(prev => ({ ...prev, date: dateString }));
-    setShowDatePicker(false);
-  };
+    setLoading(true);
+    try {
+      const announcementData = {
+        description: description.trim(),
+        content: content.trim() || description.trim(),
+        campus: selectedCampuses,
+        date: formatDate(date),
+        image: CUSTOM_ANNOUNCEMENT_IMAGE,
+        status: "pending",
+        likes: [],
+        createdAt: serverTimestamp(),
+        createdBy: user?.id
+      };
 
-  const handleTimeChange = (event: any, selectedTime?: Date) => {
-    setShowTimePicker(false); 
-    
-    if (selectedTime) {
-      const hours = selectedTime.getHours().toString().padStart(2, '0');
-      const minutes = selectedTime.getMinutes().toString().padStart(2, '0');
-      const timeString = `${hours}:${minutes}`;
-      setFormData(prev => ({ ...prev, time: timeString }));
+      const docRef = await addDoc(collection(db, "announcements"), announcementData);
+      
+      Alert.alert("Éxito", "Anuncio creado correctamente. Está pendiente de aprobación.");
+      onSubmit({ id: docRef.id, ...announcementData });
+    } catch (error) {
+      console.error("Error creating announcement:", error);
+      Alert.alert("Error", "No se pudo crear el anuncio");
+    } finally {
+      setLoading(false);
     }
   };
-  const formatDisplayDate = (dateString: string) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleDateString('es-ES', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
-  };
+
+  const isFormValid = description.trim() && selectedCampuses.length > 0;
 
   return (
     <View style={styles.formContainer}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: colors.text }]}>
-          Crear Nuevo Evento
-        </Text>
-        <Text style={[styles.subtitle, { color: colors.text }]}>
-          Completa la información del evento
+        <Text style={styles.title}>Crear Nuevo Anuncio</Text>
+        <Text style={styles.subtitle}>
+          Completa la información del anuncio
         </Text>
       </View>
 
-      <View style={styles.fieldsContainer}>
+      <ScrollView style={styles.fieldsContainer} showsVerticalScrollIndicator={false}>
+        {/* Descripción */}
         <View style={styles.fieldGroup}>
-          <Text style={[styles.label, { color: colors.text }]}>
-            Título del Evento *
-          </Text>
+          <Text style={styles.label}>Descripción del Anuncio *</Text>
           <TextInput
-            style={[
-              styles.textInput,
-              {
-                backgroundColor: colors.surface,
-                color: colors.text,
-                borderColor: colors.border,
-              },
-            ]}
-            placeholder="Ingresa el título del evento"
-            placeholderTextColor={colors.text}
-            value={formData.title}
-            onChangeText={(value) => updateField("title", value)}
+            style={styles.textInput}
+            placeholder="Describe brevemente el anuncio..."
+            placeholderTextColor="#888"
+            value={description}
+            onChangeText={setDescription}
+            multiline
           />
         </View>
 
+        {/* Contenido Completo */}
         <View style={styles.fieldGroup}>
-          <Text style={[styles.label, { color: colors.text }]}>
-            Descripción
-          </Text>
+          <Text style={styles.label}>Contenido Completo</Text>
           <TextInput
-            style={[
-              styles.textArea,
-              {
-                backgroundColor: colors.surface,
-                color: colors.text,
-                borderColor: colors.border,
-              },
-            ]}
-            placeholder="Describe el evento..."
-            placeholderTextColor={colors.text}
-            value={formData.description}
-            onChangeText={(value) => updateField("description", value)}
+            style={styles.textArea}
+            placeholder="Información detallada del anuncio..."
+            placeholderTextColor="#888"
+            value={content}
+            onChangeText={setContent}
             multiline
             numberOfLines={4}
-            textAlignVertical="top"
           />
+        </View>
+
+        {/* Campus - Checkboxes inline */}
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>Campus *</Text>
+          <View style={styles.campusContainer}>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+              {allCampuses.map((campusItem) => (
+                <View key={campusItem} style={styles.campusCheckboxRow}>
+                  <TouchableOpacity
+                    style={styles.checkboxContainer}
+                    onPress={() => handleCampusToggle(campusItem)}
+                  >
+                    <View style={[
+                      styles.checkbox,
+                      selectedCampuses.includes(campusItem) && styles.checkboxChecked
+                    ]}>
+                      {selectedCampuses.includes(campusItem) && (
+                        <Ionicons name="checkmark" size={16} color="white" />
+                      )}
+                    </View>
+                    <Text style={styles.checkboxText}>
+                      {campusItem}
+                      {campusItem === user?.campus && " (tu campus)"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+            <Text style={styles.campusHint}>
+              Selecciona al menos un campus
+            </Text>
+          </View>
         </View>
 
         {/* Fecha */}
         <View style={styles.fieldGroup}>
-          <Text style={[styles.label, { color: colors.text }]}>
-            Fecha *
-          </Text>
+          <Text style={styles.label}>Fecha del Anuncio *</Text>
           <TouchableOpacity
-            style={[
-              styles.dateTimeButton,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-            ]}
+            style={styles.dateTimeButton}
             onPress={() => setShowDatePicker(true)}
           >
-            <Text style={[styles.dateTimeText, { 
-              color: formData.date ? colors.text : colors.text 
-            }]}>
-              {formData.date ? formatDisplayDate(formData.date) : "Seleccionar fecha"}
+            <Text style={styles.dateTimeText}>
+              {formatDate(date)}
             </Text>
           </TouchableOpacity>
         </View>
+      </ScrollView>
 
-        {/* Hora */}
-        <View style={styles.fieldGroup}>
-          <Text style={[styles.label, { color: colors.text }]}>
-            Hora
-          </Text>
-          <TouchableOpacity
-            style={[
-              styles.dateTimeButton,
-              {
-                backgroundColor: colors.surface,
-                borderColor: colors.border,
-              },
-            ]}
-            onPress={() => setShowTimePicker(true)}
-          >
-            <Text style={[styles.dateTimeText, { 
-              color: formData.time ? colors.text : colors.text 
-            }]}>
-              {formData.time ? formData.time : "Seleccionar hora"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Lugar */}
-        <View style={styles.fieldGroup}>
-          <Text style={[styles.label, { color: colors.text }]}>
-            Lugar *
-          </Text>
-          <TextInput
-            style={[
-              styles.textInput,
-              {
-                backgroundColor: colors.surface,
-                color: colors.text,
-                borderColor: colors.border,
-              },
-            ]}
-            placeholder="¿Dónde será el evento?"
-            placeholderTextColor={colors.text}
-            value={formData.place}
-            onChangeText={(value) => updateField("place", value)}
-          />
-        </View>
-
-        {/* Categoría */}
-        <View style={styles.fieldGroup}>
-          <Text style={[styles.label, { color: colors.text }]}>
-            Categoría
-          </Text>
-          <TextInput
-            style={[
-              styles.textInput,
-              {
-                backgroundColor: colors.surface,
-                color: colors.text,
-                borderColor: colors.border,
-              },
-            ]}
-            placeholder="Ej: Académico, Social, Deportes..."
-            placeholderTextColor={colors.text}
-            value={formData.category}
-            onChangeText={(value) => updateField("category", value)}
-          />
-        </View>
-      </View>
-      <Modal
-        visible={showDatePicker}
-        animationType="slide"
-        transparent={true}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={[
-            styles.modalContent, 
-            { backgroundColor: colors.background }
-          ]}>
-            <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text }]}>
-                Seleccionar Fecha
-              </Text>
-              <TouchableOpacity 
-                onPress={() => setShowDatePicker(false)}
-                style={styles.closeButton}
-              >
-                <Text style={[styles.closeButtonText, { color: colors.primary }]}>
-                  Cerrar
-                </Text>
-              </TouchableOpacity>
-            </View>
-            
-            <Calendar
-              onDayPress={handleDateSelect}
-              markedDates={{
-                [formData.date]: {
-                  selected: true,
-                  selectedColor: colors.primary,
-                }
-              }}
-              theme={{
-                backgroundColor: colors.background,
-                calendarBackground: colors.background,
-                textSectionTitleColor: colors.text,
-                selectedDayBackgroundColor: colors.primary,
-                selectedDayTextColor: '#ffffff',
-                todayTextColor: colors.primary,
-                dayTextColor: colors.text,
-                textDisabledColor: colors.text,
-                arrowColor: colors.primary,
-                monthTextColor: colors.text,
-                indicatorColor: colors.primary,
-              }}
-            />
-          </View>
-        </View>
-      </Modal>
-
-      {/* Time Picker (Android) */}
-      {showTimePicker && (
+      {/* Date Picker */}
+      {showDatePicker && (
         <DateTimePicker
-          value={new Date()}
-          mode="time"
+          value={date}
+          mode="date"
           display="default"
-          onChange={handleTimeChange}
+          onChange={(event, selectedDate) => {
+            setShowDatePicker(false);
+            if (selectedDate) setDate(selectedDate);
+          }}
         />
       )}
 
-      {/* Botones de Acción */}
+      {/* Botones de acción */}
       <View style={styles.actionsContainer}>
         <TouchableOpacity
-          style={[
-            styles.cancelButton,
-            { backgroundColor: colors.surface, borderColor: colors.border },
-          ]}
+          style={styles.cancelButton}
           onPress={onCancel}
+          disabled={loading}
         >
-          <Text style={[styles.cancelButtonText, { color: colors.text }]}>
+          <Text style={styles.cancelButtonText}>
             Cancelar
           </Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[
-            styles.submitButton,
-            { backgroundColor: colors.primary },
-          ]}
+          style={[styles.submitButton, !isFormValid && styles.submitButtonDisabled]}
           onPress={handleSubmit}
+          disabled={loading || !isFormValid}
         >
-          <Text style={styles.submitButtonText}>
-            Crear Evento
-          </Text>
+          {loading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.submitButtonText}>Crear Anuncio</Text>
+          )}
         </TouchableOpacity>
       </View>
     </View>

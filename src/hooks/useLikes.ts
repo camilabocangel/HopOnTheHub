@@ -1,4 +1,3 @@
-// src/hooks/useLikes.ts
 import { useUser } from "./useUser";
 import { toggleAnnouncementLike, toggleEventLike } from "@/helpers/likeHelpers";
 

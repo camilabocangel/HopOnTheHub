@@ -30,7 +30,6 @@ export default function AnnouncementsScreen() {
 
   const selectedCampus = getSelectedCampus();
 
-  // Obtener anuncios del campus seleccionado
   const { announcements: campusAnnouncements, loading } =
     useAnnouncements(selectedCampus);
 
