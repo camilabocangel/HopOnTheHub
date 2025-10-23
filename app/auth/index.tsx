@@ -46,11 +46,7 @@ export default function AuthScreen() {
       setTimeout(() => {
         setIsLoading(false);
         if (user) {
-          if (user.role === "admin") {
-            router.replace("/(admin)");
-          } else if (user.role === "normal") {
-            router.replace("/(drawer)");
-          }
+          router.replace("/(drawer)");
         }
       }, 1500);
     } catch (e: any) {
