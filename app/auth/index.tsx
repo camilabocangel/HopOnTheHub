@@ -17,6 +17,7 @@ import { useAuthStyles } from "../../src/styles/authStyles";
 import { auth } from "../../src/config/firebaseConfig";
 import { Ionicons } from "@expo/vector-icons";
 import { LoadingSplash } from "@/components/LoadingSplash";
+import { useUser } from "@/hooks/useUser";
 
 export default function AuthScreen() {
   const { colors } = useThemeColors();
@@ -28,6 +29,9 @@ export default function AuthScreen() {
   const [error, setError] = useState<string>("");
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { user, logout } = useUser();
+
   const handleLogin = async () => {
     if (!email || !password) {
       setError("Por favor completa todos los campos");
@@ -41,11 +45,16 @@ export default function AuthScreen() {
 
       setTimeout(() => {
         setIsLoading(false);
-        router.replace("/(drawer)");
+        if (user) {
+          if (user.role === "admin") {
+            router.replace("/(admin)");
+          } else if (user.role === "normal") {
+            router.replace("/(drawer)");
+          }
+        }
       }, 1500);
-
     } catch (e: any) {
-      setIsLoading(false)
+      setIsLoading(false);
       console.error("Error login:", e);
       if (e.code === "auth/invalid-credential") {
         setError("Usuario o contraseña incorrectos");
@@ -56,10 +65,8 @@ export default function AuthScreen() {
       }
     }
   };
-  if (isLoading){
-    return (
-      <LoadingSplash/>
-    )
+  if (isLoading) {
+    return <LoadingSplash />;
   }
 
   const handleForgotPassword = async () => {
