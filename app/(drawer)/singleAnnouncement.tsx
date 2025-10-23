@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -7,12 +7,14 @@ import useLikedAnnouncements from "../../src/hooks/useLikedAnnouncements";
 import singleAnnouncementStyles from "../../src/styles/singleAnnouncementStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+
 export default function SingleAnnouncementScreen() {
   const { colors } = useThemeColors();
   const params = useLocalSearchParams();
+  const [showMapModal, setShowMapModal] = useState(false);
   const { isLiked, toggleLike } = useLikedAnnouncements();
 
-  const { id, description, date, campus, image, content } = params;
+  const { id, description, date, campus, image, content, } = params;
 
   const campusArray = campus ? JSON.parse(campus as string) : [];
   const announcementId = id ? parseInt(id as string) : 0;

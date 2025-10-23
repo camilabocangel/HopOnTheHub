@@ -111,6 +111,7 @@ export default function CampusScreen() {
                     description={event.description}
                     image={event.image}
                     content={event.content}
+                    campus={event.campus}
                   />
                 );
               }
