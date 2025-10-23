@@ -41,7 +41,7 @@ export default function AuthScreen() {
 
       setTimeout(() => {
         setIsLoading(false);
-        router.replace("/(drawer)");
+        router.replace("/(admin)");
       }, 1500);
 
     } catch (e: any) {

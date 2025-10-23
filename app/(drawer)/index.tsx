@@ -120,7 +120,6 @@ export default function HomeScreen() {
         <View></View>
       )}
 
-      {/* Próximos Eventos - FlatList Horizontal */}
       {user && upcomingEvents.length > 0 && (
         <Section title={`Próximos Eventos (${user.campus})`}>
           <FlatList
