@@ -27,7 +27,6 @@ export default function SingleEventScreen() {
     campus
   } = params;
 
-  // Parse campuses from the campus parameter
   const eventCampuses = useMemo(() => {
     return parseCampuses(campus as string || 'la paz');
   }, [campus]);
@@ -40,7 +39,6 @@ export default function SingleEventScreen() {
     return getMapRegionForCampuses(eventCampuses);
   }, [eventCampuses]);
 
-  // Format campus display text
   const campusDisplayText = useMemo(() => {
     if (eventCampuses.length === 3) return "Todos los campus";
     if (eventCampuses.length === 2) {

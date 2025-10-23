@@ -35,17 +35,12 @@ export default function HomeScreen() {
   const { user } = useUser();
   const { careers, loading: careersLoading, getCurrentSemester } = useCareers();
 
-  // SOLUCIÓN: Usar nombres diferentes para las variables
   const { events: allEvents, loading: eventsLoading } = useEvents(user?.campus);
   const { announcements: allAnnouncements, loading: announcementsLoading } =
     useAnnouncements(user?.campus);
 
   const currentSemester = getCurrentSemester(user?.career, user?.semester);
 
-  // Ya no necesitas este filtro porque el hook ya trae solo eventos futuros y aprobados
-  // const upcomingEvents = events.filter(...) // ELIMINA ESTO
-
-  // Si quieres limitar a 5 elementos, hazlo aquí:
   const upcomingEvents = allEvents.slice(0, 5);
   const recentAnnouncements = allAnnouncements.slice(0, 5);
 
@@ -61,6 +56,7 @@ export default function HomeScreen() {
         description={item.description}
         image={item.image}
         content={item.content}
+        campus={item.campus}
       />
     </View>
   );

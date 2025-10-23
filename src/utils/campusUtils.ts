@@ -1,4 +1,3 @@
-// utils/campusUtils.ts
 export type CampusKey = 'la paz' | 'cochabamba' | 'santa cruz';
 
 const CAMPUS_COORDINATES: Record<CampusKey, { latitude: number; longitude: number; title: string }> = {
@@ -7,13 +6,11 @@ const CAMPUS_COORDINATES: Record<CampusKey, { latitude: number; longitude: numbe
   'santa cruz': { latitude: -17.81922, longitude: -63.23354, title: "Santa Cruz" }, 
 };
 
-// Function to parse campus string and return array of campuses
 export const parseCampuses = (campusString: string): CampusKey[] => {
-  if (!campusString) return ['la paz']; // Default
+  if (!campusString) return ['la paz'];
   
   const normalized = campusString.toLowerCase().trim();
   
-  // Check for multi-campus indicators
   if (normalized.includes('todos') || 
       normalized.includes('all') || 
       normalized.includes('todos los campus') ||
@@ -21,7 +18,6 @@ export const parseCampuses = (campusString: string): CampusKey[] => {
     return ['la paz', 'cochabamba', 'santa cruz'];
   }
   
-  // Check for specific campuses
   const campuses: CampusKey[] = [];
   
   if (normalized.includes('la paz') || normalized.includes('lapaz')) {
@@ -34,10 +30,9 @@ export const parseCampuses = (campusString: string): CampusKey[] => {
     campuses.push('santa cruz');
   }
   
-  return campuses.length > 0 ? campuses : ['la paz']; // Default fallback
+  return campuses.length > 0 ? campuses : ['la paz']; 
 };
 
-// NEW: Function to convert string array to CampusKey array safely
 export const convertToCampusKeys = (campuses: string[]): CampusKey[] => {
   const validCampuses: CampusKey[] = [];
   
@@ -55,12 +50,10 @@ export const convertToCampusKeys = (campuses: string[]): CampusKey[] => {
   return validCampuses.length > 0 ? validCampuses : ['la paz'];
 };
 
-// Function to get coordinates for campuses
 export const getCampusesCoordinates = (campuses: CampusKey[]) => {
   return campuses.map(campus => CAMPUS_COORDINATES[campus]);
 };
 
-// Function to calculate map region based on campuses
 export const getMapRegionForCampuses = (campuses: CampusKey[]) => {
   if (campuses.length === 1) {
     const campus = campuses[0];
@@ -72,9 +65,8 @@ export const getMapRegionForCampuses = (campuses: CampusKey[]) => {
     };
   }
   
-  // For multiple campuses, show a wider view of Bolivia
   return {
-    latitude: -17.20942, // Center of Bolivia
+    latitude: -17.20942,
     longitude: -65.80328,
     latitudeDelta: 4.0,
     longitudeDelta: 6.0,

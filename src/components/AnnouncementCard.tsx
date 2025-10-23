@@ -27,7 +27,7 @@ export default function AnnouncementCard({
         id,
         description,
         date,
-        campus: Array.isArray(campus) ? campus.join(', ') : campus, // Updated this line
+        campus: Array.isArray(campus) ? campus.join(', ') : campus, 
         image,
       },
     });

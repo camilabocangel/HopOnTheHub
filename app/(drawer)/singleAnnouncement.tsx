@@ -18,13 +18,10 @@ export default function SingleAnnouncementScreen() {
 
   const { id, description, date, campus, image, content } = params;
 
-  // Parse campuses - handle both string and array formats
   const announcementCampuses = useMemo((): CampusKey[] => {
     if (Array.isArray(campus)) {
-      // If it's already an array, convert to CampusKey[]
       return convertToCampusKeys(campus);
     } else if (typeof campus === 'string') {
-      // If it's a string, try to parse it as JSON first, then as plain string
       try {
         const parsedCampus = JSON.parse(campus);
         if (Array.isArray(parsedCampus)) {
@@ -35,7 +32,7 @@ export default function SingleAnnouncementScreen() {
         return parseCampuses(campus);
       }
     }
-    return ['la paz']; // Default fallback
+    return ['la paz'];
   }, [campus]);
 
   const campusesCoordinates = useMemo(() => {
@@ -46,7 +43,6 @@ export default function SingleAnnouncementScreen() {
     return getMapRegionForCampuses(announcementCampuses);
   }, [announcementCampuses]);
 
-  // Format campus display text
   const campusDisplayText = useMemo(() => {
     if (announcementCampuses.length === 3) return "Todos los campus";
     if (announcementCampuses.length === 2) {
