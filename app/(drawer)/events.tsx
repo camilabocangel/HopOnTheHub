@@ -92,6 +92,7 @@ export default function EventsScreen() {
                       category={item.category}
                       description={item.description}
                       image={item.image}
+                      content={item.content}
                     />
                   )}
                   keyExtractor={(item) => item.id}

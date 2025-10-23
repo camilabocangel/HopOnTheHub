@@ -73,6 +73,7 @@ export default function HomeScreen() {
         category={item.category}
         description={item.description}
         image={item.image}
+        content={item.content}
       />
     </View>
   );

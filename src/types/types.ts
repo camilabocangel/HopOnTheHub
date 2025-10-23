@@ -72,6 +72,7 @@ export type EventCardProps = {
   category: string;
   description: string;
   image: string;
+  content: string;
 };
 
 export interface RegisterFormData {

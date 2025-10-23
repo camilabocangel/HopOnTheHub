@@ -16,6 +16,7 @@ export default function EventCard({
   category,
   description,
   image,
+  content,
 }: EventCardProps) {
   const { colors } = useThemeColors();
   const { isEventLiked, toggleEventLikeStatus } = useLikes();
@@ -32,6 +33,7 @@ export default function EventCard({
         category,
         description,
         image,
+        content,
       },
     });
   };

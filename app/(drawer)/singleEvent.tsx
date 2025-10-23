@@ -155,6 +155,19 @@ export default function SingleEventScreen() {
               {description as string}
             </Text>
           </View>
+
+          <View style={singleEventsStyles.section}>
+            <Text
+              style={[singleEventsStyles.sectionTitle, { color: colors.text }]}
+            >
+              Contenido
+            </Text>
+            <Text
+              style={[singleEventsStyles.sectionContent, { color: colors.text }]}
+            >
+              {content as string}
+            </Text>
+          </View>
         </View>
       </View>
     </ScrollView>
