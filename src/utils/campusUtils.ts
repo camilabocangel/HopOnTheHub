@@ -1,4 +1,5 @@
-type CampusKey = 'la paz' | 'cochabamba' | 'santa cruz';
+// utils/campusUtils.ts
+export type CampusKey = 'la paz' | 'cochabamba' | 'santa cruz';
 
 const CAMPUS_COORDINATES: Record<CampusKey, { latitude: number; longitude: number; title: string }> = {
   'la paz': { latitude: -16.57491, longitude: -68.12711, title: "La Paz" }, 
@@ -6,6 +7,7 @@ const CAMPUS_COORDINATES: Record<CampusKey, { latitude: number; longitude: numbe
   'santa cruz': { latitude: -17.81922, longitude: -63.23354, title: "Santa Cruz" }, 
 };
 
+// Function to parse campus string and return array of campuses
 export const parseCampuses = (campusString: string): CampusKey[] => {
   if (!campusString) return ['la paz']; // Default
   
@@ -35,10 +37,30 @@ export const parseCampuses = (campusString: string): CampusKey[] => {
   return campuses.length > 0 ? campuses : ['la paz']; // Default fallback
 };
 
+// NEW: Function to convert string array to CampusKey array safely
+export const convertToCampusKeys = (campuses: string[]): CampusKey[] => {
+  const validCampuses: CampusKey[] = [];
+  
+  campuses.forEach(campus => {
+    const normalized = campus.toLowerCase().trim();
+    if (normalized === 'la paz' || normalized === 'lapaz') {
+      validCampuses.push('la paz');
+    } else if (normalized === 'cochabamba' || normalized === 'cocha') {
+      validCampuses.push('cochabamba');
+    } else if (normalized === 'santa cruz' || normalized === 'santacruz') {
+      validCampuses.push('santa cruz');
+    }
+  });
+  
+  return validCampuses.length > 0 ? validCampuses : ['la paz'];
+};
+
+// Function to get coordinates for campuses
 export const getCampusesCoordinates = (campuses: CampusKey[]) => {
   return campuses.map(campus => CAMPUS_COORDINATES[campus]);
 };
 
+// Function to calculate map region based on campuses
 export const getMapRegionForCampuses = (campuses: CampusKey[]) => {
   if (campuses.length === 1) {
     const campus = campuses[0];
@@ -50,8 +72,9 @@ export const getMapRegionForCampuses = (campuses: CampusKey[]) => {
     };
   }
   
+  // For multiple campuses, show a wider view of Bolivia
   return {
-    latitude: -17.20942, 
+    latitude: -17.20942, // Center of Bolivia
     longitude: -65.80328,
     latitudeDelta: 4.0,
     longitudeDelta: 6.0,
