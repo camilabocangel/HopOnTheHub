@@ -43,12 +43,7 @@ export default function AuthScreen() {
       setIsLoading(true);
       await signInWithEmailAndPassword(auth, email, password);
 
-      setTimeout(() => {
-        setIsLoading(false);
-        if (user) {
-          router.replace("/(drawer)");
-        }
-      }, 1500);
+      router.replace("/(drawer)");
     } catch (e: any) {
       setIsLoading(false);
       console.error("Error login:", e);
