@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../hooks/useThemeColors";
 import { useLikes } from "../hooks/useLikes";
+import { useUser } from "../hooks/useUser";
 import eventCardStyles from "../styles/eventCardStyles";
 import { EventCardProps } from "@/types/types";
 
@@ -18,9 +19,12 @@ export default function EventCard({
   image,
   content,
   campus,
+  isPending,
 }: EventCardProps) {
   const { colors } = useThemeColors();
   const { isEventLiked, toggleEventLikeStatus } = useLikes();
+  const { user } = useUser();
+  const styles = eventCardStyles;
 
   const handlePress = () => {
     router.push({
@@ -35,7 +39,7 @@ export default function EventCard({
         description,
         image,
         content,
-        campus:campus||"la paz"
+        campus: campus || "la paz",
       },
     });
   };
@@ -50,68 +54,71 @@ export default function EventCard({
   };
 
   const liked = isEventLiked(id);
+  const isNormal = user ? user?.role === "normal" : false;
 
   return (
     <TouchableOpacity
-      style={[eventCardStyles.card, { backgroundColor: colors.surface }]}
+      style={[styles.card, { backgroundColor: colors.surface }]}
       onPress={handlePress}
     >
-      <View style={eventCardStyles.imageContainer}>
+      <View style={styles.imageContainer}>
         {image ? (
-          <Image source={{ uri: image }} style={eventCardStyles.image} />
+          <Image source={{ uri: image }} style={styles.image} />
         ) : (
           <View
             style={[
-              eventCardStyles.placeholderImage,
+              styles.placeholderImage,
               { backgroundColor: colors.primary },
             ]}
           >
-            <Text style={eventCardStyles.placeholderText}>Evento</Text>
+            <Text style={styles.placeholderText}>Evento</Text>
+          </View>
+        )}
+
+        {isPending && (
+          <View style={styles.pendingBadge}>
+            <Text style={styles.pendingText}>Pendiente</Text>
           </View>
         )}
       </View>
 
-      <View style={eventCardStyles.content}>
-        <Text style={[eventCardStyles.category, { color: colors.primary }]}>
+      <View style={styles.content}>
+        <Text style={[styles.category, { color: colors.primary }]}>
           {category}
         </Text>
-        <Text style={[eventCardStyles.title, { color: colors.text }]}>
-          {title}
-        </Text>
+        <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
 
-        <Text style={[eventCardStyles.date, { color: colors.subtitle }]}>
-          📅 {date}
-        </Text>
-        <Text style={[eventCardStyles.time, { color: colors.subtitle }]}>
-          ⏰ {time}
-        </Text>
-        <Text style={[eventCardStyles.place, { color: colors.subtitle }]}>
+        <Text style={[styles.date, { color: colors.subtitle }]}>📅 {date}</Text>
+        <Text style={[styles.time, { color: colors.subtitle }]}>⏰ {time}</Text>
+        <Text style={[styles.place, { color: colors.subtitle }]}>
           📍 {place}
         </Text>
 
         <Text
-          style={[eventCardStyles.description, { color: colors.subtitle }]}
+          style={[styles.description, { color: colors.subtitle }]}
           numberOfLines={2}
         >
           {description}
         </Text>
 
-        <TouchableOpacity
-          onPress={handleLikePress}
-          style={{
-            position: "absolute",
-            top: 10,
-            right: 10,
-            padding: 5,
-          }}
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
-          <Ionicons
-            name={liked ? "heart" : "heart-outline"}
-            size={20}
-            color={liked ? colors.accent : colors.subtitle}
-          />
-        </TouchableOpacity>
+        {isNormal && (
+          <TouchableOpacity
+            onPress={handleLikePress}
+            style={{
+              position: "absolute",
+              top: 10,
+              right: 10,
+              padding: 5,
+            }}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons
+              name={liked ? "heart" : "heart-outline"}
+              size={20}
+              color={liked ? colors.accent : colors.subtitle}
+            />
+          </TouchableOpacity>
+        )}
       </View>
     </TouchableOpacity>
   );

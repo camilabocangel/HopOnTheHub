@@ -237,7 +237,6 @@ export default function SingleAnnouncementScreen() {
               </View>
             </View>
 
-            {/* Optional: Content section if you have content for announcements */}
             {content && (
               <View style={singleAnnouncementStyles.section}>
                 <Text

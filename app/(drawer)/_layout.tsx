@@ -24,22 +24,23 @@ const CustomDrawerContent = (props: any) => {
         inactiveTintColor={colors.text}
         labelStyle={{ fontWeight: "600" }}
       />
-      <DrawerItem
-        label={"Perfil"}
-        onPress={() => {
-          router.push("/profile");
-        }}
-        focused={pathname === "/profile"}
-        activeTintColor={colors.primary}
-        inactiveTintColor={colors.text}
-        labelStyle={{ fontWeight: "600" }}
-      />
+
       <DrawerItem
         label={"Carreras"}
         onPress={() => {
           router.push("/careers");
         }}
         focused={pathname === "/careers"}
+        activeTintColor={colors.primary}
+        inactiveTintColor={colors.text}
+        labelStyle={{ fontWeight: "600" }}
+      />
+      <DrawerItem
+        label={"Perfil"}
+        onPress={() => {
+          router.push("/profile");
+        }}
+        focused={pathname === "/profile"}
         activeTintColor={colors.primary}
         inactiveTintColor={colors.text}
         labelStyle={{ fontWeight: "600" }}
@@ -94,7 +95,7 @@ const DrawerLayout = () => {
         name="careers"
         options={{
           drawerLabel: "Carreras",
-          title: "Carreras"
+          title: "Carreras",
         }}
       />
     </Drawer>

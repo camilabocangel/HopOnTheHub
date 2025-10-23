@@ -22,6 +22,7 @@ import { useThemeColors } from "@/hooks/useThemeColors";
 import { fetchCareers } from "@/helpers/fetchCareers ";
 import { useCareers } from "@/hooks/useCareers";  
 import { SafeAreaView } from "react-native-safe-area-context";
+import { uploadToCloudinary } from "@/services/cloudinary";
 
 export default function RegisterScreen() {
   const { colors } = useThemeColors();
@@ -108,71 +109,82 @@ export default function RegisterScreen() {
   }, []);
 
   const handleRegister = async () => {
-    if (!validateForm()) return;
+  if (!validateForm()) return;
 
-    setLoading(true);
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const uid = userCredential.user.uid;
+  setLoading(true);
+  try {
+    let photoUrl = "";
 
-      const userData: any = {
-        id: uid,
-        role: isAdmin ? "admin" : "normal",
-        picture: "",
-        userName: email,
-        name,
-        lastName,
-        secondLastName,
-        campus,
-        createdAt: serverTimestamp(),
-      };
-
-      if (photo) {
-        userData.picture = photo;
-      }
-
-      if (!isAdmin) {
-        Object.assign(userData, {
-          career,
-          semester: Number(semester),
-          likedEvents: [],
-          likedAnnouncements: [],
+    if (photo) {
+      try {
+        const uploadResponse = await uploadToCloudinary(photo, {
+          fileName: "profile-photo.jpg",
+          mimeType: "image/jpeg",
         });
+        photoUrl = uploadResponse.secure_url || "";
+      } catch (uploadError) {
+        console.error("Error uploading photo:", uploadError);
       }
-
-      await setDoc(doc(db, "users", uid), userData);
-
-      Alert.alert(
-        "Registro exitoso",
-        "Tu cuenta ha sido creada correctamente",
-        [
-          {
-            text: "Continuar",
-            onPress: () => router.replace("/(drawer)"),
-          },
-        ]
-      );
-    } catch (error: any) {
-      console.error("Error en registro:", error);
-
-      let errorMessage = "Error al registrar usuario";
-      if (error.code === "auth/email-already-in-use") {
-        errorMessage = "Este correo electrónico ya está registrado";
-      } else if (error.code === "auth/invalid-email") {
-        errorMessage = "El correo electrónico no es válido";
-      } else if (error.code === "auth/weak-password") {
-        errorMessage = "La contraseña es demasiado débil";
-      }
-
-      Alert.alert("Error", errorMessage);
-    } finally {
-      setLoading(false);
     }
-  };
+
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const uid = userCredential.user.uid;
+
+    const userData: any = {
+      uid: uid,
+      id: uid,
+      role: isAdmin ? "admin" : "normal",
+      picture: photoUrl,
+      userName: email,
+      name,
+      lastName,
+      secondLastName,
+      campus,
+      createdAt: serverTimestamp(),
+    };
+
+    if (!isAdmin) {
+      Object.assign(userData, {
+        career,
+        semester: Number(semester),
+        likedEvents: [],
+        likedAnnouncements: [],
+      });
+    }
+
+    await setDoc(doc(db, "users", uid), userData);
+
+    Alert.alert(
+      "Registro exitoso",
+      "Tu cuenta ha sido creada correctamente",
+      [
+        {
+          text: "Continuar",
+          onPress: () => router.replace("/(drawer)"),
+        },
+      ]
+    );
+  } catch (error: any) {
+    console.error("Error en registro:", error);
+
+    let errorMessage = "Error al registrar usuario";
+    if (error.code === "auth/email-already-in-use") {
+      errorMessage = "Este correo electrónico ya está registrado";
+    } else if (error.code === "auth/invalid-email") {
+      errorMessage = "El correo electrónico no es válido";
+    } else if (error.code === "auth/weak-password") {
+      errorMessage = "La contraseña es demasiado débil";
+    }
+
+    Alert.alert("Error", errorMessage);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const CampusModal = () => (
     <Modal

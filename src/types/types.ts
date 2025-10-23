@@ -32,6 +32,8 @@ export interface AnnouncementCardProps {
   description: string;
   date: string;
   campus: string[];
+  status: "pending" | "accepted" | "rejected" | "passed";
+  isPending?: boolean;
 }
 
 export type Announcement = {
@@ -48,7 +50,7 @@ export type Announcement = {
 
 export type Event = {
   id: string;
-  status: "pending" | "accepted" | "rejected";
+  status: "pending" | "accepted" | "rejected" | "passed";
   title: string;
   date: string;
   time: string;
@@ -73,7 +75,9 @@ export type EventCardProps = {
   description: string;
   image: string;
   content: string;
-  campus: string
+  campus: string;
+  status: "pending" | "accepted" | "rejected" | "passed";
+  isPending?: boolean;
 };
 
 export interface RegisterFormData {

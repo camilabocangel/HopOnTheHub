@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../hooks/useThemeColors";
 import { useLikes } from "../hooks/useLikes";
+import { useUser } from "../hooks/useUser";
 import announcementCardStyles from "../styles/announcementCardStyles";
 import { AnnouncementCardProps } from "@/types/types";
 
@@ -13,12 +14,16 @@ export default function AnnouncementCard({
   description,
   date,
   campus,
+  status,
+  isPending
 }: AnnouncementCardProps) {
   const { colors } = useThemeColors();
   const { isAnnouncementLiked, toggleAnnouncementLikeStatus } = useLikes();
+  const { user } = useUser();
 
   const styles = announcementCardStyles;
   const liked = isAnnouncementLiked(id);
+  const isNormal = user ? user?.role === "normal" : false;
 
   const handlePress = () => {
     router.push({
@@ -60,6 +65,12 @@ export default function AnnouncementCard({
             <Text style={styles.placeholderText}>Anuncio</Text>
           </View>
         )}
+        
+        {isPending && (
+          <View style={styles.pendingBadge}>
+            <Text style={styles.pendingText}>Pendiente</Text>
+          </View>
+        )}
       </View>
 
       <View style={styles.content}>
@@ -86,17 +97,19 @@ export default function AnnouncementCard({
             ))}
           </View>
 
-          <TouchableOpacity
-            onPress={handleLikePress}
-            style={styles.likeButton}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Ionicons
-              name={liked ? "heart" : "heart-outline"}
-              size={20}
-              color={liked ? colors.accent : colors.subtitle}
-            />
-          </TouchableOpacity>
+          {isNormal && (
+            <TouchableOpacity
+              onPress={handleLikePress}
+              style={styles.likeButton}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            >
+              <Ionicons
+                name={liked ? "heart" : "heart-outline"}
+                size={20}
+                color={liked ? colors.accent : colors.subtitle}
+              />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
     </TouchableOpacity>

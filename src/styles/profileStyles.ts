@@ -10,6 +10,28 @@ export const useProfileStyles = () => {
 
 const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
+    removePhotoButton: {
+      position: "absolute",
+      top: 0,
+      right: 100,
+      backgroundColor: colors.surface,
+      borderRadius: 12,
+    },
+    uploadButton: {
+      margin: 16,
+      paddingVertical: 8,
+      paddingHorizontal: 16,
+      borderRadius: 999,
+      backgroundColor: colors.primary,
+    },
+    uploadButtonDisabled: {
+      opacity: 0.7,
+    },
+    uploadLabel: {
+      fontSize: 16,
+      fontWeight: "600",
+      color: colors.surface,
+    },
     container: {
       padding: 10,
     },
