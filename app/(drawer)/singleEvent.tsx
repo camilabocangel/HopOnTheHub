@@ -1,5 +1,12 @@
 import React, { useState, useMemo } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
@@ -7,11 +14,16 @@ import singleEventsStyles from "@/styles/sinlgeEventStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapModal from "@/components/MapModal";
 import MapView, { Marker } from "react-native-maps";
-import { parseCampuses, getCampusesCoordinates, getMapRegionForCampuses, convertToCampusKeys, CampusKey } from "@/utils/campusUtils";
+import {
+  parseCampuses,
+  getCampusesCoordinates,
+  getMapRegionForCampuses,
+  convertToCampusKeys,
+  CampusKey,
+} from "@/utils/campusUtils";
 import { useLikes } from "@/hooks/useLikes";
 import { useUser } from "@/hooks/useUser";
-import { usePendingEvents } from "@/hooks/usePendingEvents"; 
-
+import { usePendingEvents } from "@/hooks/usePendingEvents";
 
 export default function SingleEventScreen() {
   const { colors } = useThemeColors();
@@ -31,7 +43,7 @@ export default function SingleEventScreen() {
     description,
     image,
     content,
-    campus
+    campus,
   } = params;
 
   const eventId = id as string;
@@ -39,27 +51,31 @@ export default function SingleEventScreen() {
 
   const handleLikeToggle = async () => {
     if (!eventId) return;
-    
+
     const success = await toggleEventLikeStatus(eventId);
     if (!success) {
       Alert.alert("Error", "No se pudo actualizar el like");
     }
   };
+
   const handleApproveEvent = async () => {
     try {
-      // Simular cambio de estado localmente
-      updateEventStatus(eventId, "accepted");
-      
-      Alert.alert(
-        "Evento Aprobado", 
-        "El evento ha sido aprobado correctamente",
-        [
-          {
-            text: "OK",
-            onPress: () => router.back() // 👈 Regresar a la pantalla anterior
-          }
-        ]
-      );
+      const success = await updateEventStatus(eventId, "accepted");
+
+      if (success) {
+        Alert.alert(
+          "Evento Aprobado",
+          "El evento ha sido aprobado correctamente",
+          [
+            {
+              text: "OK",
+              onPress: () => router.back(),
+            },
+          ]
+        );
+      } else {
+        Alert.alert("Error", "No se pudo aprobar el evento");
+      }
     } catch (error) {
       Alert.alert("Error", "No se pudo aprobar el evento");
     }
@@ -67,26 +83,25 @@ export default function SingleEventScreen() {
 
   const handleRejectEvent = async () => {
     try {
-      // Simular cambio de estado localmente
-      updateEventStatus(eventId, "rejected");
-      
-      Alert.alert(
-        "Evento Rechazado", 
-        "El evento ha sido rechazado",
-        [
+      const success = await updateEventStatus(eventId, "rejected");
+
+      if (success) {
+        Alert.alert("Evento Rechazado", "El evento ha sido rechazado", [
           {
-            text: "OK", 
-            onPress: () => router.back() 
-          }
-        ]
-      );
+            text: "OK",
+            onPress: () => router.back(),
+          },
+        ]);
+      } else {
+        Alert.alert("Error", "No se pudo rechazar el evento");
+      }
     } catch (error) {
       Alert.alert("Error", "No se pudo rechazar el evento");
     }
   };
 
   const eventCampuses = useMemo(() => {
-    return parseCampuses(campus as string || 'la paz');
+    return parseCampuses((campus as string) || "la paz");
   }, [campus]);
 
   const campusesCoordinates = useMemo(() => {
@@ -100,17 +115,15 @@ export default function SingleEventScreen() {
   const campusDisplayText = useMemo(() => {
     if (eventCampuses.length === 3) return "Todos los campus";
     if (eventCampuses.length === 2) {
-      return eventCampuses.map(campus => 
-        campus.charAt(0).toUpperCase() + campus.slice(1)
-      ).join(' y ');
+      return eventCampuses
+        .map((campus) => campus.charAt(0).toUpperCase() + campus.slice(1))
+        .join(" y ");
     }
     return eventCampuses[0].charAt(0).toUpperCase() + eventCampuses[0].slice(1);
   }, [eventCampuses]);
 
-  
-
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={singleEventsStyles.container}>
           <View style={singleEventsStyles.imageContainer}>
@@ -155,7 +168,10 @@ export default function SingleEventScreen() {
                   Fecha:
                 </Text>
                 <Text
-                  style={[singleEventsStyles.detailValue, { color: colors.text }]}
+                  style={[
+                    singleEventsStyles.detailValue,
+                    { color: colors.text },
+                  ]}
                 >
                   {date as string}
                 </Text>
@@ -176,7 +192,10 @@ export default function SingleEventScreen() {
                   Hora:
                 </Text>
                 <Text
-                  style={[singleEventsStyles.detailValue, { color: colors.text }]}
+                  style={[
+                    singleEventsStyles.detailValue,
+                    { color: colors.text },
+                  ]}
                 >
                   {time as string}
                 </Text>
@@ -197,7 +216,10 @@ export default function SingleEventScreen() {
                   Lugar:
                 </Text>
                 <Text
-                  style={[singleEventsStyles.detailValue, { color: colors.text }]}
+                  style={[
+                    singleEventsStyles.detailValue,
+                    { color: colors.text },
+                  ]}
                 >
                   {place as string}
                 </Text>
@@ -221,7 +243,7 @@ export default function SingleEventScreen() {
                   style={[
                     singleEventsStyles.detailValue,
                     { color: colors.primary },
-                    eventCampuses.length > 1 && { fontWeight: 'bold' }
+                    eventCampuses.length > 1 && { fontWeight: "bold" },
                   ]}
                 >
                   {campusDisplayText}
@@ -282,17 +304,25 @@ export default function SingleEventScreen() {
 
             <View style={singleEventsStyles.section}>
               <Text
-                style={[singleEventsStyles.sectionTitle, { color: colors.text }]}
+                style={[
+                  singleEventsStyles.sectionTitle,
+                  { color: colors.text },
+                ]}
               >
                 Ubicación
               </Text>
               {eventCampuses.length > 1 && (
-                <Text style={[singleEventsStyles.sectionContent, { 
-                  color: colors.primary, 
-                  marginBottom: 8,
-                  fontWeight: '600',
-                  fontSize: 14 
-                }]}>
+                <Text
+                  style={[
+                    singleEventsStyles.sectionContent,
+                    {
+                      color: colors.primary,
+                      marginBottom: 8,
+                      fontWeight: "600",
+                      fontSize: 14,
+                    },
+                  ]}
+                >
                   📍 Este evento se realiza en {eventCampuses.length} campus
                 </Text>
               )}
@@ -317,9 +347,12 @@ export default function SingleEventScreen() {
                     />
                   ))}
                 </MapView>
-                
+
                 <TouchableOpacity
-                  style={[singleEventsStyles.expandButton, { backgroundColor: colors.primary }]}
+                  style={[
+                    singleEventsStyles.expandButton,
+                    { backgroundColor: colors.primary },
+                  ]}
                   onPress={() => setShowMapModal(true)}
                 >
                   <Ionicons name="expand" size={20} color="white" />
@@ -329,7 +362,10 @@ export default function SingleEventScreen() {
 
             <View style={singleEventsStyles.section}>
               <Text
-                style={[singleEventsStyles.sectionTitle, { color: colors.text }]}
+                style={[
+                  singleEventsStyles.sectionTitle,
+                  { color: colors.text },
+                ]}
               >
                 Descripción
               </Text>
@@ -346,12 +382,18 @@ export default function SingleEventScreen() {
             {content && (
               <View style={singleEventsStyles.section}>
                 <Text
-                  style={[singleEventsStyles.sectionTitle, { color: colors.text }]}
+                  style={[
+                    singleEventsStyles.sectionTitle,
+                    { color: colors.text },
+                  ]}
                 >
                   Contenido
                 </Text>
                 <Text
-                  style={[singleEventsStyles.sectionContent, { color: colors.text }]}
+                  style={[
+                    singleEventsStyles.sectionContent,
+                    { color: colors.text },
+                  ]}
                 >
                   {content as string}
                 </Text>
@@ -361,17 +403,28 @@ export default function SingleEventScreen() {
         </View>
 
         {user?.role === "admin" && (
-          <View style={[singleEventsStyles.adminActions, { backgroundColor: colors.background }]}>
-            <TouchableOpacity 
-              style={[singleEventsStyles.approveButton, { backgroundColor: '#4CAF50' }]}
+          <View
+            style={[
+              singleEventsStyles.adminActions,
+              { backgroundColor: colors.background },
+            ]}
+          >
+            <TouchableOpacity
+              style={[
+                singleEventsStyles.approveButton,
+                { backgroundColor: "#4CAF50" },
+              ]}
               onPress={handleApproveEvent}
             >
               <Ionicons name="checkmark-circle" size={20} color="white" />
               <Text style={singleEventsStyles.buttonText}>Aceptar Evento</Text>
             </TouchableOpacity>
-    
-            <TouchableOpacity 
-              style={[singleEventsStyles.rejectButton, { backgroundColor: '#f44336' }]}
+
+            <TouchableOpacity
+              style={[
+                singleEventsStyles.rejectButton,
+                { backgroundColor: "#f44336" },
+              ]}
               onPress={handleRejectEvent}
             >
               <Ionicons name="close-circle" size={20} color="white" />

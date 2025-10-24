@@ -21,7 +21,7 @@ interface CreateAnnouncementFormProps {
   onCancel: () => void;
 }
 
-const CUSTOM_ANNOUNCEMENT_IMAGE = "https://png.pngtree.com/png-clipart/20230804/original/pngtree-vector-custom-made-stamp-customized-grunge-customs-vector-picture-image_9515922.png";
+const CUSTOM_ANNOUNCEMENT_IMAGE = "https://www.shutterstock.com/image-vector/under-development-sign-isolated-on-260nw-80415847.jpg";
 
 const allCampuses = ["La Paz", "Santa Cruz", "Cochabamba"];
 

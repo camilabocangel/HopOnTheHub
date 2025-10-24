@@ -3,10 +3,14 @@ import { Drawer } from "expo-router/drawer";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { router, usePathname } from "expo-router";
+import { useUser } from "@/hooks/useUser";
 
 const CustomDrawerContent = (props: any) => {
   const { colors } = useThemeColors();
+  const { user } = useUser();
   const pathname = usePathname();
+
+  const isNormal = user ? user?.role === "normal" : false;
 
   return (
     <DrawerContentScrollView
@@ -35,16 +39,18 @@ const CustomDrawerContent = (props: any) => {
         inactiveTintColor={colors.text}
         labelStyle={{ fontWeight: "600" }}
       />
-      <DrawerItem
-        label={"Favoritos"}
-        onPress={() => {
-          router.push("/favorites");
-        }}
-        focused={pathname === "/favorites"}
-        activeTintColor={colors.primary}
-        inactiveTintColor={colors.text}
-        labelStyle={{ fontWeight: "600" }}
-      />
+      {isNormal && (
+        <DrawerItem
+          label={"Favoritos"}
+          onPress={() => {
+            router.push("/favorites");
+          }}
+          focused={pathname === "/favorites"}
+          activeTintColor={colors.primary}
+          inactiveTintColor={colors.text}
+          labelStyle={{ fontWeight: "600" }}
+        />
+      )}
       <DrawerItem
         label={"Perfil"}
         onPress={() => {

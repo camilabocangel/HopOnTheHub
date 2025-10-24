@@ -31,7 +31,7 @@ interface CreateEventFormProps {
 }
 
 const CUSTOM_EVENT_IMAGE =
-  "https://png.pngtree.com/png-clipart/20230804/original/pngtree-vector-custom-made-stamp-customized-grunge-customs-vector-picture-image_9515922.png";
+  "https://www.shutterstock.com/image-vector/under-development-sign-isolated-on-260nw-80415847.jpg";
 
 const eventCategories = [
   "Tecnología",

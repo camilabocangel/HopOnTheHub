@@ -191,7 +191,6 @@ export default function ProfileScreen() {
                 )}
               </View>
 
-              {/* Texto "Cambiar foto" debajo de la imagen y arriba del nombre */}
               <TouchableOpacity
                 onPress={handlePickImage}
                 disabled={uploading}

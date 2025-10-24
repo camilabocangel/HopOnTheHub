@@ -4,9 +4,7 @@ import {
   View,
   Image,
   Text,
-  StyleSheet,
   Dimensions,
-  TouchableOpacity,
   Alert,
   FlatList,
   RefreshControl,
@@ -17,7 +15,7 @@ import SubjectCard from "../../src/components/SubjectCard";
 import CampusCard from "../../src/components/CampusCard";
 import AnnouncementCard from "../../src/components/AnnouncementCard";
 import EventCard from "../../src/components/EventCard";
-import { Link } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 import { useUser } from "../../src/hooks/useUser";
 import { useCareers } from "@/hooks/useCareers";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
@@ -173,6 +171,71 @@ export default function HomeScreen() {
     </View>
   );
 
+  const generateMockScheduleData = () => {
+    const subjectsData = [
+      {
+        schedule: "9:30 - 11:30",
+        classroom: "Aula A1",
+        startDate: "2025-01-15",
+        endDate: "2025-05-20",
+        teacher: "Dr. Paulvazo Landaeta",
+      },
+      {
+        schedule: "07:15 - 09:15",
+        classroom: "Laboratorio L3",
+        startDate: "2025-01-15",
+        endDate: "2025-05-20",
+        teacher: "Ing. Rene Sosa",
+      },
+      {
+        schedule: "11:00 - 12:30",
+        classroom: "Aula 205",
+        startDate: "2025-01-15",
+        endDate: "2025-05-20",
+        teacher: "MSc. Roberto Silva",
+      },
+      {
+        schedule: "14:00 - 15:30",
+        classroom: "Aula 410",
+        startDate: "2025-01-15",
+        endDate: "2025-05-20",
+        teacher: "Dra. María Fernández",
+      },
+      {
+        schedule: "15:45 - 17:15",
+        classroom: "Laboratorio A",
+        startDate: "2025-01-15",
+        endDate: "2025-05-20",
+        teacher: "Lic. Jorge Torres",
+      },
+    ];
+
+    return subjectsData;
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const refreshData = async () => {
+        if (user?.role === "admin") {
+          await Promise.all([
+            refetchPendingEvents(),
+            refetchPendingAnnouncements(),
+          ]);
+        } else {
+          await Promise.all([refetchEvents(), refetchAnnouncements()]);
+        }
+      };
+
+      refreshData();
+    }, [
+      user?.role,
+      refetchPendingEvents,
+      refetchPendingAnnouncements,
+      refetchEvents,
+      refetchAnnouncements,
+    ])
+  );
+
   if (user?.role === "admin") {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -282,14 +345,42 @@ export default function HomeScreen() {
           />
         </View>
 
+        {/* {__DEV__ && (
+        <TouchableOpacity
+          onPress={handleImport}
+          style={{
+            position: "absolute",
+            top: 50,
+            right: 20,
+            backgroundColor: "red",
+            padding: 10,
+            borderRadius: 5,
+            zIndex: 9999,
+          }}
+        >
+          <Text style={{ color: "white", fontSize: 12 }}>Import Data</Text>
+        </TouchableOpacity>
+      )} */}
+
         {user ? (
           <Section title="Hoy en tu horario">
             {currentSemester ? (
-              currentSemester.subjects
-                .slice(0, 3)
-                .map((subject, index) => (
-                  <SubjectCard key={index} subject={subject} />
-                ))
+              currentSemester.subjects.slice(0, 2).map((subject, index) => {
+                const mockData = generateMockScheduleData();
+                const subjectData = mockData[index % mockData.length];
+
+                return (
+                  <SubjectCard
+                    key={index}
+                    subject={subject}
+                    schedule={subjectData.schedule}
+                    classroom={subjectData.classroom}
+                    startDate={subjectData.startDate}
+                    endDate={subjectData.endDate}
+                    teacher={subjectData.teacher}
+                  />
+                );
+              })
             ) : (
               <Text style={{ color: colors.text }}>
                 {user.career && user.semester
@@ -318,7 +409,6 @@ export default function HomeScreen() {
           </Section>
         )}
 
-        {/* Si no hay eventos, mostramos solo la tarjeta de crear evento */}
         {user && upcomingEvents.length === 0 && (
           <Section title={`Eventos (${user.campus})`}>
             <View style={{ flexDirection: "row" }}>
@@ -343,7 +433,6 @@ export default function HomeScreen() {
           </Section>
         )}
 
-        {/* Si no hay anuncios, mostramos solo la tarjeta de crear anuncio */}
         {user && recentAnnouncements.length === 0 && (
           <Section title={`Anuncios (${user.campus})`}>
             <View style={{ flexDirection: "row" }}>

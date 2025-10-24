@@ -22,12 +22,10 @@ export const useFavorites = () => {
       try {
         setLoading(true);
         
-        // Fetch favorite events
         const likedEvents = user.likedEvents || [];
         const events = await fetchAllEventsByIds(likedEvents);
         setFavoriteEvents(events);
 
-        // Fetch favorite announcements
         const likedAnnouncements = user.likedAnnouncements || [];
         const announcements = await fetchAllAnnouncementsByIds(likedAnnouncements);
         setFavoriteAnnouncements(announcements);

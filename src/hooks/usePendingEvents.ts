@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { fetchPendingEvents } from "@/helpers/fetchEvents";
+import { updateEventStatus as updateEventStatusService } from "@/services/eventService";
 import { Event } from "@/types/types";
 
 export const usePendingEvents = () => {
@@ -11,7 +12,7 @@ export const usePendingEvents = () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const eventsData = await fetchPendingEvents();
       setEvents(eventsData);
     } catch (err) {
@@ -22,9 +23,26 @@ export const usePendingEvents = () => {
     }
   }, []);
 
-  const updateEventStatus = useCallback((eventId: string, newStatus: string) => {
-    setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
-  }, []);
+  const updateEventStatus = useCallback(
+    async (eventId: string, newStatus: "accepted" | "rejected") => {
+      try {
+        const success = await updateEventStatusService(eventId, newStatus);
+
+        if (success) {
+          setEvents((prevEvents) =>
+            prevEvents.filter((event) => event.id !== eventId)
+          );
+          return true;
+        } else {
+          return false;
+        }
+      } catch (error) {
+        console.error("Error updating event status:", error);
+        return false;
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     loadEvents();
@@ -35,6 +53,6 @@ export const usePendingEvents = () => {
     loading,
     error,
     refetch: loadEvents,
-    updateEventStatus 
+    updateEventStatus,
   };
 };

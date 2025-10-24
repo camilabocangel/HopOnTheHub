@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -6,53 +6,60 @@ import {
   RefreshControl,
   StyleSheet,
   ScrollView,
-} from 'react-native';
-import { useFavorites } from '@/hooks/useFavorites';
-import EventCard from '@/components/EventCard';
-import AnnouncementCard from '@/components/AnnouncementCard';
-import { useThemeColors } from '@/hooks/useThemeColors';
+  Dimensions,
+} from "react-native";
+import { useFavorites } from "@/hooks/useFavorites";
+import EventCard from "@/components/EventCard";
+import AnnouncementCard from "@/components/AnnouncementCard";
+import { useThemeColors } from "@/hooks/useThemeColors";
+import favoriteStyles from "@/styles/favoriteStyles";
+
+const { width } = Dimensions.get("window");
 
 export default function FavoritesScreen() {
-  const { favoriteEvents, favoriteAnnouncements, loading, refreshFavorites } = useFavorites();
-  const {colors} = useThemeColors();
+  const { favoriteEvents, favoriteAnnouncements, loading, refreshFavorites } =
+    useFavorites();
+  const { colors } = useThemeColors();
 
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    section: {
-      marginBottom: 20,
-    },
-    sectionTitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
-      marginHorizontal: 16,
-      marginVertical: 12,
-      color: colors.text,
-    },
-    emptyState: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      paddingHorizontal: 40,
-    },
-    emptyText: {
-      fontSize: 16,
-      textAlign: 'center',
-      color: colors.text,
-      marginTop: 12,
-    },
-    contentContainer: {
-      paddingBottom: 20,
-    },
-  });
+  const styles = favoriteStyles;
+
+  const renderEventItem = ({ item }: { item: any }) => (
+    <View style={styles.horizontalCard}>
+      <EventCard
+        id={item.id}
+        title={item.title}
+        date={item.date}
+        time={item.time}
+        place={item.place}
+        category={item.category}
+        description={item.description}
+        image={item.image}
+        content={item.content}
+        campus={item.campus?.[0] || ""}
+        status="accepted"
+      />
+    </View>
+  );
+
+  const renderAnnouncementItem = ({ item }: { item: any }) => (
+    <View style={styles.horizontalCard}>
+      <AnnouncementCard
+        id={item.id}
+        image={item.image}
+        description={item.description}
+        date={item.date}
+        campus={item.campus}
+        status="accepted"
+      />
+    </View>
+  );
 
   if (!favoriteEvents.length && !favoriteAnnouncements.length && !loading) {
     return (
       <View style={[styles.container, styles.emptyState]}>
         <Text style={styles.emptyText}>
-          No tienes favoritos aún.{'\n'}Haz like en eventos o anuncios para verlos aquí.
+          No tienes favoritos aún.{"\n"}Haz like en eventos o anuncios para
+          verlos aquí.
         </Text>
       </View>
     );
@@ -70,53 +77,40 @@ export default function FavoritesScreen() {
       }
       contentContainerStyle={styles.contentContainer}
     >
-      {/* Favorite Events Section */}
       {favoriteEvents.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Eventos Favoritos</Text>
+          <Text style={styles.sectionTitle}>
+            Eventos Favoritos ({favoriteEvents.length})
+          </Text>
           <FlatList
+            horizontal
             data={favoriteEvents}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <EventCard
-                id={item.id}
-                title={item.title}
-                date={item.date}
-                time={item.time}
-                place={item.place}
-                category={item.category}
-                description={item.description}
-                image={item.image}
-                content={item.content}
-                campus={item.campus?.[0] || ''}
-                status="accepted"
-              />
-            )}
-            scrollEnabled={false}
-            showsVerticalScrollIndicator={false}
+            renderItem={renderEventItem}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalListContent}
+            snapToAlignment="start"
+            decelerationRate="fast"
+            snapToInterval={width * 0.8 + 16}
           />
         </View>
       )}
 
-      {/* Favorite Announcements Section */}
       {favoriteAnnouncements.length > 0 && (
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Anuncios Favoritos</Text>
+          <Text style={styles.sectionTitle}>
+            Anuncios Favoritos ({favoriteAnnouncements.length})
+          </Text>
           <FlatList
+            horizontal
             data={favoriteAnnouncements}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => (
-              <AnnouncementCard
-                id={item.id}
-                image={item.image}
-                description={item.description}
-                date={item.date}
-                campus={item.campus}
-                status="accepted"
-              />
-            )}
-            scrollEnabled={false}
-            showsVerticalScrollIndicator={false}
+            renderItem={renderAnnouncementItem}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalListContent}
+            snapToAlignment="start"
+            decelerationRate="fast"
+            snapToInterval={width * 0.8 + 16}
           />
         </View>
       )}

@@ -32,7 +32,7 @@ export default function SeeMoreCreateCard({ selectedCampus, type }: Props) {
         borderRadius: 12,
         marginRight: 16,
         marginBottom: 8,
-        backgroundColor: colors.surface + 'CC', // Color opaco
+        backgroundColor: colors.surface + 'CC',
         justifyContent: "center",
         alignItems: "center",
         shadowColor: "#000",
@@ -41,7 +41,7 @@ export default function SeeMoreCreateCard({ selectedCampus, type }: Props) {
         shadowRadius: 4,
         elevation: 3,
         borderWidth: 1,
-        borderColor: colors.border + '40', // Borde opaco
+        borderColor: colors.border + '40',
       }}
       onPress={() => router.replace(config.seeMoreRoute)}
     >

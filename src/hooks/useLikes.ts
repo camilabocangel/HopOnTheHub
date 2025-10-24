@@ -6,7 +6,6 @@ import { db } from "@/config/firebaseConfig";
 export const useLikes = () => {
   const { user } = useUser();
 
-  // Normalize IDs to strings for consistent comparison
   const normalizeId = (id: string | number): string => id.toString();
 
   const isAnnouncementLiked = (announcementId: string): boolean => {
@@ -32,7 +31,6 @@ export const useLikes = () => {
       const isCurrentlyLiked = isAnnouncementLiked(announcementId);
 
       if (isCurrentlyLiked) {
-        // Remove from liked announcements - handle both string and number formats
         const currentLikes = user?.likedAnnouncements || [];
         const updatedLikes = currentLikes.filter(
           id => normalizeId(id) !== normalizedId
@@ -42,7 +40,6 @@ export const useLikes = () => {
           likedAnnouncements: updatedLikes
         });
       } else {
-        // Add to liked announcements - always store as string for consistency
         await updateDoc(userDocRef, {
           likedAnnouncements: arrayUnion(normalizedId)
         });
