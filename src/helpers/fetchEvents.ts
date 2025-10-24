@@ -78,3 +78,44 @@ export const fetchEventsByCampus = async (campus: string): Promise<Event[]> => {
     return [];
   }
 };
+export const fetchEventsByIds = async (eventIds: string[]): Promise<Event[]> => {
+  try {
+    if (!eventIds.length) return [];
+
+    const eventsRef = collection(db, "events");
+    const q = query(
+      eventsRef,
+      where("status", "==", "accepted"),
+      where("__name__", "in", eventIds.slice(0, 30)) 
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    } as Event));
+  } catch (error) {
+    console.error("Error fetching events by IDs:", error);
+    return [];
+  }
+};
+
+export const fetchAllEventsByIds = async (eventIds: string[]): Promise<Event[]> => {
+  try {
+    if (!eventIds.length) return [];
+
+    const batches = [];
+    for (let i = 0; i < eventIds.length; i += 30) {
+      const batch = eventIds.slice(i, i + 30);
+      if (batch.length > 0) {
+        batches.push(fetchEventsByIds(batch));
+      }
+    }
+
+    const results = await Promise.all(batches);
+    return results.flat();
+  } catch (error) {
+    console.error("Error fetching all events by IDs:", error);
+    return [];
+  }
+};

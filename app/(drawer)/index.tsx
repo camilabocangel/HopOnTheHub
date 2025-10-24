@@ -29,6 +29,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { importCareersToFirebase } from "@/scripts/importCareersToFirebase";
 import { importAnnouncementsToFirebase } from "@/scripts/importAnnouncementsToFirebase";
 import { importEventsToFirebase } from "@/scripts/importEventsToFirebase";
+import CreateEventCard from "@/components/CreateEventCard";
+import CreateAnnouncementCard from "@/components/CreateAnnouncementCard";
 
 const { height, width } = Dimensions.get("window");
 
@@ -53,6 +55,7 @@ export default function HomeScreen() {
     events: pendingEvents,
     loading: pendingEventsLoading,
     refetch: refetchPendingEvents,
+    updateEventStatus,
   } = usePendingEvents();
   const {
     announcements: pendingAnnouncements,
@@ -91,16 +94,16 @@ export default function HomeScreen() {
     refetchAnnouncements,
   ]);
 
-   const handleImport = async () => {
-     try {
-       await importCareersToFirebase();
-       await importAnnouncementsToFirebase();
-       await importEventsToFirebase();
-       Alert.alert("Éxito", "Importación correcta");
-     } catch (error) {
-       Alert.alert("Error", "Importación fallida");
-     }
-   };
+  const handleImport = async () => {
+    try {
+      await importCareersToFirebase();
+      await importAnnouncementsToFirebase();
+      await importEventsToFirebase();
+      Alert.alert("Éxito", "Importación correcta");
+    } catch (error) {
+      Alert.alert("Error", "Importación fallida");
+    }
+  };
 
   const renderEventItem = ({ item }: { item: any }) => (
     <View style={styles.horizontalCard}>
@@ -120,6 +123,8 @@ export default function HomeScreen() {
     </View>
   );
 
+  const renderEventListFooter = () => <CreateEventCard />;
+
   const renderAnnouncementItem = ({ item }: { item: any }) => (
     <View style={styles.horizontalCard}>
       <AnnouncementCard
@@ -132,6 +137,8 @@ export default function HomeScreen() {
       />
     </View>
   );
+
+  const renderAnnouncementListFooter = () => <CreateAnnouncementCard />;
 
   const renderPendingEventItem = ({ item }: { item: any }) => (
     <View style={styles.horizontalCard}>
@@ -194,9 +201,7 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          <Section
-            title={`Eventos Pendientes (${pendingEvents.length})`}
-          >
+          <Section title={`Eventos Pendientes (${pendingEvents.length})`}>
             {pendingEventsLoading ? (
               <Text
                 style={{ color: colors.text, textAlign: "center", padding: 20 }}
@@ -308,7 +313,17 @@ export default function HomeScreen() {
               contentContainerStyle={styles.horizontalListContent}
               snapToAlignment="start"
               decelerationRate="fast"
+              ListFooterComponent={renderEventListFooter}
             />
+          </Section>
+        )}
+
+        {/* Si no hay eventos, mostramos solo la tarjeta de crear evento */}
+        {user && upcomingEvents.length === 0 && (
+          <Section title={`Eventos (${user.campus})`}>
+            <View style={{ flexDirection: "row" }}>
+              <CreateEventCard />
+            </View>
           </Section>
         )}
 
@@ -323,7 +338,17 @@ export default function HomeScreen() {
               contentContainerStyle={styles.horizontalListContent}
               snapToAlignment="start"
               decelerationRate="fast"
+              ListFooterComponent={renderAnnouncementListFooter}
             />
+          </Section>
+        )}
+
+        {/* Si no hay anuncios, mostramos solo la tarjeta de crear anuncio */}
+        {user && recentAnnouncements.length === 0 && (
+          <Section title={`Anuncios (${user.campus})`}>
+            <View style={{ flexDirection: "row" }}>
+              <CreateAnnouncementCard />
+            </View>
           </Section>
         )}
 
@@ -350,22 +375,6 @@ export default function HomeScreen() {
             />
           </ScrollView>
         </Section>
-        {/* {__DEV__ && (
-        <TouchableOpacity
-          onPress={handleImport}
-          style={{
-            position: "absolute",
-            top: 50,
-            right: 20,
-            backgroundColor: "red",
-            padding: 10,
-            borderRadius: 5,
-            zIndex: 9999,
-          }}
-        >
-          <Text style={{ color: "white", fontSize: 12 }}>Import Data</Text>
-        </TouchableOpacity>
-      )} */}
       </ScrollView>
     </SafeAreaView>
   );

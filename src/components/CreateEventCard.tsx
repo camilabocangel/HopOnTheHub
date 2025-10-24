@@ -4,25 +4,9 @@ import { useThemeColors } from "../hooks/useThemeColors";
 import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 
-type Props = {
-  selectedCampus: string;
-  type: "events" | "announcements";
-};
-
-export default function SeeMoreCreateCard({ selectedCampus, type }: Props) {
+export default function CreateEventCard() {
   const { colors } = useThemeColors();
   const router = useRouter();
-
-  const config =
-    type === "events"
-      ? {
-          seeMoreText: "Ver más eventos",
-          seeMoreRoute: `/(drawer)/events?campus=${selectedCampus}`,
-        }
-      : {
-          seeMoreText: "Ver más anuncios",
-          seeMoreRoute: `/(drawer)/announcements?campus=${selectedCampus}`,
-        };
 
   return (
     <TouchableOpacity
@@ -43,10 +27,10 @@ export default function SeeMoreCreateCard({ selectedCampus, type }: Props) {
         borderWidth: 1,
         borderColor: colors.border + '40', // Borde opaco
       }}
-      onPress={() => router.replace(config.seeMoreRoute)}
+      onPress={() => router.push("/(drawer)/create_event")}
     >
       <View style={{ alignItems: "center" }}>
-        <Ionicons name="chevron-forward-circle" size={48} color={colors.primary} />
+        <Ionicons name="add-circle" size={48} color={colors.primary} />
         <Text style={{ 
           fontSize: 16, 
           fontWeight: "bold", 
@@ -54,7 +38,7 @@ export default function SeeMoreCreateCard({ selectedCampus, type }: Props) {
           marginTop: 12,
           textAlign: "center"
         }}>
-          {config.seeMoreText}
+          Crear evento
         </Text>
       </View>
     </TouchableOpacity>

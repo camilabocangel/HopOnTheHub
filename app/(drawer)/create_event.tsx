@@ -11,6 +11,7 @@ const styles = createEventStyles;
 export default function CreateEventScreen() {
   const { colors } = useThemeColors();
   const router = useRouter();
+  
 
   const handleCreateEvent = (eventData: any) => {
     console.log("Evento creado:", eventData);

@@ -17,20 +17,14 @@ const createStyles = (colors: ThemeColors) =>
       backgroundColor: colors.surface,
       borderRadius: 12,
     },
-    uploadButton: {
-      margin: 16,
-      paddingVertical: 8,
-      paddingHorizontal: 16,
-      borderRadius: 999,
-      backgroundColor: colors.primary,
+    changePhotoContainer: {
+      marginBottom: 16,
+      paddingVertical: 4,
     },
-    uploadButtonDisabled: {
-      opacity: 0.7,
-    },
-    uploadLabel: {
+    changePhotoText: {
       fontSize: 16,
       fontWeight: "600",
-      color: colors.surface,
+      textAlign: "center",
     },
     container: {
       padding: 10,
@@ -46,7 +40,7 @@ const createStyles = (colors: ThemeColors) =>
       borderWidth: 3,
       borderColor: colors.primary,
       padding: 3,
-      marginBottom: 16,
+      marginBottom: 12,
     },
     profileImage: {
       width: "100%",

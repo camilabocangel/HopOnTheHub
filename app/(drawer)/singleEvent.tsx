@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { View, Text, ScrollView, Image, TouchableOpacity, Alert } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import singleEventsStyles from "@/styles/sinlgeEventStyles";
@@ -9,13 +9,18 @@ import MapModal from "@/components/MapModal";
 import MapView, { Marker } from "react-native-maps";
 import { parseCampuses, getCampusesCoordinates, getMapRegionForCampuses, convertToCampusKeys, CampusKey } from "@/utils/campusUtils";
 import { useLikes } from "@/hooks/useLikes";
+import { useUser } from "@/hooks/useUser";
+import { usePendingEvents } from "@/hooks/usePendingEvents"; 
+
 
 export default function SingleEventScreen() {
   const { colors } = useThemeColors();
   const params = useLocalSearchParams();
+  const router = useRouter();
   const [showMapModal, setShowMapModal] = useState(false);
   const { isEventLiked, toggleEventLikeStatus } = useLikes();
-  
+  const { user } = useUser();
+  const { updateEventStatus } = usePendingEvents();
   const {
     id,
     title,
@@ -40,6 +45,45 @@ export default function SingleEventScreen() {
       Alert.alert("Error", "No se pudo actualizar el like");
     }
   };
+  const handleApproveEvent = async () => {
+    try {
+      // Simular cambio de estado localmente
+      updateEventStatus(eventId, "accepted");
+      
+      Alert.alert(
+        "Evento Aprobado", 
+        "El evento ha sido aprobado correctamente",
+        [
+          {
+            text: "OK",
+            onPress: () => router.back() // 👈 Regresar a la pantalla anterior
+          }
+        ]
+      );
+    } catch (error) {
+      Alert.alert("Error", "No se pudo aprobar el evento");
+    }
+  };
+
+  const handleRejectEvent = async () => {
+    try {
+      // Simular cambio de estado localmente
+      updateEventStatus(eventId, "rejected");
+      
+      Alert.alert(
+        "Evento Rechazado", 
+        "El evento ha sido rechazado",
+        [
+          {
+            text: "OK", 
+            onPress: () => router.back() 
+          }
+        ]
+      );
+    } catch (error) {
+      Alert.alert("Error", "No se pudo rechazar el evento");
+    }
+  };
 
   const eventCampuses = useMemo(() => {
     return parseCampuses(campus as string || 'la paz');
@@ -62,6 +106,8 @@ export default function SingleEventScreen() {
     }
     return eventCampuses[0].charAt(0).toUpperCase() + eventCampuses[0].slice(1);
   }, [eventCampuses]);
+
+  
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
@@ -313,6 +359,26 @@ export default function SingleEventScreen() {
             )}
           </View>
         </View>
+
+        {user?.role === "admin" && (
+          <View style={[singleEventsStyles.adminActions, { backgroundColor: colors.background }]}>
+            <TouchableOpacity 
+              style={[singleEventsStyles.approveButton, { backgroundColor: '#4CAF50' }]}
+              onPress={handleApproveEvent}
+            >
+              <Ionicons name="checkmark-circle" size={20} color="white" />
+              <Text style={singleEventsStyles.buttonText}>Aceptar Evento</Text>
+            </TouchableOpacity>
+    
+            <TouchableOpacity 
+              style={[singleEventsStyles.rejectButton, { backgroundColor: '#f44336' }]}
+              onPress={handleRejectEvent}
+            >
+              <Ionicons name="close-circle" size={20} color="white" />
+              <Text style={singleEventsStyles.buttonText}>Rechazar Evento</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
 
       <MapModal

@@ -73,3 +73,44 @@ export const fetchAnnouncementsByCampus = async (campus: string): Promise<Announ
     return [];
   }
 };
+export const fetchAnnouncementsByIds = async (announcementIds: string[]): Promise<Announcement[]> => {
+  try {
+    if (!announcementIds.length) return [];
+
+    const announcementsRef = collection(db, "announcements");
+    const q = query(
+      announcementsRef,
+      where("status", "==", "accepted"),
+      where("__name__", "in", announcementIds.slice(0, 30))
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    } as Announcement));
+  } catch (error) {
+    console.error("Error fetching announcements by IDs:", error);
+    return [];
+  }
+};
+
+export const fetchAllAnnouncementsByIds = async (announcementIds: string[]): Promise<Announcement[]> => {
+  try {
+    if (!announcementIds.length) return [];
+
+    const batches = [];
+    for (let i = 0; i < announcementIds.length; i += 30) {
+      const batch = announcementIds.slice(i, i + 30);
+      if (batch.length > 0) {
+        batches.push(fetchAnnouncementsByIds(batch));
+      }
+    }
+
+    const results = await Promise.all(batches);
+    return results.flat();
+  } catch (error) {
+    console.error("Error fetching all announcements by IDs:", error);
+    return [];
+  }
+};

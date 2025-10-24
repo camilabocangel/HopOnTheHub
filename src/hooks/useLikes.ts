@@ -1,4 +1,3 @@
-// hooks/useLikes.ts
 import { useUser } from "./useUser";
 import { toggleAnnouncementLike, toggleEventLike } from "@/helpers/likeHelpers";
 import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
