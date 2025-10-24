@@ -32,7 +32,7 @@ const { height, width } = Dimensions.get("window");
 export default function HomeScreen() {
   const styles = homeStyles;
   const { colors } = useThemeColors();
-  const { user } = useUser();
+  const { user } = useUser() ;
   const { careers, loading: careersLoading, getCurrentSemester } = useCareers();
 
   const {
@@ -50,6 +50,7 @@ export default function HomeScreen() {
     events: pendingEvents,
     loading: pendingEventsLoading,
     refetch: refetchPendingEvents,
+    updateEventStatus
   } = usePendingEvents();
   const {
     announcements: pendingAnnouncements,

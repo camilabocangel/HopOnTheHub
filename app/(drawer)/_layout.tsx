@@ -36,6 +36,16 @@ const CustomDrawerContent = (props: any) => {
         labelStyle={{ fontWeight: "600" }}
       />
       <DrawerItem
+        label={"Favoritos"}
+        onPress={() => {
+          router.push("/favorites");
+        }}
+        focused={pathname === "/favorites"}
+        activeTintColor={colors.primary}
+        inactiveTintColor={colors.text}
+        labelStyle={{ fontWeight: "600" }}
+      />
+      <DrawerItem
         label={"Perfil"}
         onPress={() => {
           router.push("/profile");
@@ -96,6 +106,13 @@ const DrawerLayout = () => {
         options={{
           drawerLabel: "Carreras",
           title: "Carreras",
+        }}
+      />
+      <Drawer.Screen
+        name="favorites"
+        options={{
+          drawerLabel: "Favoritos",
+          title: "Mis Favoritos",
         }}
       />
     </Drawer>

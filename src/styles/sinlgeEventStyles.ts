@@ -91,6 +91,40 @@ const singleEventsStyles = StyleSheet.create({
   {
     padding: 4,
   },
+  adminActions: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  paddingHorizontal: 16,
+  paddingVertical: 20,
+  borderTopWidth: 1,
+  borderTopColor: '#e0e0e0',
+  gap: 12,
+},
+approveButton: {
+  flex: 1,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingVertical: 12,
+  paddingHorizontal: 16,
+  borderRadius: 8,
+  gap: 8,
+},
+rejectButton: {
+  flex: 1,
+  flexDirection: 'row',
+  alignItems: 'center',
+  justifyContent: 'center',
+  paddingVertical: 12,
+  paddingHorizontal: 16,
+  borderRadius: 8,
+  gap: 8,
+},
+buttonText: {
+  color: 'white',
+  fontSize: 16,
+  fontWeight: '600',
+},
 });
 
 export default singleEventsStyles;

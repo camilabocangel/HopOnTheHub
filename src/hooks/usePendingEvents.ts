@@ -22,6 +22,10 @@ export const usePendingEvents = () => {
     }
   }, []);
 
+  const updateEventStatus = useCallback((eventId: string, newStatus: string) => {
+    setEvents(prevEvents => prevEvents.filter(event => event.id !== eventId));
+  }, []);
+
   useEffect(() => {
     loadEvents();
   }, [loadEvents]);
@@ -30,6 +34,7 @@ export const usePendingEvents = () => {
     events,
     loading,
     error,
-    refetch: loadEvents
+    refetch: loadEvents,
+    updateEventStatus 
   };
 };
