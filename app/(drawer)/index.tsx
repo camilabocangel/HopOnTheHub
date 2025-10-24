@@ -26,13 +26,15 @@ import { usePendingEvents } from "@/hooks/usePendingEvents";
 import { usePendingAnnouncements } from "@/hooks/usePendingAnnouncements";
 import { homeStyles } from "@/styles/homeStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import CreateEventCard from "@/components/CreateEventCard";
+import CreateAnnouncementCard from "@/components/CreateAnnouncementCard";
 
 const { height, width } = Dimensions.get("window");
 
 export default function HomeScreen() {
   const styles = homeStyles;
   const { colors } = useThemeColors();
-  const { user } = useUser() ;
+  const { user } = useUser();
   const { careers, loading: careersLoading, getCurrentSemester } = useCareers();
 
   const {
@@ -89,17 +91,6 @@ export default function HomeScreen() {
     refetchAnnouncements,
   ]);
 
-  // const handleImport = async () => {
-  //   try {
-  //     await importCareersToFirebase();
-  //     await importAnnouncementsToFirebase();
-  //     await importEventsToFirebase();
-  //     Alert.alert("Éxito", "Importación correcta");
-  //   } catch (error) {
-  //     Alert.alert("Error", "Importación fallida");
-  //   }
-  // };
-
   const renderEventItem = ({ item }: { item: any }) => (
     <View style={styles.horizontalCard}>
       <EventCard
@@ -118,6 +109,11 @@ export default function HomeScreen() {
     </View>
   );
 
+  // Función para renderizar el final de la lista de eventos
+  const renderEventListFooter = () => (
+    <CreateEventCard />
+  );
+
   const renderAnnouncementItem = ({ item }: { item: any }) => (
     <View style={styles.horizontalCard}>
       <AnnouncementCard
@@ -129,6 +125,11 @@ export default function HomeScreen() {
         status={item.status}
       />
     </View>
+  );
+
+  // Función para renderizar el final de la lista de anuncios
+  const renderAnnouncementListFooter = () => (
+    <CreateAnnouncementCard />
   );
 
   const renderPendingEventItem = ({ item }: { item: any }) => (
@@ -306,7 +307,17 @@ export default function HomeScreen() {
               contentContainerStyle={styles.horizontalListContent}
               snapToAlignment="start"
               decelerationRate="fast"
+              ListFooterComponent={renderEventListFooter}
             />
+          </Section>
+        )}
+
+        {/* Si no hay eventos, mostramos solo la tarjeta de crear evento */}
+        {user && upcomingEvents.length === 0 && (
+          <Section title={`Eventos (${user.campus})`}>
+            <View style={{ flexDirection: "row" }}>
+              <CreateEventCard />
+            </View>
           </Section>
         )}
 
@@ -321,7 +332,17 @@ export default function HomeScreen() {
               contentContainerStyle={styles.horizontalListContent}
               snapToAlignment="start"
               decelerationRate="fast"
+              ListFooterComponent={renderAnnouncementListFooter}
             />
+          </Section>
+        )}
+
+        {/* Si no hay anuncios, mostramos solo la tarjeta de crear anuncio */}
+        {user && recentAnnouncements.length === 0 && (
+          <Section title={`Anuncios (${user.campus})`}>
+            <View style={{ flexDirection: "row" }}>
+              <CreateAnnouncementCard />
+            </View>
           </Section>
         )}
 
@@ -348,22 +369,6 @@ export default function HomeScreen() {
             />
           </ScrollView>
         </Section>
-        {/* {__DEV__ && (
-        <TouchableOpacity
-          onPress={handleImport}
-          style={{
-            position: "absolute",
-            top: 50,
-            right: 20,
-            backgroundColor: "red",
-            padding: 10,
-            borderRadius: 5,
-            zIndex: 9999,
-          }}
-        >
-          <Text style={{ color: "white", fontSize: 12 }}>Import Data</Text>
-        </TouchableOpacity>
-      )} */}
       </ScrollView>
     </SafeAreaView>
   );
