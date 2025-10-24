@@ -24,6 +24,8 @@ import {
 import { useLikes } from "@/hooks/useLikes";
 import { useUser } from "@/hooks/useUser";
 import { usePendingEvents } from "@/hooks/usePendingEvents";
+import { useLayoutEffect } from "react";
+import { useNavigation } from "expo-router";
 
 export default function SingleEventScreen() {
   const { colors } = useThemeColors();
@@ -33,6 +35,12 @@ export default function SingleEventScreen() {
   const { isEventLiked, toggleEventLikeStatus } = useLikes();
   const { user } = useUser();
   const { updateEventStatus } = usePendingEvents();
+  const navigation = useNavigation();
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        title: "Evento", 
+      });
+    }, [navigation]);
   const {
     id,
     title,

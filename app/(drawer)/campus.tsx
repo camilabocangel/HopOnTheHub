@@ -16,6 +16,8 @@ import SeeMoreCreateCard from "@/components/seeMoreCreateCard";
 import { useEvents } from "@/hooks/useEvents";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useLayoutEffect } from "react";
+import { useNavigation } from "expo-router";
 
 const styles = campusStyles;
 
@@ -27,6 +29,12 @@ type SeeMoreItem = {
 export default function CampusScreen() {
   const { colors } = useThemeColors();
   const { campus } = useLocalSearchParams<{ campus: string }>();
+  const navigation = useNavigation();
+          useLayoutEffect(() => {
+            navigation.setOptions({
+              title: "Campus", 
+            });
+          }, [navigation]);
 
   const selectedCampus = Array.isArray(campus) ? campus[0] : campus;
 

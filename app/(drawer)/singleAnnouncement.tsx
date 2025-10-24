@@ -9,6 +9,9 @@ import MapModal from "@/components/MapModal";
 import MapView, { Marker } from "react-native-maps";
 import { parseCampuses, getCampusesCoordinates, getMapRegionForCampuses, convertToCampusKeys, CampusKey } from "@/utils/campusUtils";
 import { useLikes } from "@/hooks/useLikes";
+import { useLayoutEffect } from "react";
+import { useNavigation } from "expo-router";
+
 
 export default function SingleAnnouncementScreen() {
   const { colors } = useThemeColors();
@@ -16,6 +19,12 @@ export default function SingleAnnouncementScreen() {
   const [showMapModal, setShowMapModal] = useState(false);
   const { isAnnouncementLiked, toggleAnnouncementLikeStatus } = useLikes();
   const { id, description, date, campus, image, content } = params;
+  const navigation = useNavigation();
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Anuncio", 
+    });
+  }, [navigation]);
 
   const announcementCampuses = useMemo((): CampusKey[] => {
     if (Array.isArray(campus)) {

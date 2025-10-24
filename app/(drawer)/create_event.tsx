@@ -5,12 +5,20 @@ import { useThemeColors } from "../../src/hooks/useThemeColors";
 import CreateEventForm from "@/components/CreateEventForm";
 import createEventStyles from "@/styles/createEventStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useLayoutEffect } from "react";
+import { useNavigation } from "expo-router";
 
 const styles = createEventStyles;
 
 export default function CreateEventScreen() {
   const { colors } = useThemeColors();
   const router = useRouter();
+  const navigation = useNavigation();
+      useLayoutEffect(() => {
+        navigation.setOptions({
+          title: "Crear Evento", 
+        });
+      }, [navigation]);
   
 
   const handleCreateEvent = (eventData: any) => {

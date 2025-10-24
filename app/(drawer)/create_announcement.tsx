@@ -5,11 +5,19 @@ import { useThemeColors } from "../../src/hooks/useThemeColors";
 import CreateAnnouncementForm from "@/components/CreateAnnouncementForm";
 import useCreateAnnouncementStyles from "@/styles/createAnnouncementStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useLayoutEffect } from "react";
+import { useNavigation } from "expo-router";
 
 export default function CreateAnnouncementScreen() {
   const { colors } = useThemeColors();
   const router = useRouter();
   const styles = useCreateAnnouncementStyles();
+  const navigation = useNavigation();
+        useLayoutEffect(() => {
+          navigation.setOptions({
+            title: "Crear Anuncio", 
+          });
+        }, [navigation]);
 
   const handleCreateAnnouncement = (announcementData: any) => {
     console.log("Anuncio creado:", announcementData);
