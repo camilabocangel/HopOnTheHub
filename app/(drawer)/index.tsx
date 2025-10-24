@@ -15,6 +15,7 @@ import SubjectCard from "../../src/components/SubjectCard";
 import CampusCard from "../../src/components/CampusCard";
 import AnnouncementCard from "../../src/components/AnnouncementCard";
 import EventCard from "../../src/components/EventCard";
+import { useFocusEffect } from "@react-navigation/native";
 import { useUser } from "../../src/hooks/useUser";
 import { useCareers } from "@/hooks/useCareers";
 import { useAnnouncements } from "@/hooks/useAnnouncements";
@@ -104,7 +105,7 @@ export default function HomeScreen() {
 
   const [refreshing, setRefreshing] = React.useState(false);
 
-   useEffect(
+   useFocusEffect(
      React.useCallback(() => {
        const refreshData = async () => {
          if (user?.role === "admin") {
