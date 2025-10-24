@@ -27,11 +27,14 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
     textAlign: 'center',
+    color: colors.subtitle
   },
   subtitle: {
     fontSize: 16,
     opacity: 0.7,
     textAlign: 'center',
+    color: colors.subtitle
+
   },
   fieldsContainer: {
     marginBottom: 30,
@@ -43,6 +46,7 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 10,
+    color: colors.text
   },
   textInput: {
     borderWidth: 1,

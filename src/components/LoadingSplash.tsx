@@ -1,23 +1,27 @@
 import React from "react";
 import { View, ActivityIndicator, Image, StyleSheet, Text } from "react-native";
 import { useThemeColors } from "@/hooks/useThemeColors"; 
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export const LoadingSplash = () => {
   const { colors } = useThemeColors(); 
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.primary }]}>
-      <Image
-        source={require("../../assets/icon_upb.png")}
-        style={styles.logo}
-      />
-      <ActivityIndicator size="large" color={colors.accent} style={{ marginTop: 20 }} />
-      <Text style={[styles.text, { color: colors.surface }]}>
-        Iniciando sesión...
-      </Text>
-    </View>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.loadingSplash }}>
+      <View style={styles.container}>
+        <Image
+          source={require("../../assets/icon_upb.png")}
+          style={styles.logo}
+        />
+        <ActivityIndicator size="large" color={colors.accent} style={{ marginTop: 20 }} />
+        <Text style={[styles.text, { color: colors.textSplash }]}>
+          Iniciando sesión...
+        </Text>
+      </View>
+    </SafeAreaView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {
