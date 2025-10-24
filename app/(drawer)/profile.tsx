@@ -168,22 +168,6 @@ export default function ProfileScreen() {
             style={[styles.container, { backgroundColor: colors.background }]}
           >
             <View style={styles.profileSection}>
-              <Pressable
-                style={[
-                  styles.uploadButton,
-                  uploading && styles.uploadButtonDisabled,
-                ]}
-                onPress={handlePickImage}
-                disabled={uploading}
-              >
-                {uploading ? (
-                  <ActivityIndicator size="small" color={colors.primary} />
-                ) : (
-                  <Text style={styles.uploadLabel}>
-                    {user.picture ? "Cambiar foto" : "Agregar foto"}
-                  </Text>
-                )}
-              </Pressable>
               <View style={styles.imageContainer}>
                 <Image
                   source={
@@ -206,6 +190,21 @@ export default function ProfileScreen() {
                   </TouchableOpacity>
                 )}
               </View>
+
+              {/* Texto "Cambiar foto" debajo de la imagen y arriba del nombre */}
+              <TouchableOpacity
+                onPress={handlePickImage}
+                disabled={uploading}
+                style={styles.changePhotoContainer}
+              >
+                {uploading ? (
+                  <ActivityIndicator size="small" color={colors.primary} />
+                ) : (
+                  <Text style={[styles.changePhotoText, { color: colors.primary }]}>
+                    {user.picture ? "Cambiar foto" : "Agregar foto"}
+                  </Text>
+                )}
+              </TouchableOpacity>
 
               <Text style={[styles.userName, { color: colors.text }]}>
                 {user.name} {user.lastName}
