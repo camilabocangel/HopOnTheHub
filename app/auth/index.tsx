@@ -125,6 +125,10 @@ export default function AuthScreen() {
         <Text style={styles.link}>Crear cuenta nueva</Text>
       </TouchableOpacity>
 
+      <TouchableOpacity onPress={() => router.push("/(drawer)")}>
+        <Text style={styles.link}>Entrar sin Iniciar Sesión</Text>
+      </TouchableOpacity>
+
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
   );

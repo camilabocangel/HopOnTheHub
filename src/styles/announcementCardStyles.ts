@@ -1,6 +1,21 @@
 import { StyleSheet } from "react-native";
 
 const announcementCardStyles = StyleSheet.create({
+  pendingBadge: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "#FFA500",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    zIndex: 10,
+  },
+  pendingText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
   card: {
     width: 280,
     minHeight: 300,
