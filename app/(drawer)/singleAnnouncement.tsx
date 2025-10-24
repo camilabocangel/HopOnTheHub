@@ -1,5 +1,12 @@
 import React, { useState, useMemo } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity, Alert } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Alert,
+} from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
@@ -7,11 +14,17 @@ import singleAnnouncementStyles from "../../src/styles/singleAnnouncementStyles"
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapModal from "@/components/MapModal";
 import MapView, { Marker } from "react-native-maps";
-import { parseCampuses, getCampusesCoordinates, getMapRegionForCampuses, convertToCampusKeys, CampusKey } from "@/utils/campusUtils";
+import {
+  parseCampuses,
+  getCampusesCoordinates,
+  getMapRegionForCampuses,
+  convertToCampusKeys,
+  CampusKey,
+} from "@/utils/campusUtils";
 import { useLikes } from "@/hooks/useLikes";
 import { useLayoutEffect } from "react";
 import { useNavigation } from "expo-router";
-
+import { useUser } from "@/hooks/useUser";
 
 export default function SingleAnnouncementScreen() {
   const { colors } = useThemeColors();
@@ -20,16 +33,20 @@ export default function SingleAnnouncementScreen() {
   const { isAnnouncementLiked, toggleAnnouncementLikeStatus } = useLikes();
   const { id, description, date, campus, image, content } = params;
   const navigation = useNavigation();
+
+  const { user } = useUser();
+  const isNormal = user ? user?.role === "normal" : false;
+
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: "Anuncio", 
+      title: "Anuncio",
     });
   }, [navigation]);
 
   const announcementCampuses = useMemo((): CampusKey[] => {
     if (Array.isArray(campus)) {
       return convertToCampusKeys(campus);
-    } else if (typeof campus === 'string') {
+    } else if (typeof campus === "string") {
       try {
         const parsedCampus = JSON.parse(campus);
         if (Array.isArray(parsedCampus)) {
@@ -40,7 +57,7 @@ export default function SingleAnnouncementScreen() {
         return parseCampuses(campus);
       }
     }
-    return ['la paz'];
+    return ["la paz"];
   }, [campus]);
 
   const campusesCoordinates = useMemo(() => {
@@ -54,19 +71,22 @@ export default function SingleAnnouncementScreen() {
   const campusDisplayText = useMemo(() => {
     if (announcementCampuses.length === 3) return "Todos los campus";
     if (announcementCampuses.length === 2) {
-      return announcementCampuses.map(campus => 
-        campus.charAt(0).toUpperCase() + campus.slice(1)
-      ).join(' y ');
+      return announcementCampuses
+        .map((campus) => campus.charAt(0).toUpperCase() + campus.slice(1))
+        .join(" y ");
     }
-    return announcementCampuses[0].charAt(0).toUpperCase() + announcementCampuses[0].slice(1);
+    return (
+      announcementCampuses[0].charAt(0).toUpperCase() +
+      announcementCampuses[0].slice(1)
+    );
   }, [announcementCampuses]);
 
-  const announcementId = id as string; 
+  const announcementId = id as string;
   const liked = isAnnouncementLiked(announcementId);
 
   const handleLikeToggle = async () => {
     if (!announcementId) return;
-    
+
     const success = await toggleAnnouncementLikeStatus(announcementId);
     if (!success) {
       Alert.alert("Error", "No se pudo actualizar el like");
@@ -74,7 +94,7 @@ export default function SingleAnnouncementScreen() {
   };
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: colors.background}}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={singleAnnouncementStyles.container}>
           <View style={singleAnnouncementStyles.imageContainer}>
@@ -152,61 +172,76 @@ export default function SingleAnnouncementScreen() {
                     style={[
                       singleAnnouncementStyles.detailValue,
                       { color: colors.primary },
-                      announcementCampuses.length > 1 && { fontWeight: 'bold' }
+                      announcementCampuses.length > 1 && { fontWeight: "bold" },
                     ]}
                   >
                     {campusDisplayText}
                   </Text>
                   {announcementCampuses.length > 1 && (
-                    <Text style={[singleAnnouncementStyles.campusSubtitle, { color: colors.subtitle }]}>
+                    <Text
+                      style={[
+                        singleAnnouncementStyles.campusSubtitle,
+                        { color: colors.subtitle },
+                      ]}
+                    >
                       ({announcementCampuses.length} campus)
                     </Text>
                   )}
                 </View>
               </View>
-
-              <View
-                style={[
-                  singleAnnouncementStyles.detailRow,
-                  { borderBottomColor: colors.border },
-                ]}
-              >
-                <Text
+              {isNormal && (
+                <View
                   style={[
-                    singleAnnouncementStyles.detailLabel,
-                    { color: colors.subtitle },
+                    singleAnnouncementStyles.detailRow,
+                    { borderBottomColor: colors.border },
                   ]}
                 >
-                  Guardar:
-                </Text>
-                <TouchableOpacity
-                  onPress={handleLikeToggle}
-                  style={singleAnnouncementStyles.likeButton}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
-                  <Ionicons
-                    name={liked ? "heart" : "heart-outline"}
-                    size={24}
-                    color={liked ? colors.accent : colors.subtitle}
-                  />
-                </TouchableOpacity>
-              </View>
+                  <Text
+                    style={[
+                      singleAnnouncementStyles.detailLabel,
+                      { color: colors.subtitle },
+                    ]}
+                  >
+                    Guardar:
+                  </Text>
+                  <TouchableOpacity
+                    onPress={handleLikeToggle}
+                    style={singleAnnouncementStyles.likeButton}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons
+                      name={liked ? "heart" : "heart-outline"}
+                      size={24}
+                      color={liked ? colors.accent : colors.subtitle}
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
 
             <View style={singleAnnouncementStyles.section}>
               <Text
-                style={[singleAnnouncementStyles.sectionTitle, { color: colors.text }]}
+                style={[
+                  singleAnnouncementStyles.sectionTitle,
+                  { color: colors.text },
+                ]}
               >
                 Ubicación del Anuncio
               </Text>
               {announcementCampuses.length > 1 && (
-                <Text style={[singleAnnouncementStyles.sectionContent, { 
-                  color: colors.primary, 
-                  marginBottom: 8,
-                  fontWeight: '600',
-                  fontSize: 14 
-                }]}>
-                  📍 Este anuncio aplica para {announcementCampuses.length} campus
+                <Text
+                  style={[
+                    singleAnnouncementStyles.sectionContent,
+                    {
+                      color: colors.primary,
+                      marginBottom: 8,
+                      fontWeight: "600",
+                      fontSize: 14,
+                    },
+                  ]}
+                >
+                  📍 Este anuncio aplica para {announcementCampuses.length}{" "}
+                  campus
                 </Text>
               )}
               <View style={singleAnnouncementStyles.mapContainer}>
@@ -230,9 +265,12 @@ export default function SingleAnnouncementScreen() {
                     />
                   ))}
                 </MapView>
-                
+
                 <TouchableOpacity
-                  style={[singleAnnouncementStyles.expandButton, { backgroundColor: colors.primary }]}
+                  style={[
+                    singleAnnouncementStyles.expandButton,
+                    { backgroundColor: colors.primary },
+                  ]}
                   onPress={() => setShowMapModal(true)}
                 >
                   <Ionicons name="expand" size={20} color="white" />
@@ -243,12 +281,18 @@ export default function SingleAnnouncementScreen() {
             {content && (
               <View style={singleAnnouncementStyles.section}>
                 <Text
-                  style={[singleAnnouncementStyles.sectionTitle, { color: colors.text }]}
+                  style={[
+                    singleAnnouncementStyles.sectionTitle,
+                    { color: colors.text },
+                  ]}
                 >
                   Contenido Adicional
                 </Text>
                 <Text
-                  style={[singleAnnouncementStyles.sectionContent, { color: colors.text }]}
+                  style={[
+                    singleAnnouncementStyles.sectionContent,
+                    { color: colors.text },
+                  ]}
                 >
                   {content as string}
                 </Text>

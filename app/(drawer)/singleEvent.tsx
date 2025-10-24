@@ -36,11 +36,11 @@ export default function SingleEventScreen() {
   const { user } = useUser();
   const { updateEventStatus } = usePendingEvents();
   const navigation = useNavigation();
-    useLayoutEffect(() => {
-      navigation.setOptions({
-        title: "Evento", 
-      });
-    }, [navigation]);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Evento",
+    });
+  }, [navigation]);
   const {
     id,
     title,
@@ -56,6 +56,8 @@ export default function SingleEventScreen() {
 
   const eventId = id as string;
   const liked = isEventLiked(eventId);
+
+  const isNormal = user ? user?.role === "normal" : false;
 
   const handleLikeToggle = async () => {
     if (!eventId) return;
@@ -282,32 +284,34 @@ export default function SingleEventScreen() {
                 </Text>
               </View>
 
-              <View
-                style={[
-                  singleEventsStyles.detailRow,
-                  { borderBottomColor: colors.border },
-                ]}
-              >
-                <Text
+              {isNormal && (
+                <View
                   style={[
-                    singleEventsStyles.detailLabel,
-                    { color: colors.subtitle },
+                    singleEventsStyles.detailRow,
+                    { borderBottomColor: colors.border },
                   ]}
                 >
-                  Guardar:
-                </Text>
-                <TouchableOpacity
-                  onPress={handleLikeToggle}
-                  style={singleEventsStyles.likeButton}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
-                  <Ionicons
-                    name={liked ? "heart" : "heart-outline"}
-                    size={24}
-                    color={liked ? colors.accent : colors.subtitle}
-                  />
-                </TouchableOpacity>
-              </View>
+                  <Text
+                    style={[
+                      singleEventsStyles.detailLabel,
+                      { color: colors.subtitle },
+                    ]}
+                  >
+                    Guardar:
+                  </Text>
+                  <TouchableOpacity
+                    onPress={handleLikeToggle}
+                    style={singleEventsStyles.likeButton}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  >
+                    <Ionicons
+                      name={liked ? "heart" : "heart-outline"}
+                      size={24}
+                      color={liked ? colors.accent : colors.subtitle}
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
 
             <View style={singleEventsStyles.section}>
