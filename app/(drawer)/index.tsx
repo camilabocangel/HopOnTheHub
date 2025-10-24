@@ -26,6 +26,9 @@ import { usePendingEvents } from "@/hooks/usePendingEvents";
 import { usePendingAnnouncements } from "@/hooks/usePendingAnnouncements";
 import { homeStyles } from "@/styles/homeStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { importCareersToFirebase } from "@/scripts/importCareersToFirebase";
+import { importAnnouncementsToFirebase } from "@/scripts/importAnnouncementsToFirebase";
+import { importEventsToFirebase } from "@/scripts/importEventsToFirebase";
 
 const { height, width } = Dimensions.get("window");
 
@@ -88,16 +91,16 @@ export default function HomeScreen() {
     refetchAnnouncements,
   ]);
 
-  // const handleImport = async () => {
-  //   try {
-  //     await importCareersToFirebase();
-  //     await importAnnouncementsToFirebase();
-  //     await importEventsToFirebase();
-  //     Alert.alert("Éxito", "Importación correcta");
-  //   } catch (error) {
-  //     Alert.alert("Error", "Importación fallida");
-  //   }
-  // };
+   const handleImport = async () => {
+     try {
+       await importCareersToFirebase();
+       await importAnnouncementsToFirebase();
+       await importEventsToFirebase();
+       Alert.alert("Éxito", "Importación correcta");
+     } catch (error) {
+       Alert.alert("Error", "Importación fallida");
+     }
+   };
 
   const renderEventItem = ({ item }: { item: any }) => (
     <View style={styles.horizontalCard}>

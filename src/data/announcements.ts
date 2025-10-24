@@ -2,6 +2,7 @@ const announcements = [
   {
     id: 1,
     status: "accepted",
+    //publishAt: new Date("2025-09-25T10:00:00Z"),
     image: "https://th.bing.com/th/id/OIP.srRu7kFApqCXvRq3ST_XMQHaE8?w=258&h=180&c=7&r=0&o=7&cb=12&dpr=1.4&pid=1.7&rm=3",
     description: "Convocatoria a becas de excelencia para el semestre 2025-II.",
     date: "2025-10-05",

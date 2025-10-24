@@ -206,7 +206,6 @@ export default function SingleEventScreen() {
                 </Text>
               </View>
 
-              {/* Like Button for Events */}
               <View
                 style={[
                   singleEventsStyles.detailRow,
@@ -235,7 +234,6 @@ export default function SingleEventScreen() {
               </View>
             </View>
 
-            {/* Map Section */}
             <View style={singleEventsStyles.section}>
               <Text
                 style={[singleEventsStyles.sectionTitle, { color: colors.text }]}

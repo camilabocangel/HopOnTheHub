@@ -17,6 +17,7 @@ export type User = {
 export type Career = {
   id: string;
   name: string;
+  faculty: string;
   semesters?: Semester[];
   createdAt?: any;
 };

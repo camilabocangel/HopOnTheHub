@@ -13,6 +13,7 @@ export const importCareersToFirebase = async () => {
       
       await setDoc(doc(db, "careers", careerId), {
         name: career.name,
+        faculty: career.faculty,
         semesters: career.semesters,
         createdAt: new Date()
       });

@@ -205,7 +205,6 @@ export default function CreateEventForm({
         style={styles.fieldsContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Título */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Título del Evento *</Text>
           <TextInput
@@ -217,7 +216,6 @@ export default function CreateEventForm({
           />
         </View>
 
-        {/* Descripción */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Descripción Corta *</Text>
           <TextInput
@@ -230,7 +228,6 @@ export default function CreateEventForm({
           />
         </View>
 
-        {/* Contenido Completo */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Contenido Completo</Text>
           <TextInput
@@ -244,7 +241,6 @@ export default function CreateEventForm({
           />
         </View>
 
-        {/* Categoría */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Categoría *</Text>
           <TouchableOpacity
@@ -258,7 +254,6 @@ export default function CreateEventForm({
           </TouchableOpacity>
         </View>
 
-        {/* Lugar */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Lugar *</Text>
           <TextInput
@@ -270,7 +265,6 @@ export default function CreateEventForm({
           />
         </View>
 
-        {/* Campus - Checkboxes inline */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Campus *</Text>
           <View style={styles.campusContainer}>
@@ -304,7 +298,6 @@ export default function CreateEventForm({
           </View>
         </View>
 
-        {/* Fecha y Hora */}
         <View style={styles.fieldGroup}>
           <View style={styles.dateTimeContainer}>
             <View style={styles.dateTimeField}>
@@ -329,7 +322,6 @@ export default function CreateEventForm({
         </View>
       </ScrollView>
 
-      {/* Date Pickers */}
       {showDatePicker && (
         <DateTimePicker
           value={date}
@@ -354,7 +346,6 @@ export default function CreateEventForm({
         />
       )}
 
-      {/* Botones de acción */}
       <View style={styles.actionsContainer}>
         <TouchableOpacity
           style={styles.cancelButton}
@@ -380,7 +371,6 @@ export default function CreateEventForm({
         </TouchableOpacity>
       </View>
 
-      {/* Modal de categoría */}
       <CategoryModal />
     </View>
   );

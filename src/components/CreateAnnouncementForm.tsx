@@ -95,7 +95,6 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
       </View>
 
       <ScrollView style={styles.fieldsContainer} showsVerticalScrollIndicator={false}>
-        {/* Descripción */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Descripción del Anuncio *</Text>
           <TextInput
@@ -108,7 +107,6 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
           />
         </View>
 
-        {/* Contenido Completo */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Contenido Completo</Text>
           <TextInput
@@ -122,7 +120,6 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
           />
         </View>
 
-        {/* Campus - Checkboxes inline */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Campus *</Text>
           <View style={styles.campusContainer}>
@@ -155,7 +152,6 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
           </View>
         </View>
 
-        {/* Fecha */}
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Fecha del Anuncio *</Text>
           <TouchableOpacity
@@ -169,7 +165,6 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
         </View>
       </ScrollView>
 
-      {/* Date Picker */}
       {showDatePicker && (
         <DateTimePicker
           value={date}
@@ -182,7 +177,6 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
         />
       )}
 
-      {/* Botones de acción */}
       <View style={styles.actionsContainer}>
         <TouchableOpacity
           style={styles.cancelButton}

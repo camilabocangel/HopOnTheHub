@@ -1,6 +1,7 @@
 const careers = [
   {
     name: "Ingeniería Electromecánica",
+    faculty: "Facultad de Ingenierías y Arquitectura",
     semesters: [
       {
         semester: 1,
@@ -112,6 +113,7 @@ const careers = [
   },
   {
     name: "Ingeniería Electrónica y Telecomunicaciones",
+    faculty: "Facultad de Ingenierías y Arquitectura",
     semesters: [
       {
         semester: 1,
@@ -219,6 +221,7 @@ const careers = [
   },
   {
     name: "Ingeniería de Sistemas Computacionales",
+    faculty: "Facultad de Ingenierías y Arquitectura",
     semesters: [
       {
         semester: 1,
@@ -327,6 +330,7 @@ const careers = [
   },
   {
     name: "Ingeniería Industrial y de Sistemas",
+    faculty: "Facultad de Ingenierías y Arquitectura",
     semesters: [
       {
         semester: 1,
@@ -441,6 +445,7 @@ const careers = [
   },
   {
     name: "Arquitectura",
+    faculty: "Facultad de Ingenierías y Arquitectura",
     semesters: [
       {
         semester: 1,
@@ -561,6 +566,7 @@ const careers = [
   },
   {
     name: "Ingeniería Civil",
+    faculty: "Facultad de Ingenierías y Arquitectura",
     semesters: [
       {
         semester: 1,
@@ -668,6 +674,7 @@ const careers = [
   },
   {
     name: "Ingeniería del Medio Ambiente y Energías Alternativas",
+    faculty: "Facultad de Ingenierías y Arquitectura",
     semesters: [
       {
         semester: 1,
@@ -781,6 +788,7 @@ const careers = [
   },
   {
     name: "Ingeniería Financiera",
+    faculty: "Facultad de Ciencias Empresariales y Derecho",
     semesters: [
       {
         semester: 1,
@@ -886,6 +894,7 @@ const careers = [
   },
   {
     name: "Ingeniería Comercial",
+    faculty: "Facultad de Ciencias Empresariales y Derecho",
     semesters: [
       {
         semester: 1,
@@ -995,6 +1004,7 @@ const careers = [
   },
   {
     name: "Marketing & Logística",
+    faculty: "Facultad de Ciencias Empresariales y Derecho",
     semesters: [
       {
         semester: 1,
@@ -1105,6 +1115,7 @@ const careers = [
   },
   {
     name: "Psicología Organizacional",
+    faculty: "Facultad de Ciencias Empresariales y Derecho",
     semesters: [
       {
         semester: 1,
@@ -1204,6 +1215,762 @@ const careers = [
           "Control de Gestión",
           "Administración Organizacional",
           "Métodos Avanzados de Investigación en Psicología",
+        ],
+      },
+    ],
+  },
+  {
+    name: "Diseño Gráfico",
+    faculty: "Facultad de Ciencias Empresariales y Derecho",
+    semesters: [
+      {
+        semester: 1,
+        subjects: [
+          "Geometría Descriptiva I",
+          "Dibujo I",
+          "Técnicas de Comunicación Escrita",
+          "Color",
+          "Innovación y Creatividad",
+          "Filosofía del Arte Contemporáneo",
+          "Taller Computarizado I",
+          "English Beginners",
+        ],
+      },
+      {
+        semester: 2,
+        subjects: [
+          "Fundamentos de Diseño Gráfico I",
+          "Dibujo II",
+          "Forma",
+          "Administración de Empresas I",
+          "Fotografía I",
+          "Taller Computarizado II",
+          "English Intermediate",
+        ],
+      },
+      {
+        semester: 3,
+        subjects: [
+          "Fundamentos de Diseño Gráfico II",
+          "Dibujo III",
+          "Tipografía I",
+          "Liderazgo y Ética",
+          "Análisis del Entorno",
+          "Fotografía II",
+          "Taller Computarizado III",
+          "English High Intermediate",
+        ],
+      },
+      {
+        semester: 4,
+        subjects: [
+          "Diseño Gráfico I",
+          "Técnicas de Representación Gráfica I",
+          "Tipografía II",
+          "Análisis del Arte I",
+          "Fotografía Publicitaria",
+          "Taller Computarizado IV",
+          "English Advanced",
+        ],
+      },
+      {
+        semester: 5,
+        subjects: [
+          "Diseño Gráfico II",
+          "Técnicas de Representación Gráfica II",
+          "Empaque I",
+          "Presupuestos y Costos",
+          "Historia del Diseño Gráfico",
+          "Electiva I",
+          "Práctica Profesional I",
+        ],
+      },
+      {
+        semester: 6,
+        subjects: [
+          "Diseño Gráfico III",
+          "Ilustración I",
+          "Empaque II",
+          "Organización de Eventos",
+          "Introducción a la Dirección Empresarial",
+          "Electiva II",
+          "Práctica Profesional II",
+        ],
+      },
+      {
+        semester: 7,
+        subjects: [
+          "Imagen Corporativa I",
+          "Ilustración II",
+          "Semiótica de la Imagen",
+          "Electiva III",
+          "Electiva IV",
+          "Técnicas de Desarrollo de Proyectos",
+        ],
+      },
+      {
+        semester: 8,
+        subjects: [
+          "Imagen Corporativa II",
+          "Sistemas de Impresión I",
+          "Sistemas de Impresión II",
+          "Fotografía Documental",
+          "Electiva V",
+          "Proyecto de Grado",
+          "Seminario de Grado",
+        ],
+      },
+    ],
+  },
+  {
+    name: "Relaciones y Negocios Internacionales",
+    faculty: "Facultad de Ciencias Empresariales y Derecho",
+    semesters: [
+      {
+        semester: 1,
+        subjects: [
+          "Innovación y Creatividad",
+          "Técnicas de Comunicación Escrita",
+          "Introducción al Estudio del Derecho",
+          "Sociedad y Estado",
+          "Matemáticas I (4CR)",
+          "Computación",
+          "Introducción a la Economía (4CR)",
+          "English Beginners",
+        ],
+      },
+      {
+        semester: 2,
+        subjects: [
+          "Contabilidad Básica (4CR)",
+          "Mercadotecnia",
+          "Derecho Constitucional",
+          "Introducción a las Relaciones Internacionales I",
+          "Teoría Estadística I",
+          "Administración de Empresas I",
+          "Microeconomía",
+          "English Intermediate",
+        ],
+      },
+      {
+        semester: 3,
+        subjects: [
+          "Presupuestos y Costos",
+          "Mercadotecnia Internacional I",
+          "Derecho Internacional Público I",
+          "Teorías de las Relaciones Internacionales II",
+          "Teoría Estadística II",
+          "Administración Estratégica",
+          "Macroeconomía",
+          "English High Intermediate",
+        ],
+      },
+      {
+        semester: 4,
+        subjects: [
+          "Matemática Financiera",
+          "Contexto Mundial Contemporáneo",
+          "Derecho Internacional Privado I",
+          "Teorías de las Relaciones Internacionales III",
+          "Análisis Cuantitativo",
+          "Gestión del Talento Humano",
+          "Estrategia y Teoría de Juegos",
+          "English Advanced",
+        ],
+      },
+      {
+        semester: 5,
+        subjects: [
+          "Historia del Pensamiento Económico",
+          "Historia de Bolivia I",
+          "Derecho Internacional Privado II",
+          "Política Exterior de Bolivia",
+          "Análisis del Entorno",
+          "Administración Financiera I",
+          "Economía Internacional",
+          "English for Negotiations I",
+          "Práctica Profesional I",
+          "Emprendedurismo",
+        ],
+      },
+      {
+        semester: 6,
+        subjects: [
+          "Análisis de Estados Financieros",
+          "Negociación Internacional I",
+          "Organismos Internacionales",
+          "Política Exterior de Latinoamérica",
+          "Análisis del Entorno Económico",
+          "Comercio Internacional",
+          "Metodología y Técnicas de Investigación",
+          "English for Negotiations II",
+          "Electiva I",
+          "Práctica Profesional II",
+        ],
+      },
+      {
+        semester: 7,
+        subjects: [
+          "Finanzas Internacionales I",
+          "Cooperación Internacional",
+          "Política Económica Contemporánea",
+          "Geopolítica",
+          "Electiva II",
+          "Liderazgo y Ética",
+        ],
+      },
+      {
+        semester: 8,
+        subjects: [
+          "Finanzas Internacionales II",
+          "Empresas Multinacionales",
+          "Estrategia de Negocios Internacionales",
+          "Electiva III",
+          "Seminario de Grado",
+        ],
+      },
+    ],
+  },
+  {
+    name: "Economía",
+    faculty: "Facultad de Ciencias Empresariales y Derecho",
+    semesters: [
+      {
+        semester: 1,
+        subjects: [
+          "Fundamentos de Economía I",
+          "Matemáticas I",
+          "Teoría Estadística I",
+          "Computación",
+          "Contabilidad Financiera I",
+          "Técnicas de Comunicación Escrita",
+          "English Beginners",
+        ],
+      },
+      {
+        semester: 2,
+        subjects: [
+          "Fundamentos de Economía II",
+          "Matemáticas II",
+          "Teoría Estadística II",
+          "Contabilidad de Costos I",
+          "Contabilidad Financiera II",
+          "English Intermediate",
+        ],
+      },
+      {
+        semester: 3,
+        subjects: [
+          "Teoría Económica I",
+          "Matemáticas III",
+          "Teoría Estadística III",
+          "Contabilidad Administrativa",
+          "Matemática Financiera I",
+          "Economía Política I",
+          "English High Intermediate",
+        ],
+      },
+      {
+        semester: 4,
+        subjects: [
+          "Teoría Económica II",
+          "Álgebra Lineal Aplicada",
+          "Econometría I",
+          "Economía Política II",
+          "Economía Política III",
+          "English Advanced",
+        ],
+      },
+      {
+        semester: 5,
+        subjects: [
+          "Teoría Microeconómica I",
+          "Teoría Macroeconómica I",
+          "Econometría II",
+          "Economía Pública I",
+          "Economía Pública II",
+          "Economía del Trabajo I",
+          "Technical English",
+        ],
+      },
+      {
+        semester: 6,
+        subjects: [
+          "Teoría Microeconómica II",
+          "Teoría Macroeconómica II",
+          "Econometría III",
+          "Desarrollo Económico I",
+          "Economía del Trabajo II",
+          "Finanzas I",
+          "Electiva I",
+        ],
+      },
+      {
+        semester: 7,
+        subjects: [
+          "Teoría Microeconómica III",
+          "Teoría Macroeconómica III",
+          "Desarrollo Económico II",
+          "Preparación y Evaluación de Proyectos",
+          "Análisis de Estados Financieros",
+          "Electiva II",
+          "Práctica Profesional I",
+        ],
+      },
+      {
+        semester: 8,
+        subjects: [
+          "Economía Internacional",
+          "Liderazgo y Ética",
+          "Innovación y Creatividad",
+          "Administración de Empresas I",
+          "Análisis del Entorno",
+          "Electiva III",
+          "Práctica Profesional II",
+          "Seminario de Grado",
+        ],
+      },
+    ],
+  },
+  {
+    name: "Analítica Gerencial de Datos",
+    faculty: "Facultad de Ciencias Empresariales y Derecho",
+    semesters: [
+      {
+        semester: 1,
+        subjects: [
+          "Introducción a la Economía",
+          "Introducción a la Ciencia de Datos I",
+          "Contabilidad Básica",
+          "Matemáticas I",
+          "Administración de Empresas I",
+          "Programación I",
+          "Técnicas de Comunicación Escrita",
+          "English Beginners",
+        ],
+      },
+      {
+        semester: 2,
+        subjects: [
+          "Microeconomía I",
+          "Contabilidad de Costos",
+          "Introducción a la Ciencia de Datos II",
+          "Matemáticas II",
+          "Teoría Estadística I",
+          "Programación II",
+          "Macroeconomía I",
+          "English Intermediate",
+        ],
+      },
+      {
+        semester: 3,
+        subjects: [
+          "Matemática Financiera",
+          "Contabilidad Administrativa",
+          "Data Mining",
+          "Álgebra Lineal",
+          "Teoría Estadística II",
+          "Bases de Datos Relacionales",
+          "Análisis del Entorno",
+          "English High Intermediate",
+        ],
+      },
+      {
+        semester: 4,
+        subjects: [
+          "Análisis de Estados Financieros",
+          "Teoría Estadística III",
+          "Business Intelligence I",
+          "Matemáticas III",
+          "Analítica y Predicción I",
+          "Bases de Datos Avanzadas",
+          "Liderazgo y Ética",
+          "English Advanced",
+        ],
+      },
+      {
+        semester: 5,
+        subjects: [
+          "Finanzas I",
+          "Taller de Estadística",
+          "Business Intelligence II",
+          "Modelos Cuantitativos I",
+          "Analítica y Predicción II",
+          "Algorítmica",
+          "Gestión del Talento Humano",
+          "Práctica Profesional I",
+        ],
+      },
+      {
+        semester: 6,
+        subjects: [
+          "Preparación y Evaluación de Proyectos I",
+          "Innovación y Creatividad",
+          "Internet de las Cosas",
+          "Modelos Cuantitativos II",
+          "Dirección Estratégica",
+          "Seguridad Informática",
+          "Manejo Masivo de Datos (Big Data)",
+          "Práctica Profesional II",
+        ],
+      },
+      {
+        semester: 7,
+        subjects: [
+          "Simulación",
+          "Gestión de Datos no Estructurados",
+          "Inteligencia Artificial",
+          "Machine Learning I",
+          "Electiva I",
+          "Electiva II",
+          "Electiva III",
+          "Métodos y Técnicas de Investigación",
+        ],
+      },
+      {
+        semester: 8,
+        subjects: [
+          "Electiva IV",
+          "Cloud Computing",
+          "Tópicos Selectos de Inteligencia Artificial",
+          "Machine Learning II",
+          "Aprendizaje Profundo (Deep Learning)",
+          "Electiva V",
+          "Seminario de Grado",
+        ],
+      },
+    ],
+  },
+  {
+    name: "Administración de Empresas",
+    faculty: "Facultad de Ciencias Empresariales y Derecho",
+    semesters: [
+      {
+        semester: 1,
+        subjects: [
+          "Administración de Empresas I",
+          "Computación I",
+          "Matemáticas I",
+          "Contabilidad Básica",
+          "Introducción a la Economía",
+          "Innovación y Creatividad",
+          "Técnicas de Comunicación Escrita",
+          "English Beginners",
+        ],
+      },
+      {
+        semester: 2,
+        subjects: [
+          "Administración de Empresas II",
+          "Estadística I",
+          "Mercadotecnia",
+          "Contabilidad de Costos I",
+          "Microeconomía",
+          "Macroeconomía",
+          "Métodos y Técnicas de Investigación",
+          "English Intermediate",
+        ],
+      },
+      {
+        semester: 3,
+        subjects: [
+          "Comportamiento Organizacional",
+          "Estadística II",
+          "Matemáticas II",
+          "Matemática Financiera I",
+          "Marketing de Servicios",
+          "Análisis del Entorno",
+          "Introducción al Derecho Empresarial",
+          "English High Intermediate",
+        ],
+      },
+      {
+        semester: 4,
+        subjects: [
+          "Gestión del Talento Humano",
+          "Administración Pública",
+          "Liderazgo y Ética",
+          "Contabilidad Administrativa",
+          "Comportamiento del Consumidor",
+          "Administración Estratégica",
+          "Administración de Ventas",
+          "English Advanced",
+        ],
+      },
+      {
+        semester: 5,
+        subjects: [
+          "Modelos Cuantitativos I",
+          "Investigación de Mercados",
+          "Tributación",
+          "Negociación",
+          "Análisis de Estados Financieros",
+          "Comercio Exterior",
+          "Práctica Profesional I",
+        ],
+      },
+      {
+        semester: 6,
+        subjects: [
+          "Organización y Visión de Procesos",
+          "Administración de Producción y Operaciones",
+          "Administración de Sistemas de Información",
+          "E-Business",
+          "Finanzas Generales",
+          "Presupuestos",
+          "Práctica Profesional II",
+        ],
+      },
+      {
+        semester: 7,
+        subjects: [
+          "Inteligencia de Negocios",
+          "Administración de la Calidad",
+          "Electiva I",
+          "Estrategia Logística",
+          "Marketing Digital",
+          "Administración de Compras",
+          "Finanzas Gerenciales",
+          "Preparación y Evaluación de Proyectos",
+          "Seminario de Grado",
+        ],
+      },
+      {
+        semester: 8,
+        subjects: [
+          "Emprendedurismo",
+          "Control de Gestión",
+          "Electiva II",
+          "Electiva III",
+          "Electiva IV",
+          "Dirección Estratégica",
+          "Marketing Estratégico",
+          "Administración Internacional",
+          "Mercado de Valores",
+        ],
+      },
+    ],
+  },
+  {
+    name: "Derecho",
+    faculty: "Facultad de Ciencias Empresariales y Derecho",
+    semesters: [
+      {
+        semester: 1,
+        subjects: [
+          "Derecho Romano",
+          "Introducción al Estudio del Derecho",
+          "Sociedad y Estado",
+          "Contexto Mundial Contemporáneo",
+          "Técnicas de Comunicación Escrita",
+          "Innovación y Creatividad",
+          "Computación",
+          "English Beginners",
+        ],
+      },
+      {
+        semester: 2,
+        subjects: [
+          "Personas y Bienes",
+          "Teoría General del Proceso",
+          "Derecho Constitucional I",
+          "Sociología del Derecho",
+          "Derecho Laboral",
+          "Análisis del Entorno",
+          "English Intermediate",
+        ],
+      },
+      {
+        semester: 3,
+        subjects: [
+          "Obligaciones",
+          "Derecho Penal I",
+          "Derecho Constitucional II",
+          "Filosofía y Deontología Jurídica",
+          "Derecho Comercial I",
+          "Métodos y Técnicas de Investigación",
+          "English High Intermediate",
+        ],
+      },
+      {
+        semester: 4,
+        subjects: [
+          "Contratos I",
+          "Derecho Penal II",
+          "Derecho de Familia y del Menor",
+          "Derecho Administrativo I",
+          "Derecho Comercial II",
+          "Liderazgo Ética",
+          "Derecho Internacional Público I",
+          "English Advanced",
+        ],
+      },
+      {
+        semester: 5,
+        subjects: [
+          "Contratos II",
+          "Sucesiones",
+          "Derecho Administrativo II",
+          "Derecho Procesal Laboral",
+          "Derecho Comercial III",
+          "Presupuestos y Costos",
+          "Economía General",
+          "Derecho Internacional Público II",
+        ],
+      },
+      {
+        semester: 6,
+        subjects: [
+          "Procedimiento Civil I",
+          "Derecho Procesal Penal",
+          "Derecho Aduanero",
+          "Derecho Ambiental y de los Recursos",
+          "Derecho Tributario",
+          "Derecho de Seguros",
+          "Gestión de Servicios",
+          "Derecho Internacional Privado I",
+        ],
+      },
+      {
+        semester: 7,
+        subjects: [
+          "Procedimiento Civil II",
+          "Práctica Forense Penal",
+          "Práctica Forense Laboral",
+          "Derecho Financiero",
+          "Derecho Industrial e Intelectual",
+          "Electiva I",
+          "Electiva II",
+          "Derecho Internacional Privado II",
+        ],
+      },
+      {
+        semester: 8,
+        subjects: [
+          "Práctica Forense Civil",
+          "Métodos Alternativos de Solución de Controversias",
+          "Procedimientos Especiales",
+          "Derecho Bursátil",
+          "Electiva III",
+          "Electiva IV",
+          "Emprendedurismo",
+          "Comercio Internacional",
+          "Contratación Internacional",
+          "Derecho de Integración",
+          "Seminario de Grado",
+        ],
+      },
+    ],
+  },
+  {
+    name: "Comunicación",
+    faculty: "Facultad de Ciencias Empresariales y Derecho",
+    semesters: [
+      {
+        semester: 1,
+        subjects: [
+          "Comunicación Corporativa",
+          "Administración de Empresas I",
+          "Economía General",
+          "Contexto Mundial Contemporáneo",
+          "Técnicas de Comunicación Escrita",
+          "Filosofía del Arte Contemporáneo",
+          "Diseño de la Comunicación Gráfica",
+          "Computación",
+          "English Beginners",
+        ],
+      },
+      {
+        semester: 2,
+        subjects: [
+          "Branding e Identidad Corporativa",
+          "Mercadotecnia I",
+          "Historia de Bolivia",
+          "Métodos y Técnicas de Investigación",
+          "Fotografía I",
+          "Lenguaje de la Imagen",
+          "Innovación y Creatividad",
+          "English Intermediate",
+        ],
+      },
+      {
+        semester: 3,
+        subjects: [
+          "Estratégica para Comunicación",
+          "Comportamiento Organizacional",
+          "Plan Estratégico de Marketing",
+          "Teoría de la Comunicación I",
+          "Literatura Contemporánea",
+          "Fotografía II",
+          "Taller de Diseño Gráfico Avanzado",
+          "Análisis del Entorno",
+          "English High Intermediate",
+        ],
+      },
+      {
+        semester: 4,
+        subjects: [
+          "Investigación de Mercados",
+          "Comunicación Interna y Gestión del Cambio",
+          "Gestión del Talento Humano",
+          "Storytelling Visual",
+          "Teoría de la Comunicación II",
+          "Arte y Cultura Latinoamericana",
+          "Multimedios y Tecnología de la Comunicación",
+          "Guionización",
+          "Liderazgo y Ética",
+          "English Advanced",
+        ],
+      },
+      {
+        semester: 5,
+        subjects: [
+          "Medición de Audiencias y Tráfico Virtual",
+          "Calidad y Servicio al Cliente",
+          "Sociología",
+          "Taller de Periodismo I",
+          "Taller de Creación Audiovisual I",
+          "Introducción a la Empresa",
+          "Presupuestos y Costos",
+          "Práctica Profesional I",
+        ],
+      },
+      {
+        semester: 6,
+        subjects: [
+          "Electiva I",
+          "Relaciones Públicas y Protocolo",
+          "Publicidad",
+          "Comunicación Intercultural y Globalización",
+          "Taller de Creación Audiovisual II",
+          "Nuevas Tecnologías",
+          "Gestión de Redes Sociales",
+          "Práctica Profesional II",
+        ],
+      },
+      {
+        semester: 7,
+        subjects: [
+          "Electiva II",
+          "Organización de Eventos",
+          "Filosofía Política",
+          "Electiva III",
+          "Emprendedurismo",
+          "Análisis del Discurso",
+          "Edición de Contenidos Comunicacionales",
+        ],
+      },
+      {
+        semester: 8,
+        subjects: [
+          "Planificación, Evaluación y Gestión de Proyectos",
+          "Planificación y Estrategias de Comunicación",
+          "Responsabilidad Social",
+          "Planificación y Gestión de Medios Publicitarios",
+          "Comunicación Política",
+          "Electiva IV",
+          "Electiva V",
+          "Seminario de Grado",
         ],
       },
     ],
