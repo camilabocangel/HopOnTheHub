@@ -1,21 +1,20 @@
 import React, { useState, useMemo } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, Alert } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
-import useLikedAnnouncements from "../../src/hooks/useLikedAnnouncements";
 import singleAnnouncementStyles from "../../src/styles/singleAnnouncementStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapModal from "@/components/MapModal";
 import MapView, { Marker } from "react-native-maps";
 import { parseCampuses, getCampusesCoordinates, getMapRegionForCampuses, convertToCampusKeys, CampusKey } from "@/utils/campusUtils";
+import { useLikes } from "@/hooks/useLikes";
 
 export default function SingleAnnouncementScreen() {
   const { colors } = useThemeColors();
   const params = useLocalSearchParams();
   const [showMapModal, setShowMapModal] = useState(false);
-  const { isLiked, toggleLike } = useLikedAnnouncements();
-
+  const { isAnnouncementLiked, toggleAnnouncementLikeStatus } = useLikes();
   const { id, description, date, campus, image, content } = params;
 
   const announcementCampuses = useMemo((): CampusKey[] => {
@@ -53,12 +52,15 @@ export default function SingleAnnouncementScreen() {
     return announcementCampuses[0].charAt(0).toUpperCase() + announcementCampuses[0].slice(1);
   }, [announcementCampuses]);
 
-  const announcementId = id ? parseInt(id as string) : 0;
-  const liked = isLiked(announcementId);
+  const announcementId = id as string; 
+  const liked = isAnnouncementLiked(announcementId);
 
-  const handleLikeToggle = () => {
-    if (announcementId) {
-      toggleLike(announcementId);
+  const handleLikeToggle = async () => {
+    if (!announcementId) return;
+    
+    const success = await toggleAnnouncementLikeStatus(announcementId);
+    if (!success) {
+      Alert.alert("Error", "No se pudo actualizar el like");
     }
   };
 
@@ -166,30 +168,22 @@ export default function SingleAnnouncementScreen() {
                     { color: colors.subtitle },
                   ]}
                 >
-                  Estado:
+                  Guardar:
                 </Text>
                 <TouchableOpacity
                   onPress={handleLikeToggle}
                   style={singleAnnouncementStyles.likeButton}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
                   <Ionicons
                     name={liked ? "heart" : "heart-outline"}
                     size={24}
                     color={liked ? colors.accent : colors.subtitle}
                   />
-                  <Text
-                    style={[
-                      singleAnnouncementStyles.detailValue,
-                      { color: colors.text, marginLeft: 8 },
-                    ]}
-                  >
-                    {liked ? "Guardado" : "Guardar"}
-                  </Text>
                 </TouchableOpacity>
               </View>
             </View>
 
-            {/* Map Section for Announcements */}
             <View style={singleAnnouncementStyles.section}>
               <Text
                 style={[singleAnnouncementStyles.sectionTitle, { color: colors.text }]}

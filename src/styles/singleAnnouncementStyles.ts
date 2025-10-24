@@ -118,6 +118,8 @@ const singleAnnouncementStyles = StyleSheet.create({
     marginTop: 4,
     fontStyle: 'italic',
   },
+  
+
 });
 
 export default singleAnnouncementStyles;

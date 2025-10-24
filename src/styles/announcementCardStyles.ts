@@ -96,6 +96,18 @@ const announcementCardStyles = StyleSheet.create({
   likeIcon: {
     fontSize: 16,
   },
+  likeButtonOverlay: {
+  position: "absolute",
+  top: 10,
+  right: 10,
+  backgroundColor: "#fff",
+  borderRadius: 20,
+  padding: 6,
+  shadowColor: "#000",
+  shadowOpacity: 0.15,
+  shadowRadius: 3,
+  elevation: 2,
+},
 });
 
 export default announcementCardStyles;

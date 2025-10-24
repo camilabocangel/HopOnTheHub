@@ -1,15 +1,25 @@
+// hooks/useLikes.ts
 import { useUser } from "./useUser";
 import { toggleAnnouncementLike, toggleEventLike } from "@/helpers/likeHelpers";
+import { doc, updateDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { db } from "@/config/firebaseConfig";
 
 export const useLikes = () => {
   const { user } = useUser();
 
+  // Normalize IDs to strings for consistent comparison
+  const normalizeId = (id: string | number): string => id.toString();
+
   const isAnnouncementLiked = (announcementId: string): boolean => {
-    return user?.likedAnnouncements?.includes(announcementId) || false;
+    const normalizedId = normalizeId(announcementId);
+    const userLikedAnnouncements = user?.likedAnnouncements?.map(normalizeId) || [];
+    return userLikedAnnouncements.includes(normalizedId);
   };
 
   const isEventLiked = (eventId: string): boolean => {
-    return user?.likedEvents?.includes(eventId) || false;
+    const normalizedId = normalizeId(eventId);
+    const userLikedEvents = user?.likedEvents?.map(normalizeId) || [];
+    return userLikedEvents.includes(normalizedId);
   };
 
   const toggleAnnouncementLikeStatus = async (
@@ -17,19 +27,63 @@ export const useLikes = () => {
   ): Promise<boolean> => {
     if (!user) return false;
 
-    const isCurrentlyLiked = isAnnouncementLiked(announcementId);
-    return await toggleAnnouncementLike(
-      user.id,
-      announcementId,
-      isCurrentlyLiked
-    );
+    try {
+      const userDocRef = doc(db, "users", user.id);
+      const normalizedId = normalizeId(announcementId);
+      const isCurrentlyLiked = isAnnouncementLiked(announcementId);
+
+      if (isCurrentlyLiked) {
+        // Remove from liked announcements - handle both string and number formats
+        const currentLikes = user?.likedAnnouncements || [];
+        const updatedLikes = currentLikes.filter(
+          id => normalizeId(id) !== normalizedId
+        );
+        
+        await updateDoc(userDocRef, {
+          likedAnnouncements: updatedLikes
+        });
+      } else {
+        // Add to liked announcements - always store as string for consistency
+        await updateDoc(userDocRef, {
+          likedAnnouncements: arrayUnion(normalizedId)
+        });
+      }
+      
+      return true;
+    } catch (error) {
+      console.error("Error toggling announcement like:", error);
+      return false;
+    }
   };
 
   const toggleEventLikeStatus = async (eventId: string): Promise<boolean> => {
     if (!user) return false;
 
-    const isCurrentlyLiked = isEventLiked(eventId);
-    return await toggleEventLike(user.id, eventId, isCurrentlyLiked);
+    try {
+      const userDocRef = doc(db, "users", user.id);
+      const normalizedId = normalizeId(eventId);
+      const isCurrentlyLiked = isEventLiked(eventId);
+
+      if (isCurrentlyLiked) {
+        const currentLikes = user?.likedEvents || [];
+        const updatedLikes = currentLikes.filter(
+          id => normalizeId(id) !== normalizedId
+        );
+        
+        await updateDoc(userDocRef, {
+          likedEvents: updatedLikes
+        });
+      } else {
+        await updateDoc(userDocRef, {
+          likedEvents: arrayUnion(normalizedId)
+        });
+      }
+      
+      return true;
+    } catch (error) {
+      console.error("Error toggling event like:", error);
+      return false;
+    }
   };
 
   return {
@@ -37,7 +91,7 @@ export const useLikes = () => {
     isEventLiked,
     toggleAnnouncementLikeStatus,
     toggleEventLikeStatus,
-    userLikedAnnouncements: user?.likedAnnouncements || [],
-    userLikedEvents: user?.likedEvents || [],
+    userLikedAnnouncements: user?.likedAnnouncements?.map(normalizeId) || [],
+    userLikedEvents: user?.likedEvents?.map(normalizeId) || [],
   };
 };

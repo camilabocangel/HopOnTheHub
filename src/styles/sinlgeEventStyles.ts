@@ -87,6 +87,10 @@ const singleEventsStyles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
+  likeButton: 
+  {
+    padding: 4,
+  },
 });
 
 export default singleEventsStyles;

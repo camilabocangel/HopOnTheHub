@@ -1,18 +1,20 @@
 import React, { useState, useMemo } from "react";
-import { View, Text, ScrollView, Image, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Image, TouchableOpacity, Alert } from "react-native";
 import { useLocalSearchParams } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
-import singleEventsStyles from "../../src/styles/sinlgeEventStyles";
+import singleEventsStyles from "@/styles/sinlgeEventStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapModal from "@/components/MapModal";
-import { Ionicons } from "@expo/vector-icons";
 import MapView, { Marker } from "react-native-maps";
-import { parseCampuses, getCampusesCoordinates, getMapRegionForCampuses } from "@/utils/campusUtils";
+import { parseCampuses, getCampusesCoordinates, getMapRegionForCampuses, convertToCampusKeys, CampusKey } from "@/utils/campusUtils";
+import { useLikes } from "@/hooks/useLikes";
 
 export default function SingleEventScreen() {
   const { colors } = useThemeColors();
   const params = useLocalSearchParams();
   const [showMapModal, setShowMapModal] = useState(false);
+  const { isEventLiked, toggleEventLikeStatus } = useLikes();
   
   const {
     id,
@@ -26,6 +28,18 @@ export default function SingleEventScreen() {
     content,
     campus
   } = params;
+
+  const eventId = id as string;
+  const liked = isEventLiked(eventId);
+
+  const handleLikeToggle = async () => {
+    if (!eventId) return;
+    
+    const success = await toggleEventLikeStatus(eventId);
+    if (!success) {
+      Alert.alert("Error", "No se pudo actualizar el like");
+    }
+  };
 
   const eventCampuses = useMemo(() => {
     return parseCampuses(campus as string || 'la paz');
@@ -191,6 +205,34 @@ export default function SingleEventScreen() {
                   {category as string}
                 </Text>
               </View>
+
+              {/* Like Button for Events */}
+              <View
+                style={[
+                  singleEventsStyles.detailRow,
+                  { borderBottomColor: colors.border },
+                ]}
+              >
+                <Text
+                  style={[
+                    singleEventsStyles.detailLabel,
+                    { color: colors.subtitle },
+                  ]}
+                >
+                  Guardar:
+                </Text>
+                <TouchableOpacity
+                  onPress={handleLikeToggle}
+                  style={singleEventsStyles.likeButton}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
+                  <Ionicons
+                    name={liked ? "heart" : "heart-outline"}
+                    size={24}
+                    color={liked ? colors.accent : colors.subtitle}
+                  />
+                </TouchableOpacity>
+              </View>
             </View>
 
             {/* Map Section */}
@@ -257,18 +299,20 @@ export default function SingleEventScreen() {
               </Text>
             </View>
 
-            <View style={singleEventsStyles.section}>
-              <Text
-                style={[singleEventsStyles.sectionTitle, { color: colors.text }]}
-              >
-                Contenido
-              </Text>
-              <Text
-                style={[singleEventsStyles.sectionContent, { color: colors.text }]}
-              >
-                {content as string}
-              </Text>
-            </View>
+            {content && (
+              <View style={singleEventsStyles.section}>
+                <Text
+                  style={[singleEventsStyles.sectionTitle, { color: colors.text }]}
+                >
+                  Contenido
+                </Text>
+                <Text
+                  style={[singleEventsStyles.sectionContent, { color: colors.text }]}
+                >
+                  {content as string}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       </ScrollView>

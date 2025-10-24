@@ -1,3 +1,4 @@
+
 import React from "react";
 import { TouchableOpacity, View, Text, Image, Alert } from "react-native";
 import { router } from "expo-router";
@@ -9,7 +10,7 @@ import announcementCardStyles from "../styles/announcementCardStyles";
 import { AnnouncementCardProps } from "@/types/types";
 
 export default function AnnouncementCard({
-  id,
+  id ,
   image,
   description,
   date,
@@ -65,12 +66,27 @@ export default function AnnouncementCard({
             <Text style={styles.placeholderText}>Anuncio</Text>
           </View>
         )}
-        
+
+        {isNormal && (
+          <TouchableOpacity
+            onPress={handleLikePress}
+            style={styles.likeButtonOverlay}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <Ionicons
+              name={liked ? "heart" : "heart-outline"}
+              size={20}
+              color={liked ? colors.accent : "#555"}
+            />
+          </TouchableOpacity>
+        )}
+
         {isPending && (
           <View style={styles.pendingBadge}>
             <Text style={styles.pendingText}>Pendiente</Text>
           </View>
         )}
+
       </View>
 
       <View style={styles.content}>
@@ -97,19 +113,7 @@ export default function AnnouncementCard({
             ))}
           </View>
 
-          {isNormal && (
-            <TouchableOpacity
-              onPress={handleLikePress}
-              style={styles.likeButton}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-            >
-              <Ionicons
-                name={liked ? "heart" : "heart-outline"}
-                size={20}
-                color={liked ? colors.accent : colors.subtitle}
-              />
-            </TouchableOpacity>
-          )}
+          
         </View>
       </View>
     </TouchableOpacity>
