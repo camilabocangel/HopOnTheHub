@@ -64,6 +64,8 @@ export type Event = {
   attendees: string[];
   likes: string[];
   createdAt?: any;
+  locations: { lat: number; lng: number }[];
+  modality: string;
 };
 
 export type EventCardProps = {

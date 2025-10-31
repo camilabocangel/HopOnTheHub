@@ -27,7 +27,7 @@ export default function CreateEventCard() {
         borderWidth: 1,
         borderColor: colors.border + '40', 
       }}
-      onPress={() => router.push("/(drawer)/create_event")}
+      onPress={() => router.push("/(drawer)/create_edit_event")}
     >
       <View style={{ alignItems: "center" }}>
         <Ionicons name="add-circle" size={48} color={colors.primary} />

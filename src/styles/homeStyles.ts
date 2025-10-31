@@ -1,19 +1,34 @@
 import { StyleSheet } from "react-native";
 
 export const homeStyles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  emptyState: {
+    padding: 20,
+    alignItems: "center",
+  },
+  emptyStateText: {
+    fontSize: 14,
+    textAlign: "center",
+    opacity: 0.7,
+  },
   heroOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "rgba(0,0,0,0.4)",
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
   },
   heroTitle: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
@@ -24,16 +39,6 @@ export const homeStyles = StyleSheet.create({
     color: "white",
     textAlign: "center",
     opacity: 0.9,
-  },
-  emptyState: {
-    padding: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  emptyStateText: {
-    fontSize: 16,
-    textAlign: "center",
-    opacity: 0.7,
   },
   statsContainer: {
     flexDirection: "row",

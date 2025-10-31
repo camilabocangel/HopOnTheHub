@@ -21,6 +21,7 @@ export default function EventCard({
   content,
   campus,
   isPending,
+  status,
 }: EventCardProps) {
   const { colors } = useThemeColors();
   const { isEventLiked, toggleEventLikeStatus } = useLikes();
@@ -40,7 +41,8 @@ export default function EventCard({
         description,
         image,
         content,
-        campus: campus || "la paz",
+        campus,
+        status,
       },
     });
   };

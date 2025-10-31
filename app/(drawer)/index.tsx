@@ -5,9 +5,11 @@ import {
   Image,
   Text,
   Dimensions,
-  Alert,
   FlatList,
   RefreshControl,
+  ActivityIndicator,
+  Alert,
+  TouchableOpacity,
 } from "react-native";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import Section from "../../src/components/Section";
@@ -24,11 +26,11 @@ import { usePendingEvents } from "@/hooks/usePendingEvents";
 import { usePendingAnnouncements } from "@/hooks/usePendingAnnouncements";
 import { homeStyles } from "@/styles/homeStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { importCareersToFirebase } from "@/scripts/importCareersToFirebase";
-import { importAnnouncementsToFirebase } from "@/scripts/importAnnouncementsToFirebase";
-import { importEventsToFirebase } from "@/scripts/importEventsToFirebase";
 import CreateEventCard from "@/components/CreateEventCard";
 import CreateAnnouncementCard from "@/components/CreateAnnouncementCard";
+import { importAnnouncementsToFirebase } from "@/scripts/importAnnouncementsToFirebase";
+import { importEventsToFirebase } from "@/scripts/importEventsToFirebase";
+import { importCareersToFirebase } from "@/scripts/importCareersToFirebase";
 
 const { height, width } = Dimensions.get("window");
 
@@ -55,20 +57,6 @@ const generateMockScheduleData = () => {
       endDate: "2025-05-20",
       teacher: "MSc. Roberto Silva",
     },
-    {
-      schedule: "14:00 - 15:30",
-      classroom: "Aula 410",
-      startDate: "2025-01-15",
-      endDate: "2025-05-20",
-      teacher: "Dra. María Fernández",
-    },
-    {
-      schedule: "15:45 - 17:15",
-      classroom: "Laboratorio A",
-      startDate: "2025-01-15",
-      endDate: "2025-05-20",
-      teacher: "Lic. Jorge Torres",
-    },
   ];
 
   return subjectsData;
@@ -77,7 +65,7 @@ const generateMockScheduleData = () => {
 export default function HomeScreen() {
   const styles = homeStyles;
   const { colors } = useThemeColors();
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
   const { careers, loading: careersLoading, getCurrentSemester } = useCareers();
 
   const {
@@ -95,7 +83,6 @@ export default function HomeScreen() {
     events: pendingEvents,
     loading: pendingEventsLoading,
     refetch: refetchPendingEvents,
-    updateEventStatus,
   } = usePendingEvents();
   const {
     announcements: pendingAnnouncements,
@@ -104,34 +91,31 @@ export default function HomeScreen() {
   } = usePendingAnnouncements();
 
   const [refreshing, setRefreshing] = React.useState(false);
+  const [initialLoad, setInitialLoad] = React.useState(true);
 
-   useFocusEffect(
-     React.useCallback(() => {
-       const refreshData = async () => {
-         if (user?.role === "admin") {
-           await Promise.all([
-             refetchPendingEvents(),
-             refetchPendingAnnouncements(),
-           ]);
-         } else {
-           await Promise.all([refetchEvents(), refetchAnnouncements()]);
-         }
-       };
+  useFocusEffect(
+    React.useCallback(() => {
+      const refreshData = async () => {
+        if (user?.role === "admin") {
+          await Promise.all([
+            refetchPendingEvents(),
+            refetchPendingAnnouncements(),
+          ]);
+        } else {
+          await Promise.all([refetchEvents(), refetchAnnouncements()]);
+        }
+        setInitialLoad(false);
+      };
 
-       refreshData();
-     }, [
-       user?.role,
-       refetchPendingEvents,
-       refetchPendingAnnouncements,
-       refetchEvents,
-       refetchAnnouncements,
-     ])
-   );
-
-  const currentSemester = getCurrentSemester(user?.career, user?.semester);
-  
-  const upcomingEvents = allEvents?.slice(0, 5) || [];
-  const recentAnnouncements = allAnnouncements?.slice(0, 5) || [];
+      refreshData();
+    }, [
+      user?.role,
+      refetchPendingEvents,
+      refetchPendingAnnouncements,
+      refetchEvents,
+      refetchAnnouncements,
+    ])
+  );
 
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
@@ -157,16 +141,17 @@ export default function HomeScreen() {
     refetchAnnouncements,
   ]);
 
-  const handleImport = async () => {
-    try {
-      await importCareersToFirebase();
-      await importAnnouncementsToFirebase();
-      await importEventsToFirebase();
-      Alert.alert("Éxito", "Importación correcta");
-    } catch (error) {
-      Alert.alert("Error", "Importación fallida");
-    }
-  };
+  const isLoading =
+    initialLoad ||
+    userLoading ||
+    (user?.role === "admin"
+      ? pendingEventsLoading || pendingAnnouncementsLoading
+      : eventsLoading || announcementsLoading);
+
+  const currentSemester = getCurrentSemester(user?.career, user?.semester);
+
+  const upcomingEvents = allEvents?.slice(0, 5) || [];
+  const recentAnnouncements = allAnnouncements?.slice(0, 5) || [];
 
   const renderEventItem = ({ item }: { item: any }) => (
     <View style={styles.horizontalCard}>
@@ -236,6 +221,30 @@ export default function HomeScreen() {
     </View>
   );
 
+  const handleImport = async () => {
+    try {
+      await importCareersToFirebase();
+      await importAnnouncementsToFirebase();
+      await importEventsToFirebase();
+      Alert.alert("Éxito", "Importación correcta");
+    } catch (error) {
+      Alert.alert("Error", "Importación fallida");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={[styles.loadingText, { color: colors.text }]}>
+            Cargando...
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   if (user?.role === "admin") {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -264,14 +273,25 @@ export default function HomeScreen() {
             </View>
           </View>
 
+          {__DEV__ && (
+            <TouchableOpacity
+              onPress={handleImport}
+              style={{
+                position: "absolute",
+                top: 50,
+                right: 20,
+                backgroundColor: "red",
+                padding: 10,
+                borderRadius: 5,
+                zIndex: 9999,
+              }}
+            >
+              <Text style={{ color: "white", fontSize: 12 }}>Import Data</Text>
+            </TouchableOpacity>
+          )}
+
           <Section title={`Eventos Pendientes (${pendingEvents.length})`}>
-            {pendingEventsLoading ? (
-              <Text
-                style={{ color: colors.text, textAlign: "center", padding: 20 }}
-              >
-                Cargando eventos pendientes...
-              </Text>
-            ) : pendingEvents.length > 0 ? (
+            {pendingEvents.length > 0 ? (
               <FlatList
                 horizontal
                 data={pendingEvents}
@@ -294,13 +314,7 @@ export default function HomeScreen() {
           <Section
             title={`Anuncios Pendientes (${pendingAnnouncements.length})`}
           >
-            {pendingAnnouncementsLoading ? (
-              <Text
-                style={{ color: colors.text, textAlign: "center", padding: 20 }}
-              >
-                Cargando anuncios pendientes...
-              </Text>
-            ) : pendingAnnouncements.length > 0 ? (
+            {pendingAnnouncements.length > 0 ? (
               <FlatList
                 horizontal
                 data={pendingAnnouncements}
@@ -318,6 +332,29 @@ export default function HomeScreen() {
                 </Text>
               </View>
             )}
+          </Section>
+          <Section title="Buscar por Campus">
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{ paddingHorizontal: 12 }}
+            >
+              <CampusCard
+                label="La Paz"
+                href="/(drawer)/campus?campus=La Paz"
+                image={require("../../assets/lapaz.jpg")}
+              />
+              <CampusCard
+                label="Cochabamba"
+                href="/(drawer)/campus?campus=Cochabamba"
+                image={require("../../assets/cocha.jpg")}
+              />
+              <CampusCard
+                label="Santa Cruz"
+                href="/(drawer)/campus?campus=Santa Cruz"
+                image={require("../../assets/staCruz.jpg")}
+              />
+            </ScrollView>
           </Section>
         </ScrollView>
       </SafeAreaView>
@@ -337,7 +374,7 @@ export default function HomeScreen() {
           />
         }
       >
-        <View style={[styles.hero, { height: height - 10 }]}>
+        <View style={[styles.hero, { height: height * 0.25 }]}>
           <Image
             source={require("../../assets/upb.jpg")}
             style={styles.heroImage}
@@ -365,19 +402,19 @@ export default function HomeScreen() {
                 );
               })
             ) : (
-              <Text style={{ color: colors.text }}>
-                {user.career && user.semester
-                  ? `No se encontraron materias para ${user.career} - Semestre ${user.semester}`
-                  : "Completa tu información académica en tu perfil"}
-              </Text>
+              <View style={styles.emptyState}>
+                <Text style={[styles.emptyStateText, { color: colors.text }]}>
+                  {user.career && user.semester
+                    ? `No se encontraron materias para ${user.career} - Semestre ${user.semester}`
+                    : "Completa tu información académica en tu perfil"}
+                </Text>
+              </View>
             )}
           </Section>
-        ) : (
-          <View></View>
-        )}
+        ) : null}
 
-        {user && upcomingEvents.length > 0 && (
-          <Section title={`Próximos Eventos (${user.campus})`}>
+        <Section title={`Próximos Eventos (${user?.campus || "UPB"})`}>
+          {upcomingEvents.length > 0 ? (
             <FlatList
               horizontal
               data={upcomingEvents}
@@ -389,19 +426,15 @@ export default function HomeScreen() {
               decelerationRate="fast"
               ListFooterComponent={renderEventListFooter}
             />
-          </Section>
-        )}
-
-        {user && upcomingEvents.length === 0 && (
-          <Section title={`Eventos (${user.campus})`}>
+          ) : (
             <View style={{ flexDirection: "row" }}>
               <CreateEventCard />
             </View>
-          </Section>
-        )}
+          )}
+        </Section>
 
-        {user && recentAnnouncements.length > 0 && (
-          <Section title={`Anuncios (${user.campus})`}>
+        <Section title={`Anuncios (${user?.campus || "UPB"})`}>
+          {recentAnnouncements.length > 0 ? (
             <FlatList
               horizontal
               data={recentAnnouncements}
@@ -413,16 +446,12 @@ export default function HomeScreen() {
               decelerationRate="fast"
               ListFooterComponent={renderAnnouncementListFooter}
             />
-          </Section>
-        )}
-
-        {user && recentAnnouncements.length === 0 && (
-          <Section title={`Anuncios (${user.campus})`}>
+          ) : (
             <View style={{ flexDirection: "row" }}>
               <CreateAnnouncementCard />
             </View>
-          </Section>
-        )}
+          )}
+        </Section>
 
         <Section title="Buscar por Campus">
           <ScrollView

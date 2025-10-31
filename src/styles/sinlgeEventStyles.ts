@@ -100,17 +100,7 @@ const singleEventsStyles = StyleSheet.create({
   borderTopColor: '#e0e0e0',
   gap: 12,
 },
-approveButton: {
-  flex: 1,
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-  paddingVertical: 12,
-  paddingHorizontal: 16,
-  borderRadius: 8,
-  gap: 8,
-},
-rejectButton: {
+actionButton: {
   flex: 1,
   flexDirection: 'row',
   alignItems: 'center',

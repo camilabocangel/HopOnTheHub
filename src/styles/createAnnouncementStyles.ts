@@ -27,14 +27,14 @@ const createStyles = (colors: ThemeColors) => StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
     textAlign: 'center',
-    color: colors.subtitle
+    color: colors.primary
 
   },
   subtitle: {
     fontSize: 16,
     opacity: 0.7,
     textAlign: 'center',
-    color: colors.subtitle
+    color: colors.primary
 
   },
   fieldsContainer: {

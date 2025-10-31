@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback } from "react";
 import { fetchPendingEvents } from "@/helpers/fetchEvents";
 import { updateEventStatus as updateEventStatusService } from "@/services/eventService";
 import { Event } from "@/types/types";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/config/firebaseConfig";
 
 export const usePendingEvents = () => {
   const [events, setEvents] = useState<Event[]>([]);
@@ -44,6 +46,29 @@ export const usePendingEvents = () => {
     []
   );
 
+  const updateEvent = useCallback(async (eventId: string, updatedData: Partial<Event>) => {
+  try {
+    const formattedEventId = eventId.startsWith('event-') ? eventId : `event-${eventId}`;
+    const eventRef = doc(db, "events", formattedEventId);
+    
+    await updateDoc(eventRef, {
+      ...updatedData,
+      updatedAt: new Date()
+    });
+
+    setEvents(prevEvents => 
+      prevEvents.map(event => 
+        event.id === eventId ? { ...event, ...updatedData } : event
+      )
+    );
+    
+    return true;
+  } catch (error) {
+    console.error("Error updating event:", error);
+    return false;
+  }
+}, []);
+
   useEffect(() => {
     loadEvents();
   }, [loadEvents]);
@@ -54,5 +79,6 @@ export const usePendingEvents = () => {
     error,
     refetch: loadEvents,
     updateEventStatus,
+    updateEvent
   };
 };

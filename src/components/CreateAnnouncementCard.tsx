@@ -27,7 +27,7 @@ export default function CreateAnnouncementCard() {
         borderWidth: 1,
         borderColor: colors.border + '40',
       }}
-      onPress={() => router.push("/(drawer)/create_announcement")}
+      onPress={() => router.push("/(drawer)/create_edit_announcement")}
     >
       <View style={{ alignItems: "center" }}>
         <Ionicons name="add-circle" size={48} color={colors.primary} />

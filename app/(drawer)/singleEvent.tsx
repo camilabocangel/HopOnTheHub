@@ -52,6 +52,7 @@ export default function SingleEventScreen() {
     image,
     content,
     campus,
+    status,
   } = params;
 
   const eventId = id as string;
@@ -67,6 +68,31 @@ export default function SingleEventScreen() {
       Alert.alert("Error", "No se pudo actualizar el like");
     }
   };
+
+  const handleEditEvent = () => {
+    const eventData = {
+    id: id as string,
+    title: title as string,
+    date: date as string,
+    time: time as string,
+    place: place as string,
+    category: category as string,
+    description: description as string,
+    image: image as string,
+    content: content as string,
+    campus: campus as string,
+    status: status as string,
+    firestoreId: id as string,
+  };
+
+  router.push({
+    pathname: "/(drawer)/create_edit_event",
+    params: {
+      ...eventData,
+      isEditing: "true",
+    },
+  });
+};
 
   const handleApproveEvent = async () => {
     try {
@@ -422,26 +448,40 @@ export default function SingleEventScreen() {
             ]}
           >
             <TouchableOpacity
-              style={[
-                singleEventsStyles.approveButton,
-                { backgroundColor: "#4CAF50" },
-              ]}
-              onPress={handleApproveEvent}
-            >
-              <Ionicons name="checkmark-circle" size={20} color="white" />
-              <Text style={singleEventsStyles.buttonText}>Aceptar Evento</Text>
-            </TouchableOpacity>
+                  style={[
+                    singleEventsStyles.actionButton,
+                    { backgroundColor: "#ddb503ff" },
+                  ]}
+                  onPress={handleEditEvent}
+                >
+                  <Ionicons name="checkmark-circle" size={20} color="white" />
+                  <Text style={singleEventsStyles.buttonText}>Editar Evento</Text>
+                </TouchableOpacity>
+            {status === "pending" && (
+              <>
+                <TouchableOpacity
+                  style={[
+                    singleEventsStyles.actionButton,
+                    { backgroundColor: "#4CAF50" },
+                  ]}
+                  onPress={handleApproveEvent}
+                >
+                  <Ionicons name="checkmark-circle" size={20} color="white" />
+                  <Text style={singleEventsStyles.buttonText}>Aceptar Evento</Text>
+                </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[
-                singleEventsStyles.rejectButton,
-                { backgroundColor: "#f44336" },
-              ]}
-              onPress={handleRejectEvent}
-            >
-              <Ionicons name="close-circle" size={20} color="white" />
-              <Text style={singleEventsStyles.buttonText}>Rechazar Evento</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    singleEventsStyles.actionButton,
+                    { backgroundColor: "#f44336" },
+                  ]}
+                  onPress={handleRejectEvent}
+                >
+                  <Ionicons name="close-circle" size={20} color="white" />
+                  <Text style={singleEventsStyles.buttonText}>Rechazar Evento</Text>
+                </TouchableOpacity>
+              </>
+            )}
           </View>
         )}
       </ScrollView>
@@ -456,3 +496,5 @@ export default function SingleEventScreen() {
     </SafeAreaView>
   );
 }
+
+
