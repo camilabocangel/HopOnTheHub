@@ -26,6 +26,7 @@ import {
 import { db } from "@/config/firebaseConfig";
 import useCreateEventStyles from "@/styles/createEventStyles";
 import { getNextEventId } from "@/helpers/eventIdGenerator";
+import { formatCampusName, parseCampuses } from "@/utils/campusUtils";
 
 interface CreateEventFormProps {
   onSubmit: (eventData: any) => void;
@@ -51,7 +52,6 @@ const eventCategories = [
 
 const allCampuses = ["La Paz", "Santa Cruz", "Cochabamba"];
 
-// Coordenadas por defecto para cada campus
 const DEFAULT_CAMPUS_COORDINATES = {
   "La Paz": { lat: -16.575086023174308, lng: -68.12665110963786 },
   Cochabamba: { lat: -17.39812308534289, lng: -66.21836160542453 },
@@ -87,47 +87,80 @@ export default function CreateEventForm({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
 
-  useEffect(() => {
-    if (isEditing && eventToEdit) {
-      setTitle(eventToEdit.title || "");
-      setDescription(eventToEdit.description || "");
-      setContent(eventToEdit.content || "");
-      setCategory(eventToEdit.category || "");
-      setPlace(eventToEdit.place || "");
+  // Versión más robusta del useEffect
+useEffect(() => {
+  if (isEditing && eventToEdit) {
+    console.log("📝 EDITING EVENT DATA:", eventToEdit);
 
-      const campuses = Array.isArray(eventToEdit.campus)
-        ? eventToEdit.campus
-        : [eventToEdit.campus || user?.campus || "La Paz"];
-      setSelectedCampuses(campuses);
+    setTitle(eventToEdit.title || "");
+    setDescription(eventToEdit.description || "");
+    setContent(eventToEdit.content || "");
+    setCategory(eventToEdit.category || "");
+    setPlace(eventToEdit.place || "");
 
-      if (eventToEdit.date) {
-        const [year, month, day] = eventToEdit.date.split("-");
-        setDate(new Date(parseInt(year), parseInt(month) - 1, parseInt(day)));
-      }
-
-      if (eventToEdit.time) {
-        const [hours, minutes] = eventToEdit.time.split(":");
-        const newTime = new Date();
-        newTime.setHours(parseInt(hours), parseInt(minutes));
-        setTime(newTime);
-      }
-
-      setModality(eventToEdit.modality || "Presencial");
+    // SOLUCIÓN ALTERNATIVA: Manejar diferentes formatos de campus
+    let campuses: string[] = [];
+    
+    if (Array.isArray(eventToEdit.campus)) {
+      // Si ya es un array, usarlo directamente
+      campuses = eventToEdit.campus;
+    } else if (typeof eventToEdit.campus === 'string') {
+      // Si es string, usar parseCampuses
+      campuses = parseCampuses(eventToEdit.campus);
+    } else {
+      // Fallback
+      campuses = [user?.campus || "La Paz"];
     }
-  }, [isEditing, eventToEdit, user?.campus]);
+    
+    console.log("✅ Final campuses for form:", campuses);
+    setSelectedCampuses(campuses);
+
+    // Cargar modalidad
+    const eventModality = eventToEdit.modality || "Presencial";
+    setModality(eventModality);
+
+    if (eventModality === "Virtual" && (!eventToEdit.place || eventToEdit.place.trim() === "")) {
+      setPlace("En línea");
+    }
+
+    if (eventToEdit.date) {
+      const [year, month, day] = eventToEdit.date.split("-");
+      setDate(new Date(parseInt(year), parseInt(month) - 1, parseInt(day)));
+    }
+
+    if (eventToEdit.time) {
+      const [hours, minutes] = eventToEdit.time.split(":");
+      const newTime = new Date();
+      newTime.setHours(parseInt(hours), parseInt(minutes));
+      setTime(newTime);
+    }
+  } else {
+    setSelectedCampuses([user?.campus || "La Paz"]);
+    setModality("Presencial");
+  }
+}, [isEditing, eventToEdit, user?.campus]);
+
+  const handleModalityToggle = () => {
+    const newModality = modality === "Presencial" ? "Virtual" : "Presencial";
+    setModality(newModality);
+
+    if (newModality === "Virtual") {
+      setPlace("En línea");
+    } else if (place === "En línea") {
+      setPlace("");
+    }
+  };
 
   const handleCampusToggle = (campus: string) => {
     if (selectedCampuses.includes(campus)) {
       if (selectedCampuses.length > 1) {
         setSelectedCampuses(selectedCampuses.filter((c) => c !== campus));
+      } else {
+        Alert.alert("Error", "Debe seleccionar al menos un campus");
       }
     } else {
       setSelectedCampuses([...selectedCampuses, campus]);
     }
-  };
-
-  const handleModalityToggle = () => {
-    setModality((prev) => (prev === "Presencial" ? "Virtual" : "Presencial"));
   };
 
   const formatDate = (date: Date) => {
@@ -138,12 +171,20 @@ export default function CreateEventForm({
     return date.toTimeString().split(" ")[0].substring(0, 5);
   };
 
-  const generateLocations = (campuses: string[]) => {
+  const generateLocations = (
+    campuses: string[]
+  ): { lat: number; lng: number }[] => {
+    const campusCoordinates = {
+      "La Paz": { lat: -16.57491, lng: -68.12711 },
+      Cochabamba: { lat: -17.2318, lng: -66.22568 },
+      "Santa Cruz": { lat: -17.81922, lng: -63.23354 },
+    };
+
     return campuses.map((campus) => {
+      const formattedCampus = formatCampusName(campus);
       return (
-        DEFAULT_CAMPUS_COORDINATES[
-          campus as keyof typeof DEFAULT_CAMPUS_COORDINATES
-        ] || DEFAULT_CAMPUS_COORDINATES["La Paz"]
+        campusCoordinates[formattedCampus as keyof typeof campusCoordinates] ||
+        campusCoordinates["La Paz"]
       );
     });
   };
@@ -153,7 +194,7 @@ export default function CreateEventForm({
       !title.trim() ||
       !description.trim() ||
       !category ||
-      !place.trim() ||
+      (modality === "Presencial" && !place.trim()) ||
       selectedCampuses.length === 0
     ) {
       Alert.alert("Error", "Por favor completa todos los campos obligatorios");
@@ -165,33 +206,32 @@ export default function CreateEventForm({
       let eventData;
       let eventDocRef;
 
-      // Generar locations automáticamente
-      const locations = generateLocations(selectedCampuses);
-
       if (isEditing && eventToEdit) {
-        // Modo edición - actualizar evento existente
         eventData = {
           title: title.trim(),
           description: description.trim(),
           content: content.trim() || description.trim(),
           category,
-          place: place.trim(),
+          place: modality === "Virtual" ? "En línea" : place.trim(),
           campus: selectedCampuses,
           date: formatDate(date),
           time: formatTime(time),
           modality: modality,
-          locations: locations,
+          locations: generateLocations(selectedCampuses),
           updatedAt: serverTimestamp(),
+          createdBy: eventToEdit.createdBy || user?.name || "Usuario",
         };
 
-        // Usar el firestoreId si está disponible, sino generar el ID
-        const eventId = eventToEdit.firestoreId || `event-${eventToEdit.id}`;
-        eventDocRef = doc(db, "events", eventId);
+        const formattedEventId = eventToEdit.id.startsWith("event-")
+          ? eventToEdit.id
+          : `event-${eventToEdit.id}`;
+        console.log("Actualizando evento con ID:", formattedEventId);
+
+        eventDocRef = doc(db, "events", formattedEventId);
         await updateDoc(eventDocRef, eventData);
 
         Alert.alert("Éxito", "Evento actualizado correctamente");
       } else {
-        // Modo creación - crear nuevo evento
         const nextId = await getNextEventId();
 
         eventData = {
@@ -200,18 +240,18 @@ export default function CreateEventForm({
           description: description.trim(),
           content: content.trim() || description.trim(),
           category,
-          place: place.trim(),
+          place: modality === "Virtual" ? "En línea" : place.trim(),
           campus: selectedCampuses,
           date: formatDate(date),
           time: formatTime(time),
-          modality: modality,
-          locations: locations,
           image: CUSTOM_EVENT_IMAGE,
           status: "pending",
           attendees: [],
           likes: [],
           createdAt: serverTimestamp(),
-          createdBy: user?.id,
+          createdBy: user?.name || "Usuario",
+          locations: generateLocations(selectedCampuses),
+          modality: modality,
         };
 
         eventDocRef = doc(db, "events", `event-${nextId}`);
@@ -234,6 +274,23 @@ export default function CreateEventForm({
     } finally {
       setLoading(false);
     }
+  };
+
+  const formatCampusName = (campus: string): string => {
+    const campusMap: { [key: string]: string } = {
+      "la paz": "La Paz",
+      lapaz: "La Paz",
+      "santa cruz": "Santa Cruz",
+      santacruz: "Santa Cruz",
+      cochabamba: "Cochabamba",
+      cocha: "Cochabamba",
+    };
+
+    const lowerCampus = campus.toLowerCase().trim();
+    return (
+      campusMap[lowerCampus] ||
+      campus.charAt(0).toUpperCase() + campus.slice(1).toLowerCase()
+    );
   };
 
   const CategoryModal = () => (
@@ -350,21 +407,52 @@ export default function CreateEventForm({
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Modalidad *</Text>
           <View style={styles.modalityContainer}>
-            <Text style={styles.modalityText}>
-              {modality === "Presencial" ? "Presencial" : "Virtual"}
-            </Text>
-            <Switch
-              value={modality === "Virtual"}
-              onValueChange={handleModalityToggle}
-              trackColor={{ false: "#767577", true: colors.primary }}
-              thumbColor={modality === "Virtual" ? colors.primary : "#f4f3f4"}
-            />
+            <Text style={styles.modalityText}>Presencial</Text>
+            <View style={styles.switchContainer}>
+              <Text style={styles.modalityLabel}>
+                {modality === "Presencial" ? "Presencial" : "Virtual"}
+              </Text>
+              <Switch
+                value={modality === "Virtual"}
+                onValueChange={handleModalityToggle}
+                trackColor={{ false: "#767577", true: "#81b0ff" }}
+                thumbColor={modality === "Virtual" ? "#f5dd4b" : "#f4f3f4"}
+                ios_backgroundColor="#3e3e3e"
+              />
+            </View>
           </View>
           <Text style={styles.modalityHint}>
             {modality === "Presencial"
-              ? "El evento se realizará en ubicaciones físicas"
-              : "El evento será completamente virtual"}
+              ? "El evento se realizará en un lugar físico"
+              : "El evento se realizará en línea"}
           </Text>
+        </View>
+
+        <View style={styles.fieldGroup}>
+          <Text style={styles.label}>
+            Lugar {modality === "Presencial" ? "*" : ""}
+          </Text>
+          <TextInput
+            style={[
+              styles.textInput,
+              modality !== "Presencial" && styles.textInputDisabled,
+            ]}
+            placeholder={
+              modality === "Presencial"
+                ? "Auditorio Principal, Cancha Deportiva, etc."
+                : "Evento virtual - En línea"
+            }
+            placeholderTextColor="#888"
+            value={place}
+            onChangeText={setPlace}
+            editable={modality === "Presencial"}
+          />
+          {modality !== "Presencial" && (
+            <Text style={styles.hintText}>
+              Para eventos virtuales, el lugar se establece automáticamente como
+              "En línea"
+            </Text>
+          )}
         </View>
 
         <View style={styles.fieldGroup}>
@@ -381,14 +469,30 @@ export default function CreateEventForm({
         </View>
 
         <View style={styles.fieldGroup}>
-          <Text style={styles.label}>Lugar *</Text>
+          <Text style={styles.label}>
+            Lugar {modality === "Presencial" ? "*" : ""}
+          </Text>
           <TextInput
-            style={styles.textInput}
-            placeholder="Auditorio Principal, Cancha Deportiva, etc."
+            style={[
+              styles.textInput,
+              modality !== "Presencial" && styles.textInputDisabled,
+            ]}
+            placeholder={
+              modality === "Presencial"
+                ? "Auditorio Principal, Cancha Deportiva, etc."
+                : "Evento virtual - En línea"
+            }
             placeholderTextColor="#888"
             value={place}
             onChangeText={setPlace}
+            editable={modality === "Presencial"}
           />
+          {modality !== "Presencial" && (
+            <Text style={styles.hintText}>
+              Para eventos virtuales, el lugar se establece automáticamente como
+              "En línea"
+            </Text>
+          )}
         </View>
 
         <View style={styles.fieldGroup}>
@@ -414,13 +518,30 @@ export default function CreateEventForm({
                     </View>
                     <Text style={styles.checkboxText}>
                       {campusItem}
-                      {campusItem === user?.campus && " (tu campus)"}
+                      {campusItem === user?.campus &&
+                        !isEditing &&
+                        " (tu campus)"}
+                      {selectedCampuses.includes(campusItem) &&
+                        isEditing &&
+                        " ✓"}
                     </Text>
                   </TouchableOpacity>
                 </View>
               ))}
             </View>
-            <Text style={styles.campusHint}>Selecciona al menos un campus</Text>
+            <Text style={styles.campusHint}>
+              {user?.role === "admin"
+                ? "Selecciona al menos un campus"
+                : `Tu evento se creará para tu campus (${user?.campus})`}
+            </Text>
+            {!isEditing &&
+              user?.role !== "admin" &&
+              selectedCampuses.length > 0 && (
+                <Text style={styles.campusHint}>
+                  ⓘ Como usuario normal, solo puedes crear eventos para tu
+                  campus
+                </Text>
+              )}
           </View>
         </View>
 

@@ -1,4 +1,3 @@
-
 import React from "react";
 import { TouchableOpacity, View, Text, Image, Alert } from "react-native";
 import { router } from "expo-router";
@@ -21,7 +20,10 @@ export default function EventCard({
   content,
   campus,
   isPending,
+  isRejected = false,
   status,
+  createdBy,
+  createdAt,
 }: EventCardProps) {
   const { colors } = useThemeColors();
   const { isEventLiked, toggleEventLikeStatus } = useLikes();
@@ -43,6 +45,8 @@ export default function EventCard({
         content,
         campus,
         status,
+        createdBy: createdBy || "", // Pasar createdBy
+        createdAt: createdAt ? createdAt.toString() : "", // Pasar createdAt
       },
     });
   };
@@ -98,6 +102,11 @@ export default function EventCard({
           </View>
         )}
 
+        {isRejected && (
+          <View style={styles.rejectedBadge}>
+            <Text style={styles.rejectedText}>Rechazado</Text>
+          </View>
+        )}
       </View>
 
       <View style={styles.content}>
@@ -118,8 +127,6 @@ export default function EventCard({
         >
           {description}
         </Text>
-
-        
       </View>
     </TouchableOpacity>
   );
