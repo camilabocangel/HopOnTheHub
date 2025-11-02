@@ -24,6 +24,7 @@ import { useAnnouncements } from "@/hooks/useAnnouncements";
 import { useEvents } from "@/hooks/useEvents";
 import { usePendingEvents } from "@/hooks/usePendingEvents";
 import { usePendingAnnouncements } from "@/hooks/usePendingAnnouncements";
+import { useRejectedEvents } from "@/hooks/useRejectedEvents";
 import { homeStyles } from "@/styles/homeStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CreateEventCard from "@/components/CreateEventCard";
@@ -84,11 +85,18 @@ export default function HomeScreen() {
     loading: pendingEventsLoading,
     refetch: refetchPendingEvents,
   } = usePendingEvents();
+
   const {
     announcements: pendingAnnouncements,
     loading: pendingAnnouncementsLoading,
     refetch: refetchPendingAnnouncements,
   } = usePendingAnnouncements();
+
+  const {
+    events: rejectedEvents,
+    loading: rejectedEventsLoading,
+    refetch: refetchRejectedEvents,
+  } = useRejectedEvents();
 
   const [refreshing, setRefreshing] = React.useState(false);
   const [initialLoad, setInitialLoad] = React.useState(true);
@@ -100,6 +108,7 @@ export default function HomeScreen() {
           await Promise.all([
             refetchPendingEvents(),
             refetchPendingAnnouncements(),
+            refetchRejectedEvents(), // Nueva llamada
           ]);
         } else {
           await Promise.all([refetchEvents(), refetchAnnouncements()]);
@@ -112,6 +121,7 @@ export default function HomeScreen() {
       user?.role,
       refetchPendingEvents,
       refetchPendingAnnouncements,
+      refetchRejectedEvents,
       refetchEvents,
       refetchAnnouncements,
     ])
@@ -124,6 +134,7 @@ export default function HomeScreen() {
         await Promise.all([
           refetchPendingEvents(),
           refetchPendingAnnouncements(),
+          refetchRejectedEvents(),
         ]);
       } else {
         await Promise.all([refetchEvents(), refetchAnnouncements()]);
@@ -137,6 +148,7 @@ export default function HomeScreen() {
     user?.role,
     refetchPendingEvents,
     refetchPendingAnnouncements,
+    refetchRejectedEvents,
     refetchEvents,
     refetchAnnouncements,
   ]);
@@ -145,7 +157,9 @@ export default function HomeScreen() {
     initialLoad ||
     userLoading ||
     (user?.role === "admin"
-      ? pendingEventsLoading || pendingAnnouncementsLoading
+      ? pendingEventsLoading ||
+        pendingAnnouncementsLoading ||
+        rejectedEventsLoading
       : eventsLoading || announcementsLoading);
 
   const currentSemester = getCurrentSemester(user?.career, user?.semester);
@@ -168,6 +182,8 @@ export default function HomeScreen() {
         campus={item.campus}
         status={item.status}
         index={index}
+        createdBy={item.createdBy}
+        createdAt={item.createdAt}
       />
     </View>
   );
@@ -205,6 +221,8 @@ export default function HomeScreen() {
         campus={item.campus}
         status={item.status}
         isPending={true}
+        createdBy={item.createdBy}
+        createdAt={item.createdAt}
       />
     </View>
   );
@@ -219,6 +237,27 @@ export default function HomeScreen() {
         campus={item.campus}
         status={item.status}
         isPending={true}
+      />
+    </View>
+  );
+
+  const renderRejectedEventItem = ({ item }: { item: any }) => (
+    <View style={styles.horizontalCard}>
+      <EventCard
+        id={item.id}
+        title={item.title}
+        date={item.date}
+        time={item.time}
+        place={item.place}
+        category={item.category}
+        description={item.description}
+        image={item.image}
+        content={item.content}
+        campus={item.campus}
+        status={item.status}
+        isRejected={true}
+        createdBy={item.createdBy}
+        createdAt={item.createdAt}
       />
     </View>
   );
@@ -308,6 +347,27 @@ export default function HomeScreen() {
               <View style={styles.emptyState}>
                 <Text style={[styles.emptyStateText, { color: colors.text }]}>
                   No hay eventos pendientes de aprobación
+                </Text>
+              </View>
+            )}
+          </Section>
+
+          <Section title={`Eventos Rechazados (${rejectedEvents.length})`}>
+            {rejectedEvents.length > 0 ? (
+              <FlatList
+                horizontal
+                data={rejectedEvents}
+                renderItem={renderRejectedEventItem}
+                keyExtractor={(item) => item.id}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalListContent}
+                snapToAlignment="start"
+                decelerationRate="fast"
+              />
+            ) : (
+              <View style={styles.emptyState}>
+                <Text style={[styles.emptyStateText, { color: colors.text }]}>
+                  No hay eventos rechazados
                 </Text>
               </View>
             )}

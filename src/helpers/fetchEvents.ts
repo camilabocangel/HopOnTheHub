@@ -76,6 +76,31 @@ export const fetchPendingEvents = async (): Promise<Event[]> => {
   }
 };
 
+export const fetchRejectedEvents = async (): Promise<Event[]> => {
+  await updateExpiredContentStatus();
+
+  try {
+    const eventsRef = collection(db, "events");
+    const q = query(
+      eventsRef,
+      where("status", "==", "rejected"),
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        } as Event)
+    );
+  } catch (error) {
+    console.error("Error fetching rejected events:", error);
+    return [];
+  }
+};
+
 export const fetchEventsByCampus = async (campus: string): Promise<Event[]> => {
   await updateExpiredContentStatus();
 

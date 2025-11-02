@@ -6,6 +6,7 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  Animated,
 } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,8 +19,7 @@ import {
   parseCampuses,
   getCampusesCoordinates,
   getMapRegionForCampuses,
-  convertToCampusKeys,
-  CampusKey,
+  formatCampusName,
 } from "@/utils/campusUtils";
 import { useLikes } from "@/hooks/useLikes";
 import { useUser } from "@/hooks/useUser";
@@ -28,7 +28,6 @@ import { useLayoutEffect } from "react";
 import { useNavigation } from "expo-router";
 import { ScreenTransitionView } from "@/components/ScreenTransitionView";
 import { useScreenTransition } from "@/hooks/useScreenTransition";
-import { Animated } from 'react-native';
 import { AnimatedLikeButton } from "@/components/AnimatedLikeButton";
 
 export default function SingleEventScreen() {
@@ -56,6 +55,7 @@ export default function SingleEventScreen() {
       };
     }, [])
   );
+
   const {
     id,
     title,
@@ -68,12 +68,44 @@ export default function SingleEventScreen() {
     content,
     campus,
     status,
+    createdBy,
+    createdAt,
   } = params;
 
   const eventId = id as string;
   const liked = isEventLiked(eventId);
-
   const isNormal = user ? user?.role === "normal" : false;
+  const isAdmin = user?.role === "admin";
+
+  const formatCreatedAt = useMemo(() => {
+    if (!createdAt) return "Fecha no disponible";
+
+    try {
+      if (typeof createdAt === "string" && createdAt.includes("Timestamp")) {
+        const timestamp = JSON.parse(createdAt);
+        const date = new Date(timestamp.seconds * 1000);
+        return date.toLocaleDateString("es-ES", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
+      }
+
+      const date = new Date(createdAt as string);
+      return date.toLocaleDateString("es-ES", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch (error) {
+      console.error("Error formateando fecha:", error);
+      return "Fecha no disponible";
+    }
+  }, [createdAt]);
 
   const handleLikeToggle = async () => {
     if (!eventId) return false;
@@ -88,28 +120,30 @@ export default function SingleEventScreen() {
 
   const handleEditEvent = () => {
     const eventData = {
-    id: id as string,
-    title: title as string,
-    date: date as string,
-    time: time as string,
-    place: place as string,
-    category: category as string,
-    description: description as string,
-    image: image as string,
-    content: content as string,
-    campus: campus as string,
-    status: status as string,
-    firestoreId: id as string,
-  };
+      id: id as string,
+      title: title as string,
+      date: date as string,
+      time: time as string,
+      place: place as string,
+      category: category as string,
+      description: description as string,
+      image: image as string,
+      content: content as string,
+      campus: campus as string,
+      status: status as string,
+      createdBy: createdBy as string,
+      createdAt: createdAt as string,
+      firestoreId: id as string,
+    };
 
-  router.push({
-    pathname: "/(drawer)/create_edit_event",
-    params: {
-      ...eventData,
-      isEditing: "true",
-    },
-  });
-};
+    router.push({
+      pathname: "/(drawer)/create_edit_event",
+      params: {
+        ...eventData,
+        isEditing: "true",
+      },
+    });
+  };
 
   const handleApproveEvent = async () => {
     try {
@@ -153,6 +187,25 @@ export default function SingleEventScreen() {
     }
   };
 
+  const handleCancelEvent = async () => {
+    try {
+      const success = await updateEventStatus(eventId, "rejected");
+
+      if (success) {
+        Alert.alert("Evento Cancelado", "El evento ha sido cancelado", [
+          {
+            text: "OK",
+            onPress: () => router.back(),
+          },
+        ]);
+      } else {
+        Alert.alert("Error", "No se pudo cancelar el evento");
+      }
+    } catch (error) {
+      Alert.alert("Error", "No se pudo cancelar el evento");
+    }
+  };
+
   const eventCampuses = useMemo(() => {
     return parseCampuses((campus as string) || "la paz");
   }, [campus]);
@@ -169,11 +222,13 @@ export default function SingleEventScreen() {
     if (eventCampuses.length === 3) return "Todos los campus";
     if (eventCampuses.length === 2) {
       return eventCampuses
-        .map((campus) => campus.charAt(0).toUpperCase() + campus.slice(1))
+        .map((campus) => formatCampusName(campus))
         .join(" y ");
     }
-    return eventCampuses[0].charAt(0).toUpperCase() + eventCampuses[0].slice(1);
+    return formatCampusName(eventCampuses[0]);
   }, [eventCampuses]);
+
+  const showCreationInfo = isAdmin && (createdBy || createdAt);
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -277,6 +332,70 @@ export default function SingleEventScreen() {
                     </Text>
                   </Animated.View>
                 ))}
+
+                {showCreationInfo && (
+                  <>
+                    {createdBy && (
+                      <Animated.View
+                        style={[
+                          singleEventsStyles.detailRow,
+                          { borderBottomColor: colors.border },
+                          {
+                            opacity: screenTransition.opacity,
+                            transform: [{ translateY: screenTransition.translateY }]
+                          }
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            singleEventsStyles.detailLabel,
+                            { color: colors.subtitle },
+                          ]}
+                        >
+                          Creado por:
+                        </Text>
+                        <Text
+                          style={[
+                            singleEventsStyles.detailValue,
+                            { color: colors.text },
+                          ]}
+                        >
+                          {createdBy as string}
+                        </Text>
+                      </Animated.View>
+                    )}
+
+                    {createdAt && (
+                      <Animated.View
+                        style={[
+                          singleEventsStyles.detailRow,
+                          { borderBottomColor: colors.border },
+                          {
+                            opacity: screenTransition.opacity,
+                            transform: [{ translateY: screenTransition.translateY }]
+                          }
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            singleEventsStyles.detailLabel,
+                            { color: colors.subtitle },
+                          ]}
+                        >
+                          Fecha de creación:
+                        </Text>
+                        <Text
+                          style={[
+                            singleEventsStyles.detailValue,
+                            { color: colors.text, fontSize: 12 },
+                          ]}
+                        >
+                          {formatCreatedAt}
+                        </Text>
+                      </Animated.View>
+                    )}
+                  </>
+                )}
 
                 {isNormal && (
                   <Animated.View
@@ -431,56 +550,109 @@ export default function SingleEventScreen() {
                 </Animated.View>
               )}
             </View>
-          </View>
 
-          {user?.role === "admin" && (
-            <Animated.View
-              style={[
-                singleEventsStyles.adminActions,
-                { backgroundColor: colors.background },
-                {
-                  opacity: screenTransition.opacity,
-                  transform: [{ translateY: screenTransition.translateY }]
-                }
-              ]}
-            >
-              <TouchableOpacity
+            {isAdmin && (
+              <Animated.View
                 style={[
-                  singleEventsStyles.actionButton,
-                  { backgroundColor: "#ddb503ff" },
+                  singleEventsStyles.adminActions,
+                  { backgroundColor: colors.background },
+                  {
+                    opacity: screenTransition.opacity,
+                    transform: [{ translateY: screenTransition.translateY }]
+                  }
                 ]}
-                onPress={handleEditEvent}
               >
-                <Ionicons name="checkmark-circle" size={20} color="white" />
-                <Text style={singleEventsStyles.buttonText}>Editar Evento</Text>
-              </TouchableOpacity>
-              {status === "pending" && (
-                <>
-                  <TouchableOpacity
-                    style={[
-                      singleEventsStyles.actionButton,
-                      { backgroundColor: "#4CAF50" },
-                    ]}
-                    onPress={handleApproveEvent}
-                  >
-                    <Ionicons name="checkmark-circle" size={20} color="white" />
-                    <Text style={singleEventsStyles.buttonText}>Aceptar Evento</Text>
-                  </TouchableOpacity>
+                {/* Para eventos pendientes */}
+                {status === "pending" && (
+                  <>
+                    <TouchableOpacity
+                      style={[
+                        singleEventsStyles.actionButton,
+                        { backgroundColor: "#ddb503ff" },
+                      ]}
+                      onPress={handleEditEvent}
+                    >
+                      <Ionicons name="create-outline" size={20} color="white" />
+                      <Text style={singleEventsStyles.buttonText}>
+                        Editar Evento
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        singleEventsStyles.actionButton,
+                        { backgroundColor: "#4CAF50" },
+                      ]}
+                      onPress={handleApproveEvent}
+                    >
+                      <Ionicons name="checkmark-circle" size={20} color="white" />
+                      <Text style={singleEventsStyles.buttonText}>
+                        Aceptar Evento
+                      </Text>
+                    </TouchableOpacity>
 
+                    <TouchableOpacity
+                      style={[
+                        singleEventsStyles.actionButton,
+                        { backgroundColor: "#f44336" },
+                      ]}
+                      onPress={handleRejectEvent}
+                    >
+                      <Ionicons name="close-circle" size={20} color="white" />
+                      <Text style={singleEventsStyles.buttonText}>
+                        Rechazar Evento
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+
+                {/* Para eventos aceptados - Botón de cancelar */}
+                {status === "accepted" && (
+                  <>
+                    <TouchableOpacity
+                      style={[
+                        singleEventsStyles.actionButton,
+                        { backgroundColor: "#ddb503ff" },
+                      ]}
+                      onPress={handleEditEvent}
+                    >
+                      <Ionicons name="create-outline" size={20} color="white" />
+                      <Text style={singleEventsStyles.buttonText}>
+                        Editar Evento
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[
+                        singleEventsStyles.actionButton,
+                        { backgroundColor: "#f44336" },
+                      ]}
+                      onPress={handleCancelEvent}
+                    >
+                      <Ionicons name="close-circle" size={20} color="white" />
+                      <Text style={singleEventsStyles.buttonText}>
+                        Cancelar Evento
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+
+                {/* Para eventos rechazados - Solo editar */}
+                {status === "rejected" && (
                   <TouchableOpacity
                     style={[
                       singleEventsStyles.actionButton,
-                      { backgroundColor: "#f44336" },
+                      { backgroundColor: "#ddb503ff" },
                     ]}
-                    onPress={handleRejectEvent}
+                    onPress={handleEditEvent}
                   >
-                    <Ionicons name="close-circle" size={20} color="white" />
-                    <Text style={singleEventsStyles.buttonText}>Rechazar Evento</Text>
+                    <Ionicons name="create-outline" size={20} color="white" />
+                    <Text style={singleEventsStyles.buttonText}>
+                      Editar Evento
+                    </Text>
                   </TouchableOpacity>
-                </>
-              )}
-            </Animated.View>
-          )}
+                )}
+              </Animated.View>
+            )}
+          </View>
         </ScrollView>
       </ScreenTransitionView>
 
@@ -494,5 +666,3 @@ export default function SingleEventScreen() {
     </SafeAreaView>
   );
 }
-
-

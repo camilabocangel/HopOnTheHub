@@ -9,28 +9,45 @@ const CAMPUS_COORDINATES: Record<CampusKey, { latitude: number; longitude: numbe
 export const parseCampuses = (campusString: string): CampusKey[] => {
   if (!campusString) return ['la paz'];
   
+  console.log("parseCampuses input:", campusString);
+  
+  // Si ya es un array (viene como string JSON)
+  if (typeof campusString === 'string' && campusString.startsWith('[')) {
+    try {
+      const parsedArray = JSON.parse(campusString);
+      if (Array.isArray(parsedArray)) {
+        const result = convertToCampusKeys(parsedArray);
+        console.log("Parsed as JSON array:", result);
+        return result;
+      }
+    } catch (error) {
+      console.log("Error parsing campus array:", error);
+      // Continuar con el parsing normal
+    }
+  }
+  
   const normalized = campusString.toLowerCase().trim();
+  console.log("Normalized campus string:", normalized);
   
   if (normalized.includes('todos') || 
       normalized.includes('all') || 
-      normalized.includes('todos los campus') ||
       normalized.includes('todos los campus')) {
     return ['la paz', 'cochabamba', 'santa cruz'];
   }
   
-  const campuses: CampusKey[] = [];
-  
-  if (normalized.includes('la paz') || normalized.includes('lapaz')) {
-    campuses.push('la paz');
-  }
-  if (normalized.includes('cochabamba') || normalized.includes('cocha')) {
-    campuses.push('cochabamba');
-  }
-  if (normalized.includes('santa cruz') || normalized.includes('santacruz')) {
-    campuses.push('santa cruz');
+  // Manejar formato "La Paz,Santa Cruz" - CORRECCIÓN PRINCIPAL
+  if (normalized.includes(',')) {
+    const campusArray = normalized.split(',').map(c => c.trim());
+    console.log("Split by comma:", campusArray);
+    const result = convertToCampusKeys(campusArray);
+    console.log("Converted campus keys:", result);
+    return result;
   }
   
-  return campuses.length > 0 ? campuses : ['la paz']; 
+  // Si es un string simple, intentar convertirlo directamente
+  const result = convertToCampusKeys([normalized]);
+  console.log("Converted single campus:", result);
+  return result;
 };
 
 export const convertToCampusKeys = (campuses: string[]): CampusKey[] => {
@@ -38,6 +55,8 @@ export const convertToCampusKeys = (campuses: string[]): CampusKey[] => {
   
   campuses.forEach(campus => {
     const normalized = campus.toLowerCase().trim();
+    console.log("Processing campus:", campus, "normalized:", normalized);
+    
     if (normalized === 'la paz' || normalized === 'lapaz') {
       validCampuses.push('la paz');
     } else if (normalized === 'cochabamba' || normalized === 'cocha') {
@@ -45,8 +64,17 @@ export const convertToCampusKeys = (campuses: string[]): CampusKey[] => {
     } else if (normalized === 'santa cruz' || normalized === 'santacruz') {
       validCampuses.push('santa cruz');
     }
+    // Manejar casos con espacios extra o formatos inconsistentes
+    else if (normalized.includes('la paz')) {
+      validCampuses.push('la paz');
+    } else if (normalized.includes('cochabamba') || normalized.includes('cocha')) {
+      validCampuses.push('cochabamba');
+    } else if (normalized.includes('santa cruz') || normalized.includes('santacruz')) {
+      validCampuses.push('santa cruz');
+    }
   });
   
+  console.log("Final valid campuses:", validCampuses);
   return validCampuses.length > 0 ? validCampuses : ['la paz'];
 };
 
@@ -71,4 +99,18 @@ export const getMapRegionForCampuses = (campuses: CampusKey[]) => {
     latitudeDelta: 4.0,
     longitudeDelta: 6.0,
   };
+};
+
+export const formatCampusName = (campus: string): string => {
+  const campusMap: { [key: string]: string } = {
+    'la paz': 'La Paz',
+    'lapaz': 'La Paz',
+    'santa cruz': 'Santa Cruz',
+    'santacruz': 'Santa Cruz',
+    'cochabamba': 'Cochabamba',
+    'cocha': 'Cochabamba',
+  };
+  
+  const lowerCampus = campus.toLowerCase().trim();
+  return campusMap[lowerCampus] || campus.charAt(0).toUpperCase() + campus.slice(1).toLowerCase();
 };

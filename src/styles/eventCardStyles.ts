@@ -16,6 +16,21 @@ const eventCardStyles = StyleSheet.create({
     fontSize: 10,
     fontWeight: "bold",
   },
+  rejectedBadge: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "#ff0037ff",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    zIndex: 10,
+  },
+  rejectedText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
   card: {
     width: 280,
     minHeight: 300,

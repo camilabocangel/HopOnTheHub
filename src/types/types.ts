@@ -65,6 +65,7 @@ export type Event = {
   attendees: string[];
   likes: string[];
   createdAt?: any;
+  createdBy?: string;
   locations: { lat: number; lng: number }[];
   modality: string;
 };
@@ -83,6 +84,9 @@ export type EventCardProps = {
   status: "pending" | "accepted" | "rejected" | "passed";
   isPending?: boolean;
   index?: number;
+  isRejected?: boolean;
+  createdBy?: string;
+  createdAt?: any;
 };
 
 export interface RegisterFormData {

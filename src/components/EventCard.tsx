@@ -1,4 +1,3 @@
-// En tu EventCard.tsx
 import React, { useEffect } from "react";
 import { TouchableOpacity, View, Text, Image, Alert } from "react-native";
 import { router } from "expo-router";
@@ -8,9 +7,9 @@ import { useLikes } from "../hooks/useLikes";
 import { useUser } from "../hooks/useUser";
 import eventCardStyles from "../styles/eventCardStyles";
 import { EventCardProps } from "@/types/types";
-import { useFade } from '../hooks/useFade';
-import { FadeView } from './FadeView';
-import { AnimatedLikeButton } from './AnimatedLikeButton'; 
+import { useFade } from "../hooks/useFade";
+import { FadeView } from "./FadeView";
+import { AnimatedLikeButton } from "./AnimatedLikeButton";
 
 export default function EventCard({
   id,
@@ -24,19 +23,32 @@ export default function EventCard({
   content,
   campus,
   isPending,
+  isRejected = false,
   status,
   index = 0,
+  createdBy,
+  createdAt,
 }: EventCardProps) {
   const { colors } = useThemeColors();
   const { isEventLiked, toggleEventLikeStatus } = useLikes();
   const { user } = useUser();
   const styles = eventCardStyles;
-  const fadeAnim = useFade(0, 100, 'up');
+  const fadeAnim = useFade(0, 100, "up");
+
+  // const handleLikePress = async () => {
+  //   if (!id) return;
+
+  //   const success = await toggleEventLikeStatus(id);
+  //   if (!success) {
+  //     Alert.alert("Error", "No se pudo actualizar el like");
+  //   }
+  // };
+
   const liked = isEventLiked(id);
   const isNormal = user ? user?.role === "normal" : false;
 
   useEffect(() => {
-    const delay = index * 120; 
+    const delay = index * 120;
     fadeAnim.fadeIn({ duration: 600, delay });
   }, []);
 
@@ -57,6 +69,8 @@ export default function EventCard({
           content,
           campus,
           status,
+          createdBy: createdBy || "",
+          createdAt: createdAt ? createdAt.toString() : "",
         },
       });
     }, 150);
@@ -78,11 +92,9 @@ export default function EventCard({
     }
   };
 
-  
-
   return (
-    <FadeView 
-      opacity={fadeAnim.opacity} 
+    <FadeView
+      opacity={fadeAnim.opacity}
       transform={fadeAnim.transform}
       styles={{ marginBottom: 16 }}
     >
@@ -127,9 +139,17 @@ export default function EventCard({
             {category}
           </Text>
           <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
-
-          <Text style={[styles.date, { color: colors.subtitle }]}>📅 {date}</Text>
-          <Text style={[styles.time, { color: colors.subtitle }]}>⏰ {time}</Text>
+          {isRejected && (
+            <View style={styles.rejectedBadge}>
+              <Text style={styles.rejectedText}>Rechazado</Text>
+            </View>
+          )}
+          <Text style={[styles.date, { color: colors.subtitle }]}>
+            📅 {date}
+          </Text>
+          <Text style={[styles.time, { color: colors.subtitle }]}>
+            ⏰ {time}
+          </Text>
           <Text style={[styles.place, { color: colors.subtitle }]}>
             📍 {place}
           </Text>
