@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import singleAnnouncementStyles from "../../src/styles/singleAnnouncementStyles";
@@ -25,6 +25,9 @@ import { useLikes } from "@/hooks/useLikes";
 import { useLayoutEffect } from "react";
 import { useNavigation } from "expo-router";
 import { useUser } from "@/hooks/useUser";
+import { ScreenTransitionView } from "@/components/ScreenTransitionView";
+import { useScreenTransition } from "@/hooks/useScreenTransition";
+import { Animated } from 'react-native';
 
 export default function SingleAnnouncementScreen() {
   const { colors } = useThemeColors();
@@ -33,7 +36,7 @@ export default function SingleAnnouncementScreen() {
   const { isAnnouncementLiked, toggleAnnouncementLikeStatus } = useLikes();
   const { id, description, date, campus, image, content } = params;
   const navigation = useNavigation();
-
+  const screenTransition = useScreenTransition(0);
   const { user } = useUser();
   const isNormal = user ? user?.role === "normal" : false;
 
@@ -42,6 +45,14 @@ export default function SingleAnnouncementScreen() {
       title: "Anuncio",
     });
   }, [navigation]);
+  useFocusEffect(
+      useCallback(() => {
+        screenTransition.enter({ duration: 500, delay: 100 });
+        return () => {
+          screenTransition.exit({ duration: 0 });
+        };
+      }, [])
+    );
 
   const announcementCampuses = useMemo((): CampusKey[] => {
     if (Array.isArray(campus)) {
@@ -94,10 +105,25 @@ export default function SingleAnnouncementScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+  <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <ScreenTransitionView duration={500} delay={100}>
       <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
         <View style={singleAnnouncementStyles.container}>
-          <View style={singleAnnouncementStyles.imageContainer}>
+          {/* Imagen con animación de escala suave */}
+          <Animated.View 
+            style={[
+              singleAnnouncementStyles.imageContainer,
+              {
+                opacity: screenTransition.opacity,
+                transform: [{
+                  scale: screenTransition.opacity.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.9, 1],
+                  })
+                }]
+              }
+            ]}
+          >
             {image ? (
               <Image
                 source={{ uri: image as string }}
@@ -116,84 +142,93 @@ export default function SingleAnnouncementScreen() {
                 </Text>
               </View>
             )}
-          </View>
+          </Animated.View>
 
           <View style={singleAnnouncementStyles.content}>
-            <Text
+            {/* Descripción con animación */}
+            <Animated.Text
               style={[
                 singleAnnouncementStyles.description,
                 { color: colors.text },
+                {
+                  opacity: screenTransition.opacity,
+                  transform: [{ translateY: screenTransition.translateY }]
+                }
               ]}
             >
               {description as string}
-            </Text>
+            </Animated.Text>
 
+            {/* Detalles con animación escalonada */}
             <View style={singleAnnouncementStyles.detailsContainer}>
-              <View
-                style={[
-                  singleAnnouncementStyles.detailRow,
-                  { borderBottomColor: colors.border },
-                ]}
-              >
-                <Text
-                  style={[
-                    singleAnnouncementStyles.detailLabel,
-                    { color: colors.subtitle },
-                  ]}
-                >
-                  Fecha:
-                </Text>
-                <Text
-                  style={[
-                    singleAnnouncementStyles.detailValue,
-                    { color: colors.text },
-                  ]}
-                >
-                  {date as string}
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  singleAnnouncementStyles.detailRow,
-                  { borderBottomColor: colors.border },
-                ]}
-              >
-                <Text
-                  style={[
-                    singleAnnouncementStyles.detailLabel,
-                    { color: colors.subtitle },
-                  ]}
-                >
-                  Campus:
-                </Text>
-                <View style={singleAnnouncementStyles.campusContainer}>
-                  <Text
-                    style={[
-                      singleAnnouncementStyles.detailValue,
-                      { color: colors.primary },
-                      announcementCampuses.length > 1 && { fontWeight: "bold" },
-                    ]}
-                  >
-                    {campusDisplayText}
-                  </Text>
-                  {announcementCampuses.length > 1 && (
-                    <Text
-                      style={[
-                        singleAnnouncementStyles.campusSubtitle,
-                        { color: colors.subtitle },
-                      ]}
-                    >
-                      ({announcementCampuses.length} campus)
-                    </Text>
-                  )}
-                </View>
-              </View>
-              {isNormal && (
-                <View
+              {[
+                { label: "Fecha:", value: date as string },
+                { 
+                  label: "Campus:", 
+                  value: campusDisplayText,
+                  special: true,
+                  hasSubtitle: announcementCampuses.length > 1 
+                },
+              ].map((detail, index) => (
+                <Animated.View
+                  key={detail.label}
                   style={[
                     singleAnnouncementStyles.detailRow,
                     { borderBottomColor: colors.border },
+                    {
+                      opacity: screenTransition.opacity,
+                      transform: [{
+                        translateY: screenTransition.translateY.interpolate({
+                          inputRange: [0, 30],
+                          outputRange: [0, 10 - (index * 5)],
+                        })
+                      }]
+                    }
+                  ]}
+                >
+                  <Text
+                    style={[
+                      singleAnnouncementStyles.detailLabel,
+                      { color: colors.subtitle },
+                    ]}
+                  >
+                    {detail.label}
+                  </Text>
+                  <View style={singleAnnouncementStyles.campusContainer}>
+                    <Text
+                      style={[
+                        singleAnnouncementStyles.detailValue,
+                        { 
+                          color: detail.special ? colors.primary : colors.text,
+                          fontWeight: detail.special ? "bold" : "normal"
+                        },
+                      ]}
+                    >
+                      {detail.value}
+                    </Text>
+                    {detail.hasSubtitle && (
+                      <Text
+                        style={[
+                          singleAnnouncementStyles.campusSubtitle,
+                          { color: colors.subtitle },
+                        ]}
+                      >
+                        ({announcementCampuses.length} campus)
+                      </Text>
+                    )}
+                  </View>
+                </Animated.View>
+              ))}
+
+              {isNormal && (
+                <Animated.View
+                  style={[
+                    singleAnnouncementStyles.detailRow,
+                    { borderBottomColor: colors.border },
+                    {
+                      opacity: screenTransition.opacity,
+                      transform: [{ translateY: screenTransition.translateY }]
+                    }
                   ]}
                 >
                   <Text
@@ -215,11 +250,20 @@ export default function SingleAnnouncementScreen() {
                       color={liked ? colors.accent : colors.subtitle}
                     />
                   </TouchableOpacity>
-                </View>
+                </Animated.View>
               )}
             </View>
 
-            <View style={singleAnnouncementStyles.section}>
+            {/* Sección de ubicación con animación */}
+            <Animated.View 
+              style={[
+                singleAnnouncementStyles.section,
+                {
+                  opacity: screenTransition.opacity,
+                  transform: [{ translateY: screenTransition.translateY }]
+                }
+              ]}
+            >
               <Text
                 style={[
                   singleAnnouncementStyles.sectionTitle,
@@ -276,10 +320,19 @@ export default function SingleAnnouncementScreen() {
                   <Ionicons name="expand" size={20} color="white" />
                 </TouchableOpacity>
               </View>
-            </View>
+            </Animated.View>
 
+            {/* Contenido adicional con animación */}
             {content && (
-              <View style={singleAnnouncementStyles.section}>
+              <Animated.View 
+                style={[
+                  singleAnnouncementStyles.section,
+                  {
+                    opacity: screenTransition.opacity,
+                    transform: [{ translateY: screenTransition.translateY }]
+                  }
+                ]}
+              >
                 <Text
                   style={[
                     singleAnnouncementStyles.sectionTitle,
@@ -296,19 +349,20 @@ export default function SingleAnnouncementScreen() {
                 >
                   {content as string}
                 </Text>
-              </View>
+              </Animated.View>
             )}
           </View>
         </View>
       </ScrollView>
+    </ScreenTransitionView>
 
-      <MapModal
-        visible={showMapModal}
-        onClose={() => setShowMapModal(false)}
-        campuses={campusesCoordinates}
-        place="Ubicación del anuncio"
-        isMultiCampus={announcementCampuses.length > 1}
-      />
-    </SafeAreaView>
-  );
+    <MapModal
+      visible={showMapModal}
+      onClose={() => setShowMapModal(false)}
+      campuses={campusesCoordinates}
+      place="Ubicación del anuncio"
+      isMultiCampus={announcementCampuses.length > 1}
+    />
+  </SafeAreaView>
+);
 }

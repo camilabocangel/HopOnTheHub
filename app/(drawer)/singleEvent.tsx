@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import singleEventsStyles from "@/styles/sinlgeEventStyles";
@@ -26,6 +26,9 @@ import { useUser } from "@/hooks/useUser";
 import { usePendingEvents } from "@/hooks/usePendingEvents";
 import { useLayoutEffect } from "react";
 import { useNavigation } from "expo-router";
+import { ScreenTransitionView } from "@/components/ScreenTransitionView";
+import { useScreenTransition } from "@/hooks/useScreenTransition";
+import { Animated } from 'react-native';
 
 export default function SingleEventScreen() {
   const { colors } = useThemeColors();
@@ -36,11 +39,22 @@ export default function SingleEventScreen() {
   const { user } = useUser();
   const { updateEventStatus } = usePendingEvents();
   const navigation = useNavigation();
+  const screenTransition = useScreenTransition(0);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Evento",
     });
   }, [navigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      screenTransition.enter({ duration: 500, delay: 100 });
+      return () => {
+        screenTransition.exit({ duration: 0 });
+      };
+    }, [])
+  );
   const {
     id,
     title,
@@ -160,272 +174,228 @@ export default function SingleEventScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-        <View style={singleEventsStyles.container}>
-          <View style={singleEventsStyles.imageContainer}>
-            {image ? (
-              <Image
-                source={{ uri: image as string }}
-                style={singleEventsStyles.image}
-                resizeMode="cover"
-              />
-            ) : (
-              <View
-                style={[
-                  singleEventsStyles.placeholderImage,
-                  { backgroundColor: colors.primary },
-                ]}
-              >
-                <Text style={singleEventsStyles.placeholderText}>
-                  {title as string}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          <View style={singleEventsStyles.content}>
-            <Text style={[singleEventsStyles.title, { color: colors.text }]}>
-              {title as string}
-            </Text>
-
-            <View style={singleEventsStyles.detailsContainer}>
-              <View
-                style={[
-                  singleEventsStyles.detailRow,
-                  { borderBottomColor: colors.border },
-                ]}
-              >
-                <Text
-                  style={[
-                    singleEventsStyles.detailLabel,
-                    { color: colors.subtitle },
-                  ]}
-                >
-                  Fecha:
-                </Text>
-                <Text
-                  style={[
-                    singleEventsStyles.detailValue,
-                    { color: colors.text },
-                  ]}
-                >
-                  {date as string}
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  singleEventsStyles.detailRow,
-                  { borderBottomColor: colors.border },
-                ]}
-              >
-                <Text
-                  style={[
-                    singleEventsStyles.detailLabel,
-                    { color: colors.subtitle },
-                  ]}
-                >
-                  Hora:
-                </Text>
-                <Text
-                  style={[
-                    singleEventsStyles.detailValue,
-                    { color: colors.text },
-                  ]}
-                >
-                  {time as string}
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  singleEventsStyles.detailRow,
-                  { borderBottomColor: colors.border },
-                ]}
-              >
-                <Text
-                  style={[
-                    singleEventsStyles.detailLabel,
-                    { color: colors.subtitle },
-                  ]}
-                >
-                  Lugar:
-                </Text>
-                <Text
-                  style={[
-                    singleEventsStyles.detailValue,
-                    { color: colors.text },
-                  ]}
-                >
-                  {place as string}
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  singleEventsStyles.detailRow,
-                  { borderBottomColor: colors.border },
-                ]}
-              >
-                <Text
-                  style={[
-                    singleEventsStyles.detailLabel,
-                    { color: colors.subtitle },
-                  ]}
-                >
-                  Campus:
-                </Text>
-                <Text
-                  style={[
-                    singleEventsStyles.detailValue,
-                    { color: colors.primary },
-                    eventCampuses.length > 1 && { fontWeight: "bold" },
-                  ]}
-                >
-                  {campusDisplayText}
-                </Text>
-              </View>
-
-              <View
-                style={[
-                  singleEventsStyles.detailRow,
-                  { borderBottomColor: colors.border },
-                ]}
-              >
-                <Text
-                  style={[
-                    singleEventsStyles.detailLabel,
-                    { color: colors.subtitle },
-                  ]}
-                >
-                  Categoría:
-                </Text>
-                <Text
-                  style={[
-                    singleEventsStyles.detailValue,
-                    { color: colors.primary },
-                  ]}
-                >
-                  {category as string}
-                </Text>
-              </View>
-
-              {isNormal && (
+      <ScreenTransitionView duration={500} delay={100}>
+        <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+          <View style={singleEventsStyles.container}>
+            {/* Imagen con animación de escala suave */}
+            <Animated.View 
+              style={[
+                singleEventsStyles.imageContainer,
+                {
+                  opacity: screenTransition.opacity,
+                  transform: [{
+                    scale: screenTransition.opacity.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.9, 1],
+                    })
+                  }]
+                }
+              ]}
+            >
+              {image ? (
+                <Image
+                  source={{ uri: image as string }}
+                  style={singleEventsStyles.image}
+                  resizeMode="cover"
+                />
+              ) : (
                 <View
                   style={[
-                    singleEventsStyles.detailRow,
-                    { borderBottomColor: colors.border },
-                  ]}
-                >
-                  <Text
-                    style={[
-                      singleEventsStyles.detailLabel,
-                      { color: colors.subtitle },
-                    ]}
-                  >
-                    Guardar:
-                  </Text>
-                  <TouchableOpacity
-                    onPress={handleLikeToggle}
-                    style={singleEventsStyles.likeButton}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <Ionicons
-                      name={liked ? "heart" : "heart-outline"}
-                      size={24}
-                      color={liked ? colors.accent : colors.subtitle}
-                    />
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-
-            <View style={singleEventsStyles.section}>
-              <Text
-                style={[
-                  singleEventsStyles.sectionTitle,
-                  { color: colors.text },
-                ]}
-              >
-                Ubicación
-              </Text>
-              {eventCampuses.length > 1 && (
-                <Text
-                  style={[
-                    singleEventsStyles.sectionContent,
-                    {
-                      color: colors.primary,
-                      marginBottom: 8,
-                      fontWeight: "600",
-                      fontSize: 14,
-                    },
-                  ]}
-                >
-                  📍 Este evento se realiza en {eventCampuses.length} campus
-                </Text>
-              )}
-              <View style={singleEventsStyles.mapContainer}>
-                <MapView
-                  style={singleEventsStyles.smallMap}
-                  initialRegion={mapRegion}
-                  scrollEnabled={false}
-                  zoomEnabled={false}
-                  rotateEnabled={false}
-                  pitchEnabled={false}
-                >
-                  {campusesCoordinates.map((campusCoord, index) => (
-                    <Marker
-                      key={index}
-                      coordinate={{
-                        latitude: campusCoord.latitude,
-                        longitude: campusCoord.longitude,
-                      }}
-                      title={campusCoord.title}
-                      description={place as string}
-                    />
-                  ))}
-                </MapView>
-
-                <TouchableOpacity
-                  style={[
-                    singleEventsStyles.expandButton,
+                    singleEventsStyles.placeholderImage,
                     { backgroundColor: colors.primary },
                   ]}
-                  onPress={() => setShowMapModal(true)}
                 >
-                  <Ionicons name="expand" size={20} color="white" />
-                </TouchableOpacity>
+                  <Text style={singleEventsStyles.placeholderText}>
+                    {title as string}
+                  </Text>
+                </View>
+              )}
+            </Animated.View>
+
+            <View style={singleEventsStyles.content}>
+              {/* Título con animación separada */}
+              <Animated.Text 
+                style={[
+                  singleEventsStyles.title, 
+                  { 
+                    color: colors.text,
+                    opacity: screenTransition.opacity,
+                    transform: [{ translateY: screenTransition.translateY }]
+                  }
+                ]}
+              >
+                {title as string}
+              </Animated.Text>
+
+              {/* Detalles con animación escalonada */}
+              <View style={singleEventsStyles.detailsContainer}>
+                {[
+                  { label: "Fecha:", value: date as string },
+                  { label: "Hora:", value: time as string },
+                  { label: "Lugar:", value: place as string },
+                  { 
+                    label: "Campus:", 
+                    value: campusDisplayText,
+                    special: true 
+                  },
+                  { label: "Categoría:", value: category as string },
+                ].map((detail, index) => (
+                  <Animated.View
+                    key={detail.label}
+                    style={[
+                      singleEventsStyles.detailRow,
+                      { borderBottomColor: colors.border },
+                      {
+                        opacity: screenTransition.opacity,
+                        transform: [{
+                          translateY: screenTransition.translateY.interpolate({
+                            inputRange: [0, 30],
+                            outputRange: [0, 10 - (index * 5)],
+                          })
+                        }]
+                      }
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        singleEventsStyles.detailLabel,
+                        { color: colors.subtitle },
+                      ]}
+                    >
+                      {detail.label}
+                    </Text>
+                    <Text
+                      style={[
+                        singleEventsStyles.detailValue,
+                        { 
+                          color: detail.special ? colors.primary : colors.text,
+                          fontWeight: detail.special ? "bold" : "normal"
+                        },
+                      ]}
+                    >
+                      {detail.value}
+                    </Text>
+                  </Animated.View>
+                ))}
+
+                {isNormal && (
+                  <Animated.View
+                    style={[
+                      singleEventsStyles.detailRow,
+                      { borderBottomColor: colors.border },
+                      {
+                        opacity: screenTransition.opacity,
+                        transform: [{ translateY: screenTransition.translateY }]
+                      }
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        singleEventsStyles.detailLabel,
+                        { color: colors.subtitle },
+                      ]}
+                    >
+                      Guardar:
+                    </Text>
+                    <TouchableOpacity
+                      onPress={handleLikeToggle}
+                      style={singleEventsStyles.likeButton}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                      <Ionicons
+                        name={liked ? "heart" : "heart-outline"}
+                        size={24}
+                        color={liked ? colors.accent : colors.subtitle}
+                      />
+                    </TouchableOpacity>
+                  </Animated.View>
+                )}
               </View>
-            </View>
 
-            <View style={singleEventsStyles.section}>
-              <Text
+              {/* Sección de ubicación */}
+              <Animated.View 
                 style={[
-                  singleEventsStyles.sectionTitle,
-                  { color: colors.text },
+                  singleEventsStyles.section,
+                  {
+                    opacity: screenTransition.opacity,
+                    transform: [{ translateY: screenTransition.translateY }]
+                  }
                 ]}
               >
-                Descripción
-              </Text>
-              <Text
-                style={[
-                  singleEventsStyles.sectionContent,
-                  { color: colors.text },
-                ]}
-              >
-                {description as string}
-              </Text>
-            </View>
-
-            {content && (
-              <View style={singleEventsStyles.section}>
                 <Text
                   style={[
                     singleEventsStyles.sectionTitle,
                     { color: colors.text },
                   ]}
                 >
-                  Contenido
+                  Ubicación
+                </Text>
+                {eventCampuses.length > 1 && (
+                  <Text
+                    style={[
+                      singleEventsStyles.sectionContent,
+                      {
+                        color: colors.primary,
+                        marginBottom: 8,
+                        fontWeight: "600",
+                        fontSize: 14,
+                      },
+                    ]}
+                  >
+                    📍 Este evento se realiza en {eventCampuses.length} campus
+                  </Text>
+                )}
+                <View style={singleEventsStyles.mapContainer}>
+                  <MapView
+                    style={singleEventsStyles.smallMap}
+                    initialRegion={mapRegion}
+                    scrollEnabled={false}
+                    zoomEnabled={false}
+                    rotateEnabled={false}
+                    pitchEnabled={false}
+                  >
+                    {campusesCoordinates.map((campusCoord, index) => (
+                      <Marker
+                        key={index}
+                        coordinate={{
+                          latitude: campusCoord.latitude,
+                          longitude: campusCoord.longitude,
+                        }}
+                        title={campusCoord.title}
+                        description={place as string}
+                      />
+                    ))}
+                  </MapView>
+
+                  <TouchableOpacity
+                    style={[
+                      singleEventsStyles.expandButton,
+                      { backgroundColor: colors.primary },
+                    ]}
+                    onPress={() => setShowMapModal(true)}
+                  >
+                    <Ionicons name="expand" size={20} color="white" />
+                  </TouchableOpacity>
+                </View>
+              </Animated.View>
+
+              {/* Sección de descripción */}
+              <Animated.View 
+                style={[
+                  singleEventsStyles.section,
+                  {
+                    opacity: screenTransition.opacity,
+                    transform: [{ translateY: screenTransition.translateY }]
+                  }
+                ]}
+              >
+                <Text
+                  style={[
+                    singleEventsStyles.sectionTitle,
+                    { color: colors.text },
+                  ]}
+                >
+                  Descripción
                 </Text>
                 <Text
                   style={[
@@ -433,58 +403,92 @@ export default function SingleEventScreen() {
                     { color: colors.text },
                   ]}
                 >
-                  {content as string}
+                  {description as string}
                 </Text>
-              </View>
-            )}
-          </View>
-        </View>
+              </Animated.View>
 
-        {user?.role === "admin" && (
-          <View
-            style={[
-              singleEventsStyles.adminActions,
-              { backgroundColor: colors.background },
-            ]}
-          >
-            <TouchableOpacity
+              {content && (
+                <Animated.View 
                   style={[
-                    singleEventsStyles.actionButton,
-                    { backgroundColor: "#ddb503ff" },
+                    singleEventsStyles.section,
+                    {
+                      opacity: screenTransition.opacity,
+                      transform: [{ translateY: screenTransition.translateY }]
+                    }
                   ]}
-                  onPress={handleEditEvent}
                 >
-                  <Ionicons name="checkmark-circle" size={20} color="white" />
-                  <Text style={singleEventsStyles.buttonText}>Editar Evento</Text>
-                </TouchableOpacity>
-            {status === "pending" && (
-              <>
-                <TouchableOpacity
-                  style={[
-                    singleEventsStyles.actionButton,
-                    { backgroundColor: "#4CAF50" },
-                  ]}
-                  onPress={handleApproveEvent}
-                >
-                  <Ionicons name="checkmark-circle" size={20} color="white" />
-                  <Text style={singleEventsStyles.buttonText}>Aceptar Evento</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  style={[
-                    singleEventsStyles.actionButton,
-                    { backgroundColor: "#f44336" },
-                  ]}
-                  onPress={handleRejectEvent}
-                >
-                  <Ionicons name="close-circle" size={20} color="white" />
-                  <Text style={singleEventsStyles.buttonText}>Rechazar Evento</Text>
-                </TouchableOpacity>
-              </>
-            )}
+                  <Text
+                    style={[
+                      singleEventsStyles.sectionTitle,
+                      { color: colors.text },
+                    ]}
+                  >
+                    Contenido
+                  </Text>
+                  <Text
+                    style={[
+                      singleEventsStyles.sectionContent,
+                      { color: colors.text },
+                    ]}
+                  >
+                    {content as string}
+                  </Text>
+                </Animated.View>
+              )}
+            </View>
           </View>
-        )}
-      </ScrollView>
+
+          {/* Acciones de administrador */}
+          {user?.role === "admin" && (
+            <Animated.View
+              style={[
+                singleEventsStyles.adminActions,
+                { backgroundColor: colors.background },
+                {
+                  opacity: screenTransition.opacity,
+                  transform: [{ translateY: screenTransition.translateY }]
+                }
+              ]}
+            >
+              <TouchableOpacity
+                style={[
+                  singleEventsStyles.actionButton,
+                  { backgroundColor: "#ddb503ff" },
+                ]}
+                onPress={handleEditEvent}
+              >
+                <Ionicons name="checkmark-circle" size={20} color="white" />
+                <Text style={singleEventsStyles.buttonText}>Editar Evento</Text>
+              </TouchableOpacity>
+              {status === "pending" && (
+                <>
+                  <TouchableOpacity
+                    style={[
+                      singleEventsStyles.actionButton,
+                      { backgroundColor: "#4CAF50" },
+                    ]}
+                    onPress={handleApproveEvent}
+                  >
+                    <Ionicons name="checkmark-circle" size={20} color="white" />
+                    <Text style={singleEventsStyles.buttonText}>Aceptar Evento</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={[
+                      singleEventsStyles.actionButton,
+                      { backgroundColor: "#f44336" },
+                    ]}
+                    onPress={handleRejectEvent}
+                  >
+                    <Ionicons name="close-circle" size={20} color="white" />
+                    <Text style={singleEventsStyles.buttonText}>Rechazar Evento</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </Animated.View>
+          )}
+        </ScrollView>
+      </ScreenTransitionView>
 
       <MapModal
         visible={showMapModal}

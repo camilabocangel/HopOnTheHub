@@ -34,7 +34,9 @@ export default function AnnouncementCard({
       fadeAnim.fadeIn({ duration: 600, delay });
     }, []);
   const handlePress = () => {
-    router.push({
+    fadeAnim.fadeOut({duration: 200});
+    setTimeout(()=>{
+      router.push({
       pathname: "/singleAnnouncement",
       params: {
         id,
@@ -44,6 +46,7 @@ export default function AnnouncementCard({
         image,
       },
     });
+    }, 150);
   };
 
   const handleLikePress = async () => {

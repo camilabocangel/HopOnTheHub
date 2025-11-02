@@ -38,7 +38,9 @@ export default function EventCard({
   }, []);
 
   const handlePress = () => {
-    router.push({
+    fadeAnim.fadeOut({ duration: 200 });
+    setTimeout(() => {
+      router.push({
       pathname: "/singleEvent",
       params: {
         id,
@@ -54,6 +56,7 @@ export default function EventCard({
         status,
       },
     });
+    }, 150);
   };
 
   const handleLikePress = async () => {
