@@ -1,4 +1,5 @@
-import React from 'react';
+// components/MapModal.tsx
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   View,
@@ -6,10 +7,12 @@ import {
   StyleSheet,
   Text,
 } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import MapView from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors } from '@/hooks/useThemeColors';
 import { getMapRegionForCampuses } from '@/utils/campusUtils';
+import { useMarkerAnimation } from '@/hooks/useMarkerAnimation';
+import { AnimatedMarker } from './AnimatedMarker';
 
 interface CampusCoordinate {
   latitude: number;
@@ -33,16 +36,50 @@ export default function MapModal({
   isMultiCampus = false 
 }: MapModalProps) {
   const { colors } = useThemeColors();
+  const [selectedMarker, setSelectedMarker] = useState<number | null>(null);
+  
+  const { 
+    opacities, 
+    scales, 
+    animateMarkersIn, 
+    highlightMarker, 
+    resetHighlights 
+  } = useMarkerAnimation(campuses.length);
 
   const mapRegion = getMapRegionForCampuses(
     campuses.map(c => c.title.toLowerCase() as any)
   );
+
+  // Efecto para animar marcadores cuando el modal se abre
+  useEffect(() => {
+    if (visible) {
+      // Resetear estado
+      setSelectedMarker(null);
+      resetHighlights();
+      
+      // Animar entrada de marcadores después de un pequeño delay
+      setTimeout(() => {
+        animateMarkersIn({ duration: 600, delay: 300 });
+      }, 100);
+    }
+  }, [visible]);
+
+  const handleMarkerPress = (index: number) => {
+    setSelectedMarker(index);
+    highlightMarker(index);
+  };
+
+  const handleMapPress = () => {
+    setSelectedMarker(null);
+    resetHighlights();
+  };
 
   return (
     <Modal
       visible={visible}
       animationType="slide"
       presentationStyle="pageSheet"
+      onRequestClose={onClose}
     >
       <View style={[styles.modalContainer, { backgroundColor: colors.background }]}>
         <View style={styles.header}>
@@ -56,15 +93,21 @@ export default function MapModal({
             <Text style={[styles.campusSubtitle, { color: colors.subtitle }]}>
               {isMultiCampus ? `${campuses.length} campus` : campuses[0]?.title}
             </Text>
+            {selectedMarker !== null && (
+              <Text style={[styles.selectedCampus, { color: colors.primary }]}>
+                Seleccionado: {campuses[selectedMarker].title}
+              </Text>
+            )}
           </View>
         </View>
         
         <MapView
           style={styles.map}
           initialRegion={mapRegion}
+          onPress={handleMapPress}
         >
           {campuses.map((campus, index) => (
-            <Marker
+            <AnimatedMarker
               key={index}
               coordinate={{
                 latitude: campus.latitude,
@@ -72,6 +115,10 @@ export default function MapModal({
               }}
               title={campus.title}
               description={place}
+              opacity={opacities[index]}
+              scale={scales[index]}
+              isHighlighted={selectedMarker === index}
+              onPress={() => handleMarkerPress(index)}
             />
           ))}
         </MapView>
@@ -101,6 +148,11 @@ const styles = StyleSheet.create({
   campusSubtitle: {
     fontSize: 14,
     marginTop: 2,
+  },
+  selectedCampus: {
+    fontSize: 12,
+    marginTop: 4,
+    fontWeight: '500',
   },
   map: {
     flex: 1,
