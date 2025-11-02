@@ -10,6 +10,8 @@ import announcementCardStyles from "../styles/announcementCardStyles";
 import { AnnouncementCardProps } from "@/types/types";
 import { useFade } from '../hooks/useFade';
 import { FadeView } from './FadeView';
+import { AnimatedLikeButton } from './AnimatedLikeButton'; 
+
 
 export default function AnnouncementCard({
   id ,
@@ -50,12 +52,14 @@ export default function AnnouncementCard({
   };
 
   const handleLikePress = async () => {
-    if (!id) return;
+    if (!id) return false;
     
     const success = await toggleAnnouncementLikeStatus(id);
     if (!success) {
       Alert.alert("Error", "No se pudo actualizar el like");
+      return false;
     }
+    return true;
   };
 
   return (
@@ -83,17 +87,14 @@ export default function AnnouncementCard({
         )}
 
         {isNormal && (
-          <TouchableOpacity
+          <AnimatedLikeButton
+            isLiked={liked}
             onPress={handleLikePress}
+            size={20}
+            color="#555"
+            likedColor={colors.accent}
             style={styles.likeButtonOverlay}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Ionicons
-              name={liked ? "heart" : "heart-outline"}
-              size={20}
-              color={liked ? colors.accent : "#555"}
-            />
-          </TouchableOpacity>
+          />
         )}
 
         {isPending && (

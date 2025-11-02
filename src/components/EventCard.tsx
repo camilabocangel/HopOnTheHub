@@ -1,4 +1,4 @@
-
+// En tu EventCard.tsx
 import React, { useEffect } from "react";
 import { TouchableOpacity, View, Text, Image, Alert } from "react-native";
 import { router } from "expo-router";
@@ -10,6 +10,7 @@ import eventCardStyles from "../styles/eventCardStyles";
 import { EventCardProps } from "@/types/types";
 import { useFade } from '../hooks/useFade';
 import { FadeView } from './FadeView';
+import { AnimatedLikeButton } from './AnimatedLikeButton'; 
 
 export default function EventCard({
   id,
@@ -30,7 +31,9 @@ export default function EventCard({
   const { isEventLiked, toggleEventLikeStatus } = useLikes();
   const { user } = useUser();
   const styles = eventCardStyles;
-  const fadeAnim = useFade(0,100, 'up');
+  const fadeAnim = useFade(0, 100, 'up');
+  const liked = isEventLiked(id);
+  const isNormal = user ? user?.role === "normal" : false;
 
   useEffect(() => {
     const delay = index * 120; 
@@ -41,35 +44,41 @@ export default function EventCard({
     fadeAnim.fadeOut({ duration: 200 });
     setTimeout(() => {
       router.push({
-      pathname: "/singleEvent",
-      params: {
-        id,
-        title,
-        date,
-        time,
-        place,
-        category,
-        description,
-        image,
-        content,
-        campus,
-        status,
-      },
-    });
+        pathname: "/singleEvent",
+        params: {
+          id,
+          title,
+          date,
+          time,
+          place,
+          category,
+          description,
+          image,
+          content,
+          campus,
+          status,
+        },
+      });
     }, 150);
   };
 
-  const handleLikePress = async () => {
-    if (!id) return;
+  const handleLikePress = async (): Promise<boolean> => {
+    if (!id) return false;
 
-    const success = await toggleEventLikeStatus(id);
-    if (!success) {
+    try {
+      const success = await toggleEventLikeStatus(id);
+      if (!success) {
+        Alert.alert("Error", "No se pudo actualizar el like");
+        return false;
+      }
+      return true;
+    } catch (error) {
       Alert.alert("Error", "No se pudo actualizar el like");
+      return false;
     }
   };
 
-  const liked = isEventLiked(id);
-  const isNormal = user ? user?.role === "normal" : false;
+  
 
   return (
     <FadeView 
@@ -78,68 +87,61 @@ export default function EventCard({
       styles={{ marginBottom: 16 }}
     >
       <TouchableOpacity
-      style={[styles.card, { backgroundColor: colors.surface }]}
-      onPress={handlePress}
-    >
-      <View style={styles.imageContainer}>
-        {image ? (
-          <Image source={{ uri: image }} style={styles.image} />
-        ) : (
-          <View
-            style={[
-              styles.placeholderImage,
-              { backgroundColor: colors.primary },
-            ]}
-          >
-            <Text style={styles.placeholderText}>Evento</Text>
-          </View>
-        )}
+        style={[styles.card, { backgroundColor: colors.surface }]}
+        onPress={handlePress}
+      >
+        <View style={styles.imageContainer}>
+          {image ? (
+            <Image source={{ uri: image }} style={styles.image} />
+          ) : (
+            <View
+              style={[
+                styles.placeholderImage,
+                { backgroundColor: colors.primary },
+              ]}
+            >
+              <Text style={styles.placeholderText}>Evento</Text>
+            </View>
+          )}
 
-        {isNormal && (
-          <TouchableOpacity
-            onPress={handleLikePress}
-            style={styles.likeButtonOverlay}
-            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-          >
-            <Ionicons
-              name={liked ? "heart" : "heart-outline"}
+          {isNormal && (
+            <AnimatedLikeButton
+              isLiked={liked}
+              onPress={handleLikePress}
               size={20}
-              color={liked ? colors.accent : "#555"} 
+              color="#555"
+              likedColor={colors.accent}
+              style={styles.likeButtonOverlay}
             />
-          </TouchableOpacity>
-        )}
+          )}
 
-        {isPending && (
-          <View style={styles.pendingBadge}>
-            <Text style={styles.pendingText}>Pendiente</Text>
-          </View>
-        )}
+          {isPending && (
+            <View style={styles.pendingBadge}>
+              <Text style={styles.pendingText}>Pendiente</Text>
+            </View>
+          )}
+        </View>
 
-      </View>
+        <View style={styles.content}>
+          <Text style={[styles.category, { color: colors.primary }]}>
+            {category}
+          </Text>
+          <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
 
-      <View style={styles.content}>
-        <Text style={[styles.category, { color: colors.primary }]}>
-          {category}
-        </Text>
-        <Text style={[styles.title, { color: colors.text }]}>{title}</Text>
+          <Text style={[styles.date, { color: colors.subtitle }]}>📅 {date}</Text>
+          <Text style={[styles.time, { color: colors.subtitle }]}>⏰ {time}</Text>
+          <Text style={[styles.place, { color: colors.subtitle }]}>
+            📍 {place}
+          </Text>
 
-        <Text style={[styles.date, { color: colors.subtitle }]}>📅 {date}</Text>
-        <Text style={[styles.time, { color: colors.subtitle }]}>⏰ {time}</Text>
-        <Text style={[styles.place, { color: colors.subtitle }]}>
-          📍 {place}
-        </Text>
-
-        <Text
-          style={[styles.description, { color: colors.subtitle }]}
-          numberOfLines={2}
-        >
-          {description}
-        </Text>
-
-        
-      </View>
-    </TouchableOpacity>
+          <Text
+            style={[styles.description, { color: colors.subtitle }]}
+            numberOfLines={2}
+          >
+            {description}
+          </Text>
+        </View>
+      </TouchableOpacity>
     </FadeView>
-    
   );
 }

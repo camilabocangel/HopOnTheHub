@@ -28,6 +28,8 @@ import { useUser } from "@/hooks/useUser";
 import { ScreenTransitionView } from "@/components/ScreenTransitionView";
 import { useScreenTransition } from "@/hooks/useScreenTransition";
 import { Animated } from 'react-native';
+import { AnimatedLikeButton } from "@/components/AnimatedLikeButton";
+
 
 export default function SingleAnnouncementScreen() {
   const { colors } = useThemeColors();
@@ -96,12 +98,14 @@ export default function SingleAnnouncementScreen() {
   const liked = isAnnouncementLiked(announcementId);
 
   const handleLikeToggle = async () => {
-    if (!announcementId) return;
+    if (!announcementId) return false;
 
     const success = await toggleAnnouncementLikeStatus(announcementId);
     if (!success) {
       Alert.alert("Error", "No se pudo actualizar el like");
+      return false;
     }
+    return true;
   };
 
   return (
@@ -239,17 +243,14 @@ export default function SingleAnnouncementScreen() {
                   >
                     Guardar:
                   </Text>
-                  <TouchableOpacity
-                    onPress={handleLikeToggle}
-                    style={singleAnnouncementStyles.likeButton}
-                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                  >
-                    <Ionicons
-                      name={liked ? "heart" : "heart-outline"}
+                  <AnimatedLikeButton
+                      isLiked={liked}
+                      onPress={handleLikeToggle}
                       size={24}
-                      color={liked ? colors.accent : colors.subtitle}
+                      color={colors.subtitle}
+                      likedColor={colors.accent}
+                      style={singleAnnouncementStyles.likeButton}
                     />
-                  </TouchableOpacity>
                 </Animated.View>
               )}
             </View>

@@ -29,6 +29,7 @@ import { useNavigation } from "expo-router";
 import { ScreenTransitionView } from "@/components/ScreenTransitionView";
 import { useScreenTransition } from "@/hooks/useScreenTransition";
 import { Animated } from 'react-native';
+import { AnimatedLikeButton } from "@/components/AnimatedLikeButton";
 
 export default function SingleEventScreen() {
   const { colors } = useThemeColors();
@@ -75,12 +76,14 @@ export default function SingleEventScreen() {
   const isNormal = user ? user?.role === "normal" : false;
 
   const handleLikeToggle = async () => {
-    if (!eventId) return;
+    if (!eventId) return false;
 
     const success = await toggleEventLikeStatus(eventId);
     if (!success) {
       Alert.alert("Error", "No se pudo actualizar el like");
+      return false
     }
+    return true;
   };
 
   const handleEditEvent = () => {
@@ -177,7 +180,6 @@ export default function SingleEventScreen() {
       <ScreenTransitionView duration={500} delay={100}>
         <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
           <View style={singleEventsStyles.container}>
-            {/* Imagen con animación de escala suave */}
             <Animated.View 
               style={[
                 singleEventsStyles.imageContainer,
@@ -213,7 +215,6 @@ export default function SingleEventScreen() {
             </Animated.View>
 
             <View style={singleEventsStyles.content}>
-              {/* Título con animación separada */}
               <Animated.Text 
                 style={[
                   singleEventsStyles.title, 
@@ -227,7 +228,6 @@ export default function SingleEventScreen() {
                 {title as string}
               </Animated.Text>
 
-              {/* Detalles con animación escalonada */}
               <View style={singleEventsStyles.detailsContainer}>
                 {[
                   { label: "Fecha:", value: date as string },
@@ -297,22 +297,18 @@ export default function SingleEventScreen() {
                     >
                       Guardar:
                     </Text>
-                    <TouchableOpacity
+                    <AnimatedLikeButton
+                      isLiked={liked}
                       onPress={handleLikeToggle}
+                      size={24}
+                      color={colors.subtitle}
+                      likedColor={colors.accent}
                       style={singleEventsStyles.likeButton}
-                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                    >
-                      <Ionicons
-                        name={liked ? "heart" : "heart-outline"}
-                        size={24}
-                        color={liked ? colors.accent : colors.subtitle}
-                      />
-                    </TouchableOpacity>
+                    />
                   </Animated.View>
                 )}
               </View>
 
-              {/* Sección de ubicación */}
               <Animated.View 
                 style={[
                   singleEventsStyles.section,
@@ -379,7 +375,6 @@ export default function SingleEventScreen() {
                 </View>
               </Animated.View>
 
-              {/* Sección de descripción */}
               <Animated.View 
                 style={[
                   singleEventsStyles.section,
@@ -438,7 +433,6 @@ export default function SingleEventScreen() {
             </View>
           </View>
 
-          {/* Acciones de administrador */}
           {user?.role === "admin" && (
             <Animated.View
               style={[
