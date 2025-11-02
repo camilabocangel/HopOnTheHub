@@ -157,7 +157,7 @@ export default function EventsScreen() {
                   <FlatList
                     horizontal
                     data={categoryEvents}
-                    renderItem={({ item }) => (
+                    renderItem={({ item, index }) => (
                       <EventCard
                         id={item.id}
                         title={item.title}
@@ -170,6 +170,7 @@ export default function EventsScreen() {
                         content={item.content}
                         campus={selectedCampus}
                         status={item.status}
+                        index={index}
                       />
                     )}
                     keyExtractor={(item) => item.id}

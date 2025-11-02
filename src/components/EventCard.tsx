@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { TouchableOpacity, View, Text, Image, Alert } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -8,6 +8,8 @@ import { useLikes } from "../hooks/useLikes";
 import { useUser } from "../hooks/useUser";
 import eventCardStyles from "../styles/eventCardStyles";
 import { EventCardProps } from "@/types/types";
+import { useFade } from '../hooks/useFade';
+import { FadeView } from './FadeView';
 
 export default function EventCard({
   id,
@@ -22,11 +24,18 @@ export default function EventCard({
   campus,
   isPending,
   status,
+  index = 0,
 }: EventCardProps) {
   const { colors } = useThemeColors();
   const { isEventLiked, toggleEventLikeStatus } = useLikes();
   const { user } = useUser();
   const styles = eventCardStyles;
+  const fadeAnim = useFade(0,100, 'up');
+
+  useEffect(() => {
+    const delay = index * 120; 
+    fadeAnim.fadeIn({ duration: 600, delay });
+  }, []);
 
   const handlePress = () => {
     router.push({
@@ -60,7 +69,12 @@ export default function EventCard({
   const isNormal = user ? user?.role === "normal" : false;
 
   return (
-    <TouchableOpacity
+    <FadeView 
+      opacity={fadeAnim.opacity} 
+      transform={fadeAnim.transform}
+      styles={{ marginBottom: 16 }}
+    >
+      <TouchableOpacity
       style={[styles.card, { backgroundColor: colors.surface }]}
       onPress={handlePress}
     >
@@ -122,5 +136,7 @@ export default function EventCard({
         
       </View>
     </TouchableOpacity>
+    </FadeView>
+    
   );
 }

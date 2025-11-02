@@ -129,7 +129,7 @@ export default function AnnouncementsScreen() {
               <FlatList
                 horizontal
                 data={filteredAnnouncements}
-                renderItem={({ item }) => (
+                renderItem={({ item, index }) => (
                   <AnnouncementCard
                     id={item.id}
                     image={item.image}
@@ -137,6 +137,7 @@ export default function AnnouncementsScreen() {
                     date={item.date}
                     campus={item.campus}
                     status={item.status}
+                    index={index}
                   />
                 )}
                 keyExtractor={(item) => item.id}

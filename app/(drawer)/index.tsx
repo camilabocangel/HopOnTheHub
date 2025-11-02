@@ -153,7 +153,7 @@ export default function HomeScreen() {
   const upcomingEvents = allEvents?.slice(0, 5) || [];
   const recentAnnouncements = allAnnouncements?.slice(0, 5) || [];
 
-  const renderEventItem = ({ item }: { item: any }) => (
+  const renderEventItem = ({ item, index }: { item: any, index:any }) => (
     <View style={styles.horizontalCard}>
       <EventCard
         id={item.id}
@@ -167,13 +167,14 @@ export default function HomeScreen() {
         content={item.content}
         campus={item.campus}
         status={item.status}
+        index={index}
       />
     </View>
   );
 
   const renderEventListFooter = () => <CreateEventCard />;
 
-  const renderAnnouncementItem = ({ item }: { item: any }) => (
+  const renderAnnouncementItem = ({ item, index }: { item: any, index:any }) => (
     <View style={styles.horizontalCard}>
       <AnnouncementCard
         id={item.id}
@@ -182,6 +183,7 @@ export default function HomeScreen() {
         date={item.date}
         campus={item.campus}
         status={item.status}
+        index={index}
       />
     </View>
   );

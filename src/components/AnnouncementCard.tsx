@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { TouchableOpacity, View, Text, Image, Alert } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -8,6 +8,8 @@ import { useLikes } from "../hooks/useLikes";
 import { useUser } from "../hooks/useUser";
 import announcementCardStyles from "../styles/announcementCardStyles";
 import { AnnouncementCardProps } from "@/types/types";
+import { useFade } from '../hooks/useFade';
+import { FadeView } from './FadeView';
 
 export default function AnnouncementCard({
   id ,
@@ -16,16 +18,21 @@ export default function AnnouncementCard({
   date,
   campus,
   status,
-  isPending
+  isPending,
+  index=0,
 }: AnnouncementCardProps) {
   const { colors } = useThemeColors();
   const { isAnnouncementLiked, toggleAnnouncementLikeStatus } = useLikes();
   const { user } = useUser();
-
   const styles = announcementCardStyles;
+  const fadeAnim = useFade(0,100, 'up');
   const liked = isAnnouncementLiked(id);
   const isNormal = user ? user?.role === "normal" : false;
 
+  useEffect(() => {
+      const delay = index * 120; 
+      fadeAnim.fadeIn({ duration: 600, delay });
+    }, []);
   const handlePress = () => {
     router.push({
       pathname: "/singleAnnouncement",
@@ -49,7 +56,12 @@ export default function AnnouncementCard({
   };
 
   return (
-    <TouchableOpacity
+    <FadeView
+      opacity={fadeAnim.opacity} 
+      transform={fadeAnim.transform}
+      styles={{ marginBottom: 16 }}
+    >
+      <TouchableOpacity
       style={[styles.card, { backgroundColor: colors.surface }]}
       onPress={handlePress}
     >
@@ -117,5 +129,6 @@ export default function AnnouncementCard({
         </View>
       </View>
     </TouchableOpacity>
+    </FadeView>
   );
 }
