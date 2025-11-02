@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   View,
   Text,
@@ -113,7 +113,7 @@ export default function SingleEventScreen() {
     const success = await toggleEventLikeStatus(eventId);
     if (!success) {
       Alert.alert("Error", "No se pudo actualizar el like");
-      return false
+      return false;
     }
     return true;
   };
@@ -235,18 +235,20 @@ export default function SingleEventScreen() {
       <ScreenTransitionView duration={500} delay={100}>
         <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
           <View style={singleEventsStyles.container}>
-            <Animated.View 
+            <Animated.View
               style={[
                 singleEventsStyles.imageContainer,
                 {
                   opacity: screenTransition.opacity,
-                  transform: [{
-                    scale: screenTransition.opacity.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.9, 1],
-                    })
-                  }]
-                }
+                  transform: [
+                    {
+                      scale: screenTransition.opacity.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.9, 1],
+                      }),
+                    },
+                  ],
+                },
               ]}
             >
               {image ? (
@@ -270,14 +272,14 @@ export default function SingleEventScreen() {
             </Animated.View>
 
             <View style={singleEventsStyles.content}>
-              <Animated.Text 
+              <Animated.Text
                 style={[
-                  singleEventsStyles.title, 
-                  { 
+                  singleEventsStyles.title,
+                  {
                     color: colors.text,
                     opacity: screenTransition.opacity,
-                    transform: [{ translateY: screenTransition.translateY }]
-                  }
+                    transform: [{ translateY: screenTransition.translateY }],
+                  },
                 ]}
               >
                 {title as string}
@@ -288,10 +290,10 @@ export default function SingleEventScreen() {
                   { label: "Fecha:", value: date as string },
                   { label: "Hora:", value: time as string },
                   { label: "Lugar:", value: place as string },
-                  { 
-                    label: "Campus:", 
+                  {
+                    label: "Campus:",
                     value: campusDisplayText,
-                    special: true 
+                    special: true,
                   },
                   { label: "Categoría:", value: category as string },
                 ].map((detail, index) => (
@@ -302,13 +304,17 @@ export default function SingleEventScreen() {
                       { borderBottomColor: colors.border },
                       {
                         opacity: screenTransition.opacity,
-                        transform: [{
-                          translateY: screenTransition.translateY.interpolate({
-                            inputRange: [0, 30],
-                            outputRange: [0, 10 - (index * 5)],
-                          })
-                        }]
-                      }
+                        transform: [
+                          {
+                            translateY: screenTransition.translateY.interpolate(
+                              {
+                                inputRange: [0, 30],
+                                outputRange: [0, 10 - index * 5],
+                              }
+                            ),
+                          },
+                        ],
+                      },
                     ]}
                   >
                     <Text
@@ -322,9 +328,9 @@ export default function SingleEventScreen() {
                     <Text
                       style={[
                         singleEventsStyles.detailValue,
-                        { 
+                        {
                           color: detail.special ? colors.primary : colors.text,
-                          fontWeight: detail.special ? "bold" : "normal"
+                          fontWeight: detail.special ? "bold" : "normal",
                         },
                       ]}
                     >
@@ -342,8 +348,10 @@ export default function SingleEventScreen() {
                           { borderBottomColor: colors.border },
                           {
                             opacity: screenTransition.opacity,
-                            transform: [{ translateY: screenTransition.translateY }]
-                          }
+                            transform: [
+                              { translateY: screenTransition.translateY },
+                            ],
+                          },
                         ]}
                       >
                         <Text
@@ -372,8 +380,10 @@ export default function SingleEventScreen() {
                           { borderBottomColor: colors.border },
                           {
                             opacity: screenTransition.opacity,
-                            transform: [{ translateY: screenTransition.translateY }]
-                          }
+                            transform: [
+                              { translateY: screenTransition.translateY },
+                            ],
+                          },
                         ]}
                       >
                         <Text
@@ -404,8 +414,10 @@ export default function SingleEventScreen() {
                       { borderBottomColor: colors.border },
                       {
                         opacity: screenTransition.opacity,
-                        transform: [{ translateY: screenTransition.translateY }]
-                      }
+                        transform: [
+                          { translateY: screenTransition.translateY },
+                        ],
+                      },
                     ]}
                   >
                     <Text
@@ -428,13 +440,13 @@ export default function SingleEventScreen() {
                 )}
               </View>
 
-              <Animated.View 
+              <Animated.View
                 style={[
                   singleEventsStyles.section,
                   {
                     opacity: screenTransition.opacity,
-                    transform: [{ translateY: screenTransition.translateY }]
-                  }
+                    transform: [{ translateY: screenTransition.translateY }],
+                  },
                 ]}
               >
                 <Text
@@ -494,13 +506,13 @@ export default function SingleEventScreen() {
                 </View>
               </Animated.View>
 
-              <Animated.View 
+              <Animated.View
                 style={[
                   singleEventsStyles.section,
                   {
                     opacity: screenTransition.opacity,
-                    transform: [{ translateY: screenTransition.translateY }]
-                  }
+                    transform: [{ translateY: screenTransition.translateY }],
+                  },
                 ]}
               >
                 <Text
@@ -522,13 +534,13 @@ export default function SingleEventScreen() {
               </Animated.View>
 
               {content && (
-                <Animated.View 
+                <Animated.View
                   style={[
                     singleEventsStyles.section,
                     {
                       opacity: screenTransition.opacity,
-                      transform: [{ translateY: screenTransition.translateY }]
-                    }
+                      transform: [{ translateY: screenTransition.translateY }],
+                    },
                   ]}
                 >
                   <Text
@@ -558,8 +570,8 @@ export default function SingleEventScreen() {
                   { backgroundColor: colors.background },
                   {
                     opacity: screenTransition.opacity,
-                    transform: [{ translateY: screenTransition.translateY }]
-                  }
+                    transform: [{ translateY: screenTransition.translateY }],
+                  },
                 ]}
               >
                 {/* Para eventos pendientes */}
@@ -584,7 +596,11 @@ export default function SingleEventScreen() {
                       ]}
                       onPress={handleApproveEvent}
                     >
-                      <Ionicons name="checkmark-circle" size={20} color="white" />
+                      <Ionicons
+                        name="checkmark-circle"
+                        size={20}
+                        color="white"
+                      />
                       <Text style={singleEventsStyles.buttonText}>
                         Aceptar Evento
                       </Text>
