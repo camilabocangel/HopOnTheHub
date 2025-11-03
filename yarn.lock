@@ -3371,6 +3371,11 @@ expo-linking@~8.0.8:
     expo-constants "~18.0.8"
     invariant "^2.2.4"
 
+expo-location@~19.0.7:
+  version "19.0.7"
+  resolved "https://registry.yarnpkg.com/expo-location/-/expo-location-19.0.7.tgz#58ab5b9b59db3a26d0495c19e719d5f559948b1c"
+  integrity sha512-YNkh4r9E6ECbPkBCAMG5A5yHDgS0pw+Rzyd0l2ZQlCtjkhlODB55nMCKr5CZnUI0mXTkaSm8CwfoCO8n2MpYfg==
+
 expo-modules-autolinking@3.0.14:
   version "3.0.14"
   resolved "https://registry.npmjs.org/expo-modules-autolinking/-/expo-modules-autolinking-3.0.14.tgz"
@@ -3760,6 +3765,11 @@ hasown@^2.0.2:
   integrity sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==
   dependencies:
     function-bind "^1.1.2"
+
+haversine-distance@^1.2.4:
+  version "1.2.4"
+  resolved "https://registry.yarnpkg.com/haversine-distance/-/haversine-distance-1.2.4.tgz#4b64f6703594d0ad84b4d73f7c1123df188c7d23"
+  integrity sha512-8MHQBQXR7GXZJIvitCf/ux+gwLtWOxmXNNz5dReG+jJbuvaEoj6QIXlaIO3cPr433BFWM4jececJaLYpwxnZhg==
 
 hermes-compiler@0.0.0:
   version "0.0.0"
@@ -4285,6 +4295,11 @@ lodash.debounce@4.0.8, lodash.debounce@^4.0.8:
   version "4.0.8"
   resolved "https://registry.npmjs.org/lodash.debounce/-/lodash.debounce-4.0.8.tgz"
   integrity sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==
+
+lodash.isequal@^4.5.0:
+  version "4.5.0"
+  resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
+  integrity sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==
 
 lodash.throttle@^4.1.1:
   version "4.1.1"
@@ -4971,7 +4986,7 @@ prompts@^2.3.2:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@15.8.1, prop-types@^15.5.10, prop-types@^15.8.1:
+prop-types@15.8.1, prop-types@^15.5.10, prop-types@^15.6.0, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -5116,6 +5131,14 @@ react-native-is-edge-to-edge@^1.1.6, react-native-is-edge-to-edge@^1.2.1:
   version "1.2.1"
   resolved "https://registry.npmjs.org/react-native-is-edge-to-edge/-/react-native-is-edge-to-edge-1.2.1.tgz"
   integrity sha512-FLbPWl/MyYQWz+KwqOZsSyj2JmLKglHatd3xLZWskXOpRaio4LfEDEz8E/A6uD8QoTHW6Aobw1jbEwK7KMgR7Q==
+
+react-native-maps-directions@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/react-native-maps-directions/-/react-native-maps-directions-1.9.0.tgz#63ae8e8b36499042a658e43cd4836ac89aab8b7d"
+  integrity sha512-68SrMOUg4WQ5PmpS9sNOTZaYtdyVYJnnjQOOhABrgiKnb5BXCZRU2gDoS11gYf23hjUBjq8JXzgfn37WcINLwA==
+  dependencies:
+    lodash.isequal "^4.5.0"
+    prop-types "^15.6.0"
 
 react-native-maps@1.20.1:
   version "1.20.1"
