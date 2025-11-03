@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   Switch,
   TouchableOpacity,
   Alert,
-  Pressable,
   ActivityIndicator,
 } from "react-native";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
@@ -31,6 +30,8 @@ export default function ProfileScreen() {
 
   const [uploading, setUploading] = useState(false);
   const [photoUrl, setPhotoUrl] = useState<string | undefined>(user?.picture);
+
+  const isDarkMode = useMemo(() => theme === "dark", [theme]);
 
   const handleLogout = async () => {
     Alert.alert(
@@ -75,6 +76,8 @@ export default function ProfileScreen() {
   }, []);
 
   const handlePickImage = useCallback(async () => {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
     const currentUser = auth.currentUser;
     if (!currentUser) {
       Alert.alert(
@@ -97,7 +100,7 @@ export default function ProfileScreen() {
       quality: 0.8,
     });
 
-    if (result.canceled || !(result.assets?.length > 0)) {
+    if (result.canceled || !result.assets || result.assets.length === 0) {
       return;
     }
 
@@ -160,149 +163,167 @@ export default function ProfileScreen() {
     );
   }, [updateUserPhoto]);
 
+  const handleThemeToggle = useCallback(
+    (value: boolean) => {
+      toggleTheme();
+    },
+    [toggleTheme]
+  );
+
+  if (!user) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+        <View
+          style={[
+            styles.container,
+            { alignItems: "center", justifyContent: "center", flex: 1 },
+          ]}
+        >
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: colors.text, marginBottom: 20 },
+            ]}
+          >
+            No hay usuario logueado
+          </Text>
+          <TouchableOpacity
+            style={styles.logoutCard}
+            onPress={() => router.replace("/auth")}
+          >
+            <Text style={styles.logoutText}>Iniciar Sesión</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-        {user ? (
-          <View
-            style={[styles.container, { backgroundColor: colors.background }]}
-          >
-            <View style={styles.profileSection}>
-              <View style={styles.imageContainer}>
-                <Image
-                  source={
-                    photoUrl || user.picture
-                      ? { uri: photoUrl || user.picture }
-                      : require("../../assets/default-profile-picture.jpg")
-                  }
-                  style={styles.profileImage}
-                  resizeMode="cover"
-                  onError={handleImageError}
-                  defaultSource={require("../../assets/default-profile-picture.jpg")}
-                />
+        <View
+          style={[styles.container, { backgroundColor: colors.background }]}
+        >
+          <View style={styles.profileSection}>
+            <View style={styles.imageContainer}>
+              <Image
+                source={
+                  photoUrl || user.picture
+                    ? { uri: photoUrl || user.picture }
+                    : require("../../assets/default-profile-picture.jpg")
+                }
+                style={styles.profileImage}
+                resizeMode="cover"
+                onError={handleImageError}
+                defaultSource={require("../../assets/default-profile-picture.jpg")}
+              />
 
-                {(photoUrl || user.picture) && (
-                  <TouchableOpacity
-                    onPress={handleRemovePhoto}
-                    style={styles.removePhotoButton}
-                  >
-                    <Ionicons name="close-circle" size={28} color="#ff3b30" />
-                  </TouchableOpacity>
-                )}
-              </View>
-
-              <TouchableOpacity
-                onPress={handlePickImage}
-                disabled={uploading}
-                style={styles.changePhotoContainer}
-              >
-                {uploading ? (
-                  <ActivityIndicator size="small" color={colors.primary} />
-                ) : (
-                  <Text style={[styles.changePhotoText, { color: colors.primary }]}>
-                    {user.picture ? "Cambiar foto" : "Agregar foto"}
-                  </Text>
-                )}
-              </TouchableOpacity>
-
-              <Text style={[styles.userName, { color: colors.text }]}>
-                {user.name} {user.lastName}
-              </Text>
-
-              <Text style={[styles.campus, { color: colors.primary }]}>
-                Campus {user.campus}
-              </Text>
-
-              <View style={styles.roleBadge}>
-                <Text style={styles.roleText}>
-                  {user.role === "admin" ? "Administrador" : "Estudiante"}
-                </Text>
-              </View>
+              {(photoUrl || user.picture) && (
+                <TouchableOpacity
+                  onPress={handleRemovePhoto}
+                  style={styles.removePhotoButton}
+                >
+                  <Ionicons name="close-circle" size={28} color="#ff3b30" />
+                </TouchableOpacity>
+              )}
             </View>
 
-            {user.role === "normal" && (
-              <View style={styles.infoSection}>
-                <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                  Información Académica
+            <TouchableOpacity
+              onPress={handlePickImage}
+              disabled={uploading}
+              style={styles.changePhotoContainer}
+            >
+              {uploading ? (
+                <ActivityIndicator size="small" color={colors.primary} />
+              ) : (
+                <Text
+                  style={[styles.changePhotoText, { color: colors.primary }]}
+                >
+                  {user.picture ? "Cambiar foto" : "Agregar foto"}
                 </Text>
+              )}
+            </TouchableOpacity>
 
-                <View style={styles.infoCard}>
-                  <View style={styles.infoRow}>
-                    <Text style={[styles.infoLabel, { color: colors.text }]}>
-                      Carrera:
-                    </Text>
-                    <Text style={[styles.infoValue, { color: colors.text }]}>
-                      {user.career || "No especificada"}
-                    </Text>
-                  </View>
+            <Text style={[styles.userName, { color: colors.text }]}>
+              {user.name} {user.lastName}
+            </Text>
 
-                  <View style={styles.infoRow}>
-                    <Text style={[styles.infoLabel, { color: colors.text }]}>
-                      Semestre:
-                    </Text>
-                    <Text style={[styles.infoValue, { color: colors.text }]}>
-                      {user.semester
-                        ? `${user.semester}° Semestre`
-                        : "No especificado"}
-                    </Text>
-                  </View>
+            <Text style={[styles.campus, { color: colors.primary }]}>
+              Campus {user.campus}
+            </Text>
 
-                  <View style={styles.infoRow}>
-                    <Text style={[styles.infoLabel, { color: colors.text }]}>
-                      Campus:
-                    </Text>
-                    <Text style={[styles.infoValue, { color: colors.text }]}>
-                      {user.campus}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            )}
+            <View style={styles.roleBadge}>
+              <Text style={styles.roleText}>
+                {user.role === "admin" ? "Administrador" : "Estudiante"}
+              </Text>
+            </View>
+          </View>
 
+          {user.role === "normal" && (
             <View style={styles.infoSection}>
               <Text style={[styles.sectionTitle, { color: colors.text }]}>
-                Información Personal
+                Información Académica
               </Text>
 
               <View style={styles.infoCard}>
                 <View style={styles.infoRow}>
                   <Text style={[styles.infoLabel, { color: colors.text }]}>
-                    Nombre completo:
+                    Carrera:
                   </Text>
                   <Text style={[styles.infoValue, { color: colors.text }]}>
-                    {user.name} {user.lastName} {user.secondLastName || ""}
+                    {user.career || "No especificada"}
                   </Text>
                 </View>
 
                 <View style={styles.infoRow}>
                   <Text style={[styles.infoLabel, { color: colors.text }]}>
-                    Email:
+                    Semestre:
                   </Text>
                   <Text style={[styles.infoValue, { color: colors.text }]}>
-                    {user.userName}
+                    {user.semester
+                      ? `${user.semester}° Semestre`
+                      : "No especificado"}
+                  </Text>
+                </View>
+
+                <View style={styles.infoRow}>
+                  <Text style={[styles.infoLabel, { color: colors.text }]}>
+                    Campus:
+                  </Text>
+                  <Text style={[styles.infoValue, { color: colors.text }]}>
+                    {user.campus}
                   </Text>
                 </View>
               </View>
             </View>
-          </View>
-        ) : (
-          <View
-            style={[
-              styles.container,
-              { alignItems: "center", justifyContent: "center" },
-            ]}
-          >
+          )}
+
+          <View style={styles.infoSection}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              No hay usuario logueado
+              Información Personal
             </Text>
-            <TouchableOpacity
-              style={styles.logoutCard}
-              onPress={() => router.replace("/auth")}
-            >
-              <Text style={styles.logoutText}>Iniciar Sesión</Text>
-            </TouchableOpacity>
+
+            <View style={styles.infoCard}>
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: colors.text }]}>
+                  Nombre completo:
+                </Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>
+                  {user.name} {user.lastName} {user.secondLastName || ""}
+                </Text>
+              </View>
+
+              <View style={styles.infoRow}>
+                <Text style={[styles.infoLabel, { color: colors.text }]}>
+                  Email:
+                </Text>
+                <Text style={[styles.infoValue, { color: colors.text }]}>
+                  {user.userName}
+                </Text>
+              </View>
+            </View>
           </View>
-        )}
+        </View>
 
         <View style={styles.container}>
           <Text style={[styles.sectionTitle, { color: colors.text }]}>
@@ -314,21 +335,22 @@ export default function ProfileScreen() {
               Modo oscuro
             </Text>
             <Switch
-              value={theme === "dark"}
-              onValueChange={toggleTheme}
+              value={isDarkMode}
+              onValueChange={handleThemeToggle}
               trackColor={{
-                false: colors.switchTrackOff,
-                true: colors.switchTrackOn,
+                false: colors.switchTrackOff || "#767577",
+                true: colors.switchTrackOn || colors.primary,
               }}
-              thumbColor={theme === "dark" ? colors.switchThumb : "#f4f4f5"}
+              thumbColor={
+                isDarkMode ? colors.switchThumb || "#f4f3f4" : "#f4f3f4"
+              }
+              ios_backgroundColor="#3e3e3e"
             />
           </View>
 
-          {user && (
-            <TouchableOpacity style={styles.logoutCard} onPress={handleLogout}>
-              <Text style={styles.logoutText}>Cerrar Sesión</Text>
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity style={styles.logoutCard} onPress={handleLogout}>
+            <Text style={styles.logoutText}>Cerrar Sesión</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

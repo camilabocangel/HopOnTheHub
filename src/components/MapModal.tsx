@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from 'react';
-=======
 import React, { useState, useEffect, useRef } from 'react';
->>>>>>> cami/animations
 import {
   Modal,
   View,
@@ -75,8 +71,6 @@ export default function MapModal({
 
   useEffect(() => {
     if (visible) {
-<<<<<<< HEAD
-=======
       requestLocationPermission();
     }
   }, [visible]);
@@ -119,7 +113,6 @@ export default function MapModal({
 
   useEffect(() => {
     if (visible) {
->>>>>>> cami/animations
       setSelectedMarker(null);
       setShowRoute(false);
       setRouteInfo(null);
