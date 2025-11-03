@@ -46,9 +46,9 @@ export const AnimatedMarker: React.FC<AnimatedMarkerProps> = ({
     >
       <Animated.View style={{ opacity, transform }}>
         <Ionicons 
-          name="location" 
-          size={isHighlighted ? 32 : 24} 
-          color={isHighlighted ? colors.primary : colors.primary} 
+          name="location-sharp" 
+          size={isHighlighted ? 44 : 36} 
+          color={isHighlighted ? colors.map : colors.map} 
         />
       </Animated.View>
     </Marker>

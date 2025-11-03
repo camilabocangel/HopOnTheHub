@@ -111,6 +111,9 @@ async function scheduleLocalNotification() {
       sound: 'default',
       data: { local: true },
     },
-    trigger: { seconds: 2 },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      seconds: 2,
+    },
   });
 }

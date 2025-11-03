@@ -16,6 +16,7 @@ export const palette = {
     switchTrackOn: "#FFD43B",
     switchTrackOff: "#94A3B8",
     switchThumb: "#F8F9FA",
+    map: "#ee0e0eff"
   },
   dark: {
     background: "#0F172A",
@@ -33,6 +34,7 @@ export const palette = {
     switchTrackOn: "#FFD43B",
     switchTrackOff: "#475569",
     switchThumb: "#1E293B",
+    map: "#ee0e0eff"
   },
 } as const;
 
