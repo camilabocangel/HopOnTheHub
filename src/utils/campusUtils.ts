@@ -11,7 +11,6 @@ export const parseCampuses = (campusString: string): CampusKey[] => {
   
   console.log("parseCampuses input:", campusString);
   
-  // Si ya es un array (viene como string JSON)
   if (typeof campusString === 'string' && campusString.startsWith('[')) {
     try {
       const parsedArray = JSON.parse(campusString);
@@ -22,7 +21,6 @@ export const parseCampuses = (campusString: string): CampusKey[] => {
       }
     } catch (error) {
       console.log("Error parsing campus array:", error);
-      // Continuar con el parsing normal
     }
   }
   
@@ -35,7 +33,6 @@ export const parseCampuses = (campusString: string): CampusKey[] => {
     return ['la paz', 'cochabamba', 'santa cruz'];
   }
   
-  // Manejar formato "La Paz,Santa Cruz" - CORRECCIÓN PRINCIPAL
   if (normalized.includes(',')) {
     const campusArray = normalized.split(',').map(c => c.trim());
     console.log("Split by comma:", campusArray);
@@ -44,7 +41,6 @@ export const parseCampuses = (campusString: string): CampusKey[] => {
     return result;
   }
   
-  // Si es un string simple, intentar convertirlo directamente
   const result = convertToCampusKeys([normalized]);
   console.log("Converted single campus:", result);
   return result;
@@ -64,7 +60,6 @@ export const convertToCampusKeys = (campuses: string[]): CampusKey[] => {
     } else if (normalized === 'santa cruz' || normalized === 'santacruz') {
       validCampuses.push('santa cruz');
     }
-    // Manejar casos con espacios extra o formatos inconsistentes
     else if (normalized.includes('la paz')) {
       validCampuses.push('la paz');
     } else if (normalized.includes('cochabamba') || normalized.includes('cocha')) {

@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { Drawer } from "expo-router/drawer";
-import { useThemeColors } from "../../src/hooks/useThemeColors";
 import { DrawerContentScrollView, DrawerItem } from "@react-navigation/drawer";
 import { router, usePathname } from "expo-router";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
 import { useUser } from "@/hooks/useUser";
+import GeneralMapModal from "@/components/GeneralMapModal";
 
-const CustomDrawerContent = (props: any) => {
+const CustomDrawerContent = ({ onOpenMap, ...props }: any) => {
   const { colors } = useThemeColors();
   const { user } = useUser();
   const pathname = usePathname();
@@ -20,9 +21,7 @@ const CustomDrawerContent = (props: any) => {
     >
       <DrawerItem
         label={"Inicio"}
-        onPress={() => {
-          router.push("/");
-        }}
+        onPress={() => router.push("/")}
         focused={pathname === "/"}
         activeTintColor={colors.primary}
         inactiveTintColor={colors.text}
@@ -31,31 +30,35 @@ const CustomDrawerContent = (props: any) => {
 
       <DrawerItem
         label={"Carreras"}
-        onPress={() => {
-          router.push("/careers");
-        }}
+        onPress={() => router.push("/careers")}
         focused={pathname === "/careers"}
         activeTintColor={colors.primary}
         inactiveTintColor={colors.text}
         labelStyle={{ fontWeight: "600" }}
       />
+
       {isNormal && (
         <DrawerItem
           label={"Favoritos"}
-          onPress={() => {
-            router.push("/favorites");
-          }}
+          onPress={() => router.push("/favorites")}
           focused={pathname === "/favorites"}
           activeTintColor={colors.primary}
           inactiveTintColor={colors.text}
           labelStyle={{ fontWeight: "600" }}
         />
       )}
+
+      <DrawerItem
+        label={"Mapa de Eventos"}
+        onPress={onOpenMap} // ← llamamos a la función del padre
+        activeTintColor={colors.primary}
+        inactiveTintColor={colors.text}
+        labelStyle={{ fontWeight: "600" }}
+      />
+
       <DrawerItem
         label={"Perfil"}
-        onPress={() => {
-          router.push("/profile");
-        }}
+        onPress={() => router.push("/profile")}
         focused={pathname === "/profile"}
         activeTintColor={colors.primary}
         inactiveTintColor={colors.text}
@@ -67,61 +70,45 @@ const CustomDrawerContent = (props: any) => {
 
 const DrawerLayout = () => {
   const { colors } = useThemeColors();
+  const [showGeneralMap, setShowGeneralMap] = useState(false);
 
   return (
-    <Drawer
-      screenOptions={{
-        headerShown: true,
-        headerTitleAlign: "center",
-        headerStyle: { backgroundColor: colors.surface },
-        headerTintColor: colors.text,
-        drawerStyle: {
-          backgroundColor: colors.drawerBackground,
-          width: 280,
-        },
-        drawerContentStyle: {
-          backgroundColor: colors.drawerBackground,
-        },
-        drawerActiveTintColor: colors.primary,
-        drawerInactiveTintColor: colors.text,
-        drawerActiveBackgroundColor: colors.muted + "40",
-        drawerInactiveBackgroundColor: "transparent",
-        drawerLabelStyle: {
-          fontWeight: "600",
-          fontSize: 16,
-        },
-      }}
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-    >
-      <Drawer.Screen
-        name="index"
-        options={{
-          drawerLabel: "Inicio",
-          title: "UPBHub",
+    <>
+      <Drawer
+        screenOptions={{
+          headerShown: true,
+          headerTitleAlign: "center",
+          headerStyle: { backgroundColor: colors.surface },
+          headerTintColor: colors.text,
+          drawerStyle: {
+            backgroundColor: colors.drawerBackground,
+            width: 280,
+          },
+          drawerContentStyle: {
+            backgroundColor: colors.drawerBackground,
+          },
+          drawerActiveTintColor: colors.primary,
+          drawerInactiveTintColor: colors.text,
+          drawerActiveBackgroundColor: colors.muted + "40",
+          drawerInactiveBackgroundColor: "transparent",
+          drawerLabelStyle: {
+            fontWeight: "600",
+            fontSize: 16,
+          },
         }}
-      />
-      <Drawer.Screen
-        name="profile"
-        options={{
-          drawerLabel: "Perfil",
-          title: "Perfil",
-        }}
-      />
-      <Drawer.Screen
-        name="careers"
-        options={{
-          drawerLabel: "Carreras",
-          title: "Carreras",
-        }}
-      />
-      <Drawer.Screen
-        name="favorites"
-        options={{
-          drawerLabel: "Favoritos",
-          title: "Mis Favoritos",
-        }}
-      />
-    </Drawer>
+        drawerContent={(props) => (
+          <CustomDrawerContent {...props} onOpenMap={() => setShowGeneralMap(true)} />
+        )}
+      >
+        <Drawer.Screen name="index" options={{ drawerLabel: "Inicio", title: "UPBHub" }} />
+        <Drawer.Screen name="profile" options={{ drawerLabel: "Perfil", title: "Perfil" }} />
+        <Drawer.Screen name="careers" options={{ drawerLabel: "Carreras", title: "Carreras" }} />
+        <Drawer.Screen name="favorites" options={{ drawerLabel: "Favoritos", title: "Mis Favoritos" }} />
+      </Drawer>
+
+      {/* Aquí sí renderizamos el modal */}
+      <GeneralMapModal visible={showGeneralMap} onClose={() => setShowGeneralMap(false)} />
+    </>
   );
 };
 
