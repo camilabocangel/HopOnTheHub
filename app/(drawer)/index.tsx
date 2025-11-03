@@ -358,7 +358,7 @@ export default function HomeScreen() {
             />
           }
         >
-          <View style={[styles.hero, { height: height * 0.3 }]}>
+          <View style={[styles.hero, { height: height }]}>
             <Image
               source={require("../../assets/upb.jpg")}
               style={styles.heroImage}
@@ -525,7 +525,7 @@ export default function HomeScreen() {
           />
         }
       >
-        <View style={[styles.hero, { height: height * 0.25 }]}>
+        <View style={[styles.hero, { height: height }]}>
           <Image
             source={require("../../assets/upb.jpg")}
             style={styles.heroImage}
