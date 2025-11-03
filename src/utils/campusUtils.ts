@@ -15,8 +15,10 @@ const CAMPUS_COORDINATES: Record<
 
 export const parseCampuses = (campusString: string): CampusKey[] => {
   if (!campusString) return ["la paz"];
-
-  if (typeof campusString === "string" && campusString.startsWith("[")) {
+  
+  console.log("parseCampuses input:", campusString);
+  
+  if (typeof campusString === 'string' && campusString.startsWith('[')) {
     try {
       const parsedArray = JSON.parse(campusString);
       if (Array.isArray(parsedArray)) {
@@ -24,7 +26,7 @@ export const parseCampuses = (campusString: string): CampusKey[] => {
         return result;
       }
     } catch (error) {
-      console.error("Error parsing campus array:", error);
+      console.log("Error parsing campus array:", error);
     }
   }
 
@@ -38,12 +40,13 @@ export const parseCampuses = (campusString: string): CampusKey[] => {
     return ["la paz", "cochabamba", "santa cruz"];
   }
 
-  if (normalized.includes(",")) {
-    const campusArray = normalized.split(",").map((c) => c.trim());
+  if (normalized.includes(',')) {
+    const campusArray = normalized.split(',').map(c => c.trim());
+    console.log("Split by comma:", campusArray);
     const result = convertToCampusKeys(campusArray);
     return result;
   }
-
+  
   const result = convertToCampusKeys([normalized]);
   return result;
 };
@@ -53,29 +56,21 @@ export const convertToCampusKeys = (campuses: string[]): CampusKey[] => {
 
   campuses.forEach((campus) => {
     const normalized = campus.toLowerCase().trim();
-
-    if (
-      normalized === "la paz" ||
-      normalized === "lapaz" ||
-      normalized === "lapaz"
-    ) {
-      validCampuses.push("la paz");
-    } else if (
-      normalized === "cochabamba" ||
-      normalized === "cocha" ||
-      normalized.includes("cochabamba")
-    ) {
-      validCampuses.push("cochabamba");
-    } else if (
-      normalized === "santa cruz" ||
-      normalized === "santacruz" ||
-      normalized.includes("santa cruz")
-    ) {
-      validCampuses.push("santa cruz");
-    } else if (normalized === "lapaz") {
-      validCampuses.push("la paz");
-    } else if (normalized === "santacruz") {
-      validCampuses.push("santa cruz");
+    console.log("Processing campus:", campus, "normalized:", normalized);
+    
+    if (normalized === 'la paz' || normalized === 'lapaz') {
+      validCampuses.push('la paz');
+    } else if (normalized === 'cochabamba' || normalized === 'cocha') {
+      validCampuses.push('cochabamba');
+    } else if (normalized === 'santa cruz' || normalized === 'santacruz') {
+      validCampuses.push('santa cruz');
+    }
+    else if (normalized.includes('la paz')) {
+      validCampuses.push('la paz');
+    } else if (normalized.includes('cochabamba') || normalized.includes('cocha')) {
+      validCampuses.push('cochabamba');
+    } else if (normalized.includes('santa cruz') || normalized.includes('santacruz')) {
+      validCampuses.push('santa cruz');
     }
   });
 
