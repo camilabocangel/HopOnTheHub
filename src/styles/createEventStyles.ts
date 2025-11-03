@@ -26,30 +26,29 @@ const createStyles = (colors: ThemeColors) =>
     modalityLabel: {
       fontSize: 16,
       fontWeight: "500",
-      color: "#333",
+      color: colors.text,
     },
     modalityText: {
       fontSize: 16,
       fontWeight: "600",
-      color: "#333",
+      color: colors.text,
     },
     modalityHint: {
       fontSize: 12,
-      color: "#666",
+      color: colors.text,
       marginTop: 4,
       fontStyle: "italic",
     },
     textInputDisabled: {
-      backgroundColor: "#f5f5f5",
-      color: "#888",
+      backgroundColor: colors.background,
+      color: colors.text,
     },
     hintText: {
       fontSize: 12,
-      color: "#666",
+      color: colors.text,
       marginTop: 4,
       fontStyle: "italic",
     },
-
     modalitySwitch: {
       padding: 4,
     },

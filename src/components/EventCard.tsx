@@ -11,6 +11,11 @@ import { useFade } from "../hooks/useFade";
 import { FadeView } from "./FadeView";
 import { AnimatedLikeButton } from "./AnimatedLikeButton";
 
+interface FirebaseTimestamp {
+  seconds: number;
+  nanoseconds?: number;
+}
+
 export default function EventCard({
   id,
   title,
@@ -35,15 +40,6 @@ export default function EventCard({
   const styles = eventCardStyles;
   const fadeAnim = useFade(0, 100, "up");
 
-  // const handleLikePress = async () => {
-  //   if (!id) return;
-
-  //   const success = await toggleEventLikeStatus(id);
-  //   if (!success) {
-  //     Alert.alert("Error", "No se pudo actualizar el like");
-  //   }
-  // };
-
   const liked = isEventLiked(id);
   const isNormal = user ? user?.role === "normal" : false;
 
@@ -52,8 +48,35 @@ export default function EventCard({
     fadeAnim.fadeIn({ duration: 600, delay });
   }, []);
 
+  const formatCreatedAtForParams = (): string => {
+    if (!createdAt) return "";
+
+    if (typeof createdAt === "object" && createdAt !== null) {
+      if (
+        "seconds" in createdAt &&
+        typeof (createdAt as any).seconds === "number"
+      ) {
+        const timestamp = createdAt as FirebaseTimestamp;
+        const result = JSON.stringify({
+          seconds: timestamp.seconds,
+          nanoseconds: timestamp.nanoseconds || 0,
+        });
+
+        return result;
+      }
+    }
+
+    if (typeof createdAt === "string" && createdAt.includes("seconds")) {
+      return createdAt;
+    }
+
+    return String(createdAt);
+  };
+
   const handlePress = () => {
     fadeAnim.fadeOut({ duration: 200 });
+
+    const formattedCreatedAt = formatCreatedAtForParams();
     setTimeout(() => {
       router.push({
         pathname: "/singleEvent",
@@ -70,7 +93,7 @@ export default function EventCard({
           campus,
           status,
           createdBy: createdBy || "",
-          createdAt: createdAt ? createdAt.toString() : "",
+          createdAt: formattedCreatedAt,
         },
       });
     }, 150);

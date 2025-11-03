@@ -16,7 +16,7 @@ export const updateExpiredContentStatus = async (): Promise<void> => {
     const eventsRef = collection(db, "events");
     const eventsQuery = query(
       eventsRef,
-      where("status", "in", ["accepted", "pending", "rejected"]) // Incluir rejected
+      where("status", "in", ["accepted", "pending", "rejected"])
     );
 
     const eventsSnapshot = await getDocs(eventsQuery);
@@ -39,7 +39,7 @@ export const updateExpiredContentStatus = async (): Promise<void> => {
     const announcementsRef = collection(db, "announcements");
     const announcementsQuery = query(
       announcementsRef,
-      where("status", "in", ["accepted", "pending", "rejected"]) // Incluir rejected
+      where("status", "in", ["accepted", "pending", "rejected"])
     );
 
     const announcementsSnapshot = await getDocs(announcementsQuery);

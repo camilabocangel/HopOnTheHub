@@ -1,12 +1,13 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import {
   View,
   Text,
   FlatList,
   ScrollView,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useFocusEffect } from "expo-router";
 import Section from "../../src/components/Section";
 import EventCard from "../../src/components/EventCard";
 import { SearchBar } from "../../src/components/SearchBar";
@@ -25,11 +26,40 @@ export default function EventsScreen() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState<DateFilterType>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   const campusParam = Array.isArray(campus) ? campus[0] : campus;
   const selectedCampus = campusParam || user?.campus || "Cochabamba";
 
-  const { events: campusEvents, loading } = useEvents(selectedCampus);
+  const {
+    events: campusEvents,
+    loading: eventsLoading,
+    refetch: refetchEvents,
+  } = useEvents(selectedCampus);
+
+  // USAR USEFOCUSEFFECT COMO EN HOME SCREEN
+  useFocusEffect(
+    useCallback(() => {
+      const refreshData = async () => {
+        await refetchEvents();
+        setInitialLoad(false);
+      };
+
+      refreshData();
+    }, [refetchEvents])
+  );
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetchEvents();
+    } catch (error) {
+      console.error("Error refreshing:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetchEvents]);
 
   const getDateRange = (filter: DateFilterType) => {
     const today = new Date();
@@ -100,6 +130,26 @@ export default function EventsScreen() {
     }, {});
   }, [filteredEvents, categories]);
 
+  // FUNCIÓN DE RENDERIZADO CON INDEX Y WRAPPER
+  const renderEventItem = ({ item, index }: { item: any; index: number }) => (
+    <View style={{ marginBottom: 16 }}>
+      <EventCard
+        id={item.id}
+        title={item.title}
+        date={item.date}
+        time={item.time}
+        place={item.place}
+        category={item.category}
+        description={item.description}
+        image={item.image}
+        content={item.content}
+        campus={selectedCampus}
+        status={item.status}
+        index={index}
+      />
+    </View>
+  );
+
   const handleClearSearch = () => {
     setSearchQuery("");
   };
@@ -108,27 +158,34 @@ export default function EventsScreen() {
     setDateFilter(null);
   };
 
-  if (loading) {
+  const isLoading = initialLoad || eventsLoading;
+
+  if (isLoading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: colors.background,
-        }}
-      >
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={{ color: colors.text, marginTop: 12 }}>
-          Cargando eventos...
-        </Text>
-      </View>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={[styles.loadingText, { color: colors.text }]}>
+            Cargando eventos...
+          </Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: colors.background }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+          />
+        }
+      >
         <View
           style={[styles.container, { backgroundColor: colors.background }]}
         >
@@ -157,25 +214,12 @@ export default function EventsScreen() {
                   <FlatList
                     horizontal
                     data={categoryEvents}
-                    renderItem={({ item, index }) => (
-                      <EventCard
-                        id={item.id}
-                        title={item.title}
-                        date={item.date}
-                        time={item.time}
-                        place={item.place}
-                        category={item.category}
-                        description={item.description}
-                        image={item.image}
-                        content={item.content}
-                        campus={selectedCampus}
-                        status={item.status}
-                        index={index}
-                      />
-                    )}
+                    renderItem={renderEventItem}
                     keyExtractor={(item) => item.id}
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.flatListContent}
+                    snapToAlignment="start"
+                    decelerationRate="fast"
                   />
                 </Section>
               );

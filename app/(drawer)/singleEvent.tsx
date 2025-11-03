@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   Animated,
+  ActivityIndicator,
 } from "react-native";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
@@ -30,6 +31,11 @@ import { ScreenTransitionView } from "@/components/ScreenTransitionView";
 import { useScreenTransition } from "@/hooks/useScreenTransition";
 import { AnimatedLikeButton } from "@/components/AnimatedLikeButton";
 
+interface FirebaseTimestamp {
+  seconds: number;
+  nanoseconds?: number;
+}
+
 export default function SingleEventScreen() {
   const { colors } = useThemeColors();
   const params = useLocalSearchParams();
@@ -40,6 +46,8 @@ export default function SingleEventScreen() {
   const { updateEventStatus } = usePendingEvents();
   const navigation = useNavigation();
   const screenTransition = useScreenTransition(0);
+
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -72,40 +80,75 @@ export default function SingleEventScreen() {
     createdAt,
   } = params;
 
-  const eventId = id as string;
-  const liked = isEventLiked(eventId);
+  const eventId = Array.isArray(id) ? id[0] : id;
+  const eventTitle = Array.isArray(title) ? title[0] : title;
+  const eventDate = Array.isArray(date) ? date[0] : date;
+  const eventTime = Array.isArray(time) ? time[0] : time;
+  const eventPlace = Array.isArray(place) ? place[0] : place;
+  const eventCategory = Array.isArray(category) ? category[0] : category;
+  const eventDescription = Array.isArray(description)
+    ? description[0]
+    : description;
+  const eventImage = Array.isArray(image) ? image[0] : image;
+  const eventContent = Array.isArray(content) ? content[0] : content;
+  const eventCampus = Array.isArray(campus) ? campus[0] : campus;
+  const eventStatus = Array.isArray(status) ? status[0] : status;
+  const eventCreatedBy = Array.isArray(createdBy) ? createdBy[0] : createdBy;
+  const eventCreatedAt = Array.isArray(createdAt) ? createdAt[0] : createdAt;
+
+  const liked = isEventLiked(eventId || "");
   const isNormal = user ? user?.role === "normal" : false;
   const isAdmin = user?.role === "admin";
 
   const formatCreatedAt = useMemo(() => {
-    if (!createdAt) return "Fecha no disponible";
+    if (!eventCreatedAt) {
+      return "Fecha no disponible";
+    }
 
     try {
-      if (typeof createdAt === "string" && createdAt.includes("Timestamp")) {
-        const timestamp = JSON.parse(createdAt);
-        const date = new Date(timestamp.seconds * 1000);
-        return date.toLocaleDateString("es-ES", {
-          day: "2-digit",
-          month: "2-digit",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
+      if (typeof eventCreatedAt === "string") {
+        if (
+          eventCreatedAt.trim().startsWith("{") &&
+          eventCreatedAt.trim().endsWith("}")
+        ) {
+          try {
+            const timestampObj = JSON.parse(
+              eventCreatedAt
+            ) as FirebaseTimestamp;
+
+            if (timestampObj && typeof timestampObj.seconds === "number") {
+              const date = new Date(timestampObj.seconds * 1000);
+              const result = date.toLocaleDateString("es-ES", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+              });
+              return result;
+            }
+          } catch (e) {}
+        }
+
+        const date = new Date(eventCreatedAt);
+        if (!isNaN(date.getTime())) {
+          const result = date.toLocaleDateString("es-ES", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+          });
+          return result;
+        }
       }
 
-      const date = new Date(createdAt as string);
-      return date.toLocaleDateString("es-ES", {
-        day: "2-digit",
-        month: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+      return "Fecha no disponible";
     } catch (error) {
       console.error("Error formateando fecha:", error);
       return "Fecha no disponible";
     }
-  }, [createdAt]);
+  }, [eventCreatedAt]);
 
   const handleLikeToggle = async () => {
     if (!eventId) return false;
@@ -119,21 +162,23 @@ export default function SingleEventScreen() {
   };
 
   const handleEditEvent = () => {
+    if (!eventId) return;
+
     const eventData = {
-      id: id as string,
-      title: title as string,
-      date: date as string,
-      time: time as string,
-      place: place as string,
-      category: category as string,
-      description: description as string,
-      image: image as string,
-      content: content as string,
-      campus: campus as string,
-      status: status as string,
-      createdBy: createdBy as string,
-      createdAt: createdAt as string,
-      firestoreId: id as string,
+      id: eventId,
+      title: eventTitle || "",
+      date: eventDate || "",
+      time: eventTime || "",
+      place: eventPlace || "",
+      category: eventCategory || "",
+      description: eventDescription || "",
+      image: eventImage || "",
+      content: eventContent || "",
+      campus: eventCampus || "",
+      status: eventStatus || "",
+      createdBy: eventCreatedBy || "",
+      createdAt: eventCreatedAt || "",
+      firestoreId: eventId,
     };
 
     router.push({
@@ -146,48 +191,51 @@ export default function SingleEventScreen() {
   };
 
   const handleApproveEvent = async () => {
+    if (!eventId) return;
+
+    setActionLoading("approve");
     try {
       const success = await updateEventStatus(eventId, "accepted");
-
       if (success) {
         Alert.alert(
           "Evento Aprobado",
           "El evento ha sido aprobado correctamente",
-          [
-            {
-              text: "OK",
-              onPress: () => router.back(),
-            },
-          ]
+          [{ text: "OK", onPress: () => router.back() }]
         );
       } else {
         Alert.alert("Error", "No se pudo aprobar el evento");
       }
     } catch (error) {
       Alert.alert("Error", "No se pudo aprobar el evento");
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleRejectEvent = async () => {
+    if (!eventId) return;
+
+    setActionLoading("reject");
     try {
       const success = await updateEventStatus(eventId, "rejected");
-
       if (success) {
         Alert.alert("Evento Rechazado", "El evento ha sido rechazado", [
-          {
-            text: "OK",
-            onPress: () => router.back(),
-          },
+          { text: "OK", onPress: () => router.back() },
         ]);
       } else {
         Alert.alert("Error", "No se pudo rechazar el evento");
       }
     } catch (error) {
       Alert.alert("Error", "No se pudo rechazar el evento");
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const handleCancelEvent = async () => {
+    if (!eventId) return;
+
+    setActionLoading("cancel");
     try {
       const success = await updateEventStatus(eventId, "rejected");
 
@@ -203,12 +251,14 @@ export default function SingleEventScreen() {
       }
     } catch (error) {
       Alert.alert("Error", "No se pudo cancelar el evento");
+    } finally {
+      setActionLoading(null);
     }
   };
 
   const eventCampuses = useMemo(() => {
-    return parseCampuses((campus as string) || "la paz");
-  }, [campus]);
+    return parseCampuses(eventCampus || "la paz");
+  }, [eventCampus]);
 
   const campusesCoordinates = useMemo(() => {
     return getCampusesCoordinates(eventCampuses);
@@ -228,7 +278,19 @@ export default function SingleEventScreen() {
     return formatCampusName(eventCampuses[0]);
   }, [eventCampuses]);
 
-  const showCreationInfo = isAdmin && (createdBy || createdAt);
+  const showCreationInfo = isAdmin && (eventCreatedBy || eventCreatedAt);
+
+  if (!eventId) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+        <View style={singleEventsStyles.container}>
+          <Text style={[singleEventsStyles.title, { color: colors.text }]}>
+            Error: Evento no encontrado
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -251,9 +313,9 @@ export default function SingleEventScreen() {
                 },
               ]}
             >
-              {image ? (
+              {eventImage ? (
                 <Image
-                  source={{ uri: image as string }}
+                  source={{ uri: eventImage }}
                   style={singleEventsStyles.image}
                   resizeMode="cover"
                 />
@@ -265,7 +327,7 @@ export default function SingleEventScreen() {
                   ]}
                 >
                   <Text style={singleEventsStyles.placeholderText}>
-                    {title as string}
+                    {eventTitle}
                   </Text>
                 </View>
               )}
@@ -282,20 +344,20 @@ export default function SingleEventScreen() {
                   },
                 ]}
               >
-                {title as string}
+                {eventTitle}
               </Animated.Text>
 
               <View style={singleEventsStyles.detailsContainer}>
                 {[
-                  { label: "Fecha:", value: date as string },
-                  { label: "Hora:", value: time as string },
-                  { label: "Lugar:", value: place as string },
+                  { label: "Fecha:", value: eventDate },
+                  { label: "Hora:", value: eventTime },
+                  { label: "Lugar:", value: eventPlace },
                   {
                     label: "Campus:",
                     value: campusDisplayText,
                     special: true,
                   },
-                  { label: "Categoría:", value: category as string },
+                  { label: "Categoría:", value: eventCategory },
                 ].map((detail, index) => (
                   <Animated.View
                     key={detail.label}
@@ -341,7 +403,7 @@ export default function SingleEventScreen() {
 
                 {showCreationInfo && (
                   <>
-                    {createdBy && (
+                    {eventCreatedBy && (
                       <Animated.View
                         style={[
                           singleEventsStyles.detailRow,
@@ -368,12 +430,12 @@ export default function SingleEventScreen() {
                             { color: colors.text },
                           ]}
                         >
-                          {createdBy as string}
+                          {eventCreatedBy}
                         </Text>
                       </Animated.View>
                     )}
 
-                    {createdAt && (
+                    {eventCreatedAt && (
                       <Animated.View
                         style={[
                           singleEventsStyles.detailRow,
@@ -574,7 +636,6 @@ export default function SingleEventScreen() {
                   },
                 ]}
               >
-                {/* Para eventos pendientes */}
                 {status === "pending" && (
                   <>
                     <TouchableOpacity
@@ -589,52 +650,87 @@ export default function SingleEventScreen() {
                         Editar Evento
                       </Text>
                     </TouchableOpacity>
+
                     <TouchableOpacity
                       style={[
                         singleEventsStyles.actionButton,
                         { backgroundColor: "#4CAF50" },
+                        actionLoading === "accept" &&
+                          singleEventsStyles.actionButtonDisabled,
                       ]}
                       onPress={handleApproveEvent}
+                      disabled={actionLoading !== null}
                     >
-                      <Ionicons
-                        name="checkmark-circle"
-                        size={20}
-                        color="white"
-                      />
-                      <Text style={singleEventsStyles.buttonText}>
-                        Aceptar Evento
-                      </Text>
+                      {actionLoading === "accept" ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <>
+                          <Ionicons
+                            name="checkmark-circle"
+                            size={20}
+                            color="white"
+                          />
+                          <Text style={singleEventsStyles.buttonText}>
+                            Aceptar Evento
+                          </Text>
+                        </>
+                      )}
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       style={[
                         singleEventsStyles.actionButton,
                         { backgroundColor: "#f44336" },
+                        actionLoading === "reject" &&
+                          singleEventsStyles.actionButtonDisabled,
                       ]}
                       onPress={handleRejectEvent}
+                      disabled={actionLoading !== null}
                     >
-                      <Ionicons name="close-circle" size={20} color="white" />
-                      <Text style={singleEventsStyles.buttonText}>
-                        Rechazar Evento
-                      </Text>
+                      {actionLoading === "reject" ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <>
+                          <Ionicons
+                            name="close-circle"
+                            size={20}
+                            color="white"
+                          />
+                          <Text style={singleEventsStyles.buttonText}>
+                            Rechazar Evento
+                          </Text>
+                        </>
+                      )}
                     </TouchableOpacity>
                   </>
                 )}
 
-                {/* Para eventos aceptados - Botón de cancelar */}
                 {status === "accepted" && (
                   <>
                     <TouchableOpacity
                       style={[
                         singleEventsStyles.actionButton,
                         { backgroundColor: "#ddb503ff" },
+                        actionLoading === "cancel" &&
+                          singleEventsStyles.actionButtonDisabled,
                       ]}
                       onPress={handleEditEvent}
+                      disabled={actionLoading !== null}
                     >
-                      <Ionicons name="create-outline" size={20} color="white" />
-                      <Text style={singleEventsStyles.buttonText}>
-                        Editar Evento
-                      </Text>
+                      {actionLoading === "cancel" ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <>
+                          <Ionicons
+                            name="create-outline"
+                            size={20}
+                            color="white"
+                          />
+                          <Text style={singleEventsStyles.buttonText}>
+                            Editar Evento
+                          </Text>
+                        </>
+                      )}
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[
@@ -649,22 +745,6 @@ export default function SingleEventScreen() {
                       </Text>
                     </TouchableOpacity>
                   </>
-                )}
-
-                {/* Para eventos rechazados - Solo editar */}
-                {status === "rejected" && (
-                  <TouchableOpacity
-                    style={[
-                      singleEventsStyles.actionButton,
-                      { backgroundColor: "#ddb503ff" },
-                    ]}
-                    onPress={handleEditEvent}
-                  >
-                    <Ionicons name="create-outline" size={20} color="white" />
-                    <Text style={singleEventsStyles.buttonText}>
-                      Editar Evento
-                    </Text>
-                  </TouchableOpacity>
                 )}
               </Animated.View>
             )}

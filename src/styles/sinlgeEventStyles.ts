@@ -1,6 +1,9 @@
 import { StyleSheet } from "react-native";
 
 const singleEventsStyles = StyleSheet.create({
+  actionButtonDisabled: {
+    opacity: 0.6,
+  },
   container: {
     flex: 1,
   },
@@ -34,7 +37,7 @@ const singleEventsStyles = StyleSheet.create({
   },
   detailsContainer: {
     marginBottom: 20,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
   },
   detailRow: {
     flexDirection: "row",
@@ -63,58 +66,57 @@ const singleEventsStyles = StyleSheet.create({
     lineHeight: 24,
   },
   mapContainer: {
-    position: 'relative',
+    position: "relative",
     borderRadius: 12,
-    overflow: 'hidden',
+    overflow: "hidden",
     marginTop: 8,
   },
   smallMap: {
     height: 150,
-    width: '100%',
+    width: "100%",
   },
   expandButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 12,
     right: 12,
     width: 40,
     height: 40,
     borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  likeButton: 
-  {
+  likeButton: {
     padding: 4,
   },
   adminActions: {
-  flexDirection: 'row',
-  justifyContent: 'space-between',
-  paddingHorizontal: 16,
-  paddingVertical: 20,
-  borderTopWidth: 1,
-  borderTopColor: '#e0e0e0',
-  gap: 12,
-},
-actionButton: {
-  flex: 1,
-  flexDirection: 'row',
-  alignItems: 'center',
-  justifyContent: 'center',
-  paddingVertical: 12,
-  paddingHorizontal: 16,
-  borderRadius: 8,
-  gap: 8,
-},
-buttonText: {
-  color: 'white',
-  fontSize: 16,
-  fontWeight: '600',
-},
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
+    gap: 12,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    gap: 8,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
+  },
 });
 
 export default singleEventsStyles;

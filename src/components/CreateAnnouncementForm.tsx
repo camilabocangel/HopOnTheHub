@@ -12,27 +12,40 @@ import { useThemeColors } from "@/hooks/useThemeColors";
 import { useUser } from "@/hooks/useUser";
 import { Ionicons } from "@expo/vector-icons";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  doc,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
 import useCreateAnnouncementStyles from "@/styles/createAnnouncementStyles";
+import { getNextAnnouncementId } from "@/helpers/announcementIdGenerator";
 
 interface CreateAnnouncementFormProps {
   onSubmit: (announcementData: any) => void;
   onCancel: () => void;
 }
 
-const CUSTOM_ANNOUNCEMENT_IMAGE = "https://www.shutterstock.com/image-vector/under-development-sign-isolated-on-260nw-80415847.jpg";
+const CUSTOM_ANNOUNCEMENT_IMAGE =
+  "https://www.shutterstock.com/image-vector/under-development-sign-isolated-on-260nw-80415847.jpg";
 
 const allCampuses = ["La Paz", "Santa Cruz", "Cochabamba"];
 
-export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnnouncementFormProps) {
+export default function CreateAnnouncementForm({
+  onSubmit,
+  onCancel,
+}: CreateAnnouncementFormProps) {
   const { colors } = useThemeColors();
   const { user } = useUser();
   const styles = useCreateAnnouncementStyles();
 
   const [description, setDescription] = useState("");
   const [content, setContent] = useState("");
-  const [selectedCampuses, setSelectedCampuses] = useState<string[]>([user?.campus || "La Paz"]);
+  const [selectedCampuses, setSelectedCampuses] = useState<string[]>([
+    user?.campus || "La Paz",
+  ]);
   const [date, setDate] = useState(new Date());
   const [loading, setLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -40,7 +53,7 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
   const handleCampusToggle = (campus: string) => {
     if (selectedCampuses.includes(campus)) {
       if (selectedCampuses.length > 1) {
-        setSelectedCampuses(selectedCampuses.filter(c => c !== campus));
+        setSelectedCampuses(selectedCampuses.filter((c) => c !== campus));
       }
     } else {
       setSelectedCampuses([...selectedCampuses, campus]);
@@ -48,7 +61,7 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
   };
 
   const formatDate = (date: Date) => {
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
   };
 
   const handleSubmit = async () => {
@@ -59,7 +72,12 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
 
     setLoading(true);
     try {
+      const nextId = await getNextAnnouncementId();
+
+      const firestoreId = `announcement-${nextId}`;
+
       const announcementData = {
+        id: nextId,
         description: description.trim(),
         content: content.trim() || description.trim(),
         campus: selectedCampuses,
@@ -68,13 +86,23 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
         status: "pending",
         likes: [],
         createdAt: serverTimestamp(),
-        createdBy: user?.id
+        createdBy: user?.name + " " + user?.lastName || "Usuario Desconocido",
       };
 
-      const docRef = await addDoc(collection(db, "announcements"), announcementData);
-      
-      Alert.alert("Éxito", "Anuncio creado correctamente. Está pendiente de aprobación.");
-      onSubmit({ id: docRef.id, ...announcementData });
+      const announcementRef = doc(db, "announcements", firestoreId);
+      await setDoc(announcementRef, announcementData);
+
+      Alert.alert(
+        "Éxito",
+        "Anuncio creado correctamente. Está pendiente de aprobación."
+      );
+
+      setDescription("");
+      setContent("");
+      setSelectedCampuses([user?.campus || "La Paz"]);
+      setDate(new Date());
+
+      onSubmit(announcementData);
     } catch (error) {
       console.error("Error creating announcement:", error);
       Alert.alert("Error", "No se pudo crear el anuncio");
@@ -89,12 +117,13 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
     <View style={styles.formContainer}>
       <View style={styles.header}>
         <Text style={styles.title}>Crear Nuevo Anuncio</Text>
-        <Text style={styles.subtitle}>
-          Completa la información del anuncio
-        </Text>
+        <Text style={styles.subtitle}>Completa la información del anuncio</Text>
       </View>
 
-      <ScrollView style={styles.fieldsContainer} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.fieldsContainer}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Descripción del Anuncio *</Text>
           <TextInput
@@ -123,17 +152,20 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Campus *</Text>
           <View style={styles.campusContainer}>
-            <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+            <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
               {allCampuses.map((campusItem) => (
                 <View key={campusItem} style={styles.campusCheckboxRow}>
                   <TouchableOpacity
                     style={styles.checkboxContainer}
                     onPress={() => handleCampusToggle(campusItem)}
                   >
-                    <View style={[
-                      styles.checkbox,
-                      selectedCampuses.includes(campusItem) && styles.checkboxChecked
-                    ]}>
+                    <View
+                      style={[
+                        styles.checkbox,
+                        selectedCampuses.includes(campusItem) &&
+                          styles.checkboxChecked,
+                      ]}
+                    >
                       {selectedCampuses.includes(campusItem) && (
                         <Ionicons name="checkmark" size={16} color="white" />
                       )}
@@ -146,9 +178,7 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
                 </View>
               ))}
             </View>
-            <Text style={styles.campusHint}>
-              Selecciona al menos un campus
-            </Text>
+            <Text style={styles.campusHint}>Selecciona al menos un campus</Text>
           </View>
         </View>
 
@@ -158,9 +188,7 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
             style={styles.dateTimeButton}
             onPress={() => setShowDatePicker(true)}
           >
-            <Text style={styles.dateTimeText}>
-              {formatDate(date)}
-            </Text>
+            <Text style={styles.dateTimeText}>{formatDate(date)}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -183,13 +211,14 @@ export default function CreateAnnouncementForm({ onSubmit, onCancel }: CreateAnn
           onPress={onCancel}
           disabled={loading}
         >
-          <Text style={styles.cancelButtonText}>
-            Cancelar
-          </Text>
+          <Text style={styles.cancelButtonText}>Cancelar</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.submitButton, !isFormValid && styles.submitButtonDisabled]}
+          style={[
+            styles.submitButton,
+            !isFormValid && styles.submitButtonDisabled,
+          ]}
           onPress={handleSubmit}
           disabled={loading || !isFormValid}
         >

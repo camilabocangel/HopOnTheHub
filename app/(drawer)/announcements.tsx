@@ -1,12 +1,13 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 import {
   View,
   Text,
   FlatList,
   ScrollView,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useFocusEffect } from "expo-router";
 import Section from "../../src/components/Section";
 import AnnouncementCard from "../../src/components/AnnouncementCard";
 import { SearchBar } from "../../src/components/SearchBar";
@@ -25,11 +26,40 @@ export default function AnnouncementsScreen() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [dateFilter, setDateFilter] = useState<DateFilterType>(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   const campusParam = Array.isArray(campus) ? campus[0] : campus;
   const selectedCampus = campusParam || user?.campus || "Cochabamba";
 
-  const { announcements: campusAnnouncements, loading } = useAnnouncements(selectedCampus);
+  const {
+    announcements: campusAnnouncements,
+    loading: announcementsLoading,
+    refetch: refetchAnnouncements,
+  } = useAnnouncements(selectedCampus);
+
+  // USAR USEFOCUSEFFECT COMO EN HOME SCREEN
+  useFocusEffect(
+    useCallback(() => {
+      const refreshData = async () => {
+        await refetchAnnouncements();
+        setInitialLoad(false);
+      };
+
+      refreshData();
+    }, [refetchAnnouncements])
+  );
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await refetchAnnouncements();
+    } catch (error) {
+      console.error("Error refreshing:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetchAnnouncements]);
 
   const getDateRange = (filter: DateFilterType) => {
     const today = new Date();
@@ -40,17 +70,17 @@ export default function AnnouncementsScreen() {
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
         return { start: today, end: tomorrow };
-      
+
       case "week":
         const endOfWeek = new Date(today);
         endOfWeek.setDate(endOfWeek.getDate() + 7);
         return { start: today, end: endOfWeek };
-      
+
       case "month":
         const endOfMonth = new Date(today);
         endOfMonth.setMonth(endOfMonth.getMonth() + 1);
         return { start: today, end: endOfMonth };
-      
+
       default:
         return null;
     }
@@ -61,7 +91,7 @@ export default function AnnouncementsScreen() {
 
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      filtered = filtered.filter(announcement => 
+      filtered = filtered.filter((announcement) =>
         announcement.description.toLowerCase().includes(query)
       );
     }
@@ -69,10 +99,13 @@ export default function AnnouncementsScreen() {
     if (dateFilter) {
       const dateRange = getDateRange(dateFilter);
       if (dateRange) {
-        filtered = filtered.filter(announcement => {
+        filtered = filtered.filter((announcement) => {
           const announcementDate = new Date(announcement.date);
           announcementDate.setHours(0, 0, 0, 0);
-          return announcementDate >= dateRange.start && announcementDate < dateRange.end;
+          return (
+            announcementDate >= dateRange.start &&
+            announcementDate < dateRange.end
+          );
         });
       }
     }
@@ -80,31 +113,59 @@ export default function AnnouncementsScreen() {
     return filtered;
   }, [campusAnnouncements, searchQuery, dateFilter]);
 
+  // FUNCIÓN DE RENDERIZADO CON INDEX Y WRAPPER
+  const renderAnnouncementItem = ({
+    item,
+    index,
+  }: {
+    item: any;
+    index: number;
+  }) => (
+    <View style={{ marginBottom: 16 }}>
+      <AnnouncementCard
+        id={item.id}
+        image={item.image}
+        description={item.description}
+        date={item.date}
+        campus={item.campus}
+        status={item.status}
+        index={index}
+      />
+    </View>
+  );
+
   const handleClearSearch = () => {
     setSearchQuery("");
   };
 
-  if (loading) {
+  const isLoading = initialLoad || announcementsLoading;
+
+  if (isLoading) {
     return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: colors.background,
-        }}
-      >
-        <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={{ color: colors.text, marginTop: 12 }}>
-          Cargando anuncios...
-        </Text>
-      </View>
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={[styles.loadingText, { color: colors.text }]}>
+            Cargando anuncios...
+          </Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+      <ScrollView
+        style={{ flex: 1, backgroundColor: colors.background }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+          />
+        }
+      >
         <View
           style={[styles.container, { backgroundColor: colors.background }]}
         >
@@ -129,27 +190,19 @@ export default function AnnouncementsScreen() {
               <FlatList
                 horizontal
                 data={filteredAnnouncements}
-                renderItem={({ item, index }) => (
-                  <AnnouncementCard
-                    id={item.id}
-                    image={item.image}
-                    description={item.description}
-                    date={item.date}
-                    campus={item.campus}
-                    status={item.status}
-                    index={index}
-                  />
-                )}
+                renderItem={renderAnnouncementItem}
                 keyExtractor={(item) => item.id}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.flatListContent}
+                snapToAlignment="start"
+                decelerationRate="fast"
               />
             </Section>
           ) : (
             <View style={styles.noAnnouncementsContainer}>
               {searchQuery || dateFilter ? (
                 <Text style={[styles.noAnnouncements, { color: colors.text }]}>
-                  No se encontraron anuncios 
+                  No se encontraron anuncios
                   {searchQuery && ` para "${searchQuery}"`}
                   {dateFilter && ` en el período seleccionado`}
                   {` en ${selectedCampus}`}

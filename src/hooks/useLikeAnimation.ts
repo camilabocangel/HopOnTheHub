@@ -13,7 +13,6 @@ export const useLikeAnimation = () => {
   const animateLike = (isLiked: boolean, options: LikeAnimationOptions = {}): Promise<void> => {
     const { duration = 400, scale = 1.2 } = options;
 
-    // Reset animations
     scaleAnim.setValue(1);
     bounceAnim.setValue(1);
 
@@ -30,7 +29,6 @@ export const useLikeAnimation = () => {
       }),
     ]);
 
-    // Solo animar el bounce cuando se da like, no cuando se quita
     const bounceAnimation = isLiked 
       ? Animated.sequence([
           Animated.timing(bounceAnim, {

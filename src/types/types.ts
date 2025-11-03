@@ -27,20 +27,9 @@ export type Semester = {
   subjects: string[];
 };
 
-export interface AnnouncementCardProps {
-  id: string; 
-  image: string;
-  description: string;
-  date: string;
-  campus: string[];
-  status: "pending" | "accepted" | "rejected" | "passed";
-  isPending?: boolean;
-  index?: number;
-}
-
 export type Announcement = {
   id: string;
-  status: "pending" | "accepted" | "rejected" | "passed";
+  status: "pending" | "accepted" | "rejected" | "passed" | "hidden";
   image: string;
   description: string;
   date: string;
@@ -49,6 +38,19 @@ export type Announcement = {
   likes: string[];
   createdAt?: any;
 };
+
+export interface AnnouncementCardProps {
+  id: string; 
+  image: string;
+  description: string;
+  date: string;
+  campus: string[];
+  status: "pending" | "accepted" | "rejected" | "passed" | "hidden";
+  isPending?: boolean;
+  isRejected?: boolean;
+  isHidden?: boolean;
+  index?: number;
+}
 
 export type Event = {
   id: string;

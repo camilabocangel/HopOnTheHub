@@ -25,6 +25,8 @@ import { useEvents } from "@/hooks/useEvents";
 import { usePendingEvents } from "@/hooks/usePendingEvents";
 import { usePendingAnnouncements } from "@/hooks/usePendingAnnouncements";
 import { useRejectedEvents } from "@/hooks/useRejectedEvents";
+import { useRejectedAnnouncements } from "@/hooks/useRejectedAnnouncements";
+import { useHiddenAnnouncements } from "@/hooks/useHiddenAnnouncements";
 import { homeStyles } from "@/styles/homeStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import CreateEventCard from "@/components/CreateEventCard";
@@ -98,6 +100,18 @@ export default function HomeScreen() {
     refetch: refetchRejectedEvents,
   } = useRejectedEvents();
 
+  const {
+    announcements: rejectedAnnouncements,
+    loading: rejectedAnnouncementsLoading,
+    refetch: refetchRejectedAnnouncements,
+  } = useRejectedAnnouncements();
+
+  const {
+    announcements: hiddenAnnouncements,
+    loading: hiddenAnnouncementsLoading,
+    refetch: refetchHiddenAnnouncements,
+  } = useHiddenAnnouncements();
+
   const [refreshing, setRefreshing] = React.useState(false);
   const [initialLoad, setInitialLoad] = React.useState(true);
 
@@ -108,7 +122,9 @@ export default function HomeScreen() {
           await Promise.all([
             refetchPendingEvents(),
             refetchPendingAnnouncements(),
-            refetchRejectedEvents(), // Nueva llamada
+            refetchRejectedEvents(),
+            refetchRejectedAnnouncements(),
+            refetchHiddenAnnouncements(),
           ]);
         } else {
           await Promise.all([refetchEvents(), refetchAnnouncements()]);
@@ -122,6 +138,8 @@ export default function HomeScreen() {
       refetchPendingEvents,
       refetchPendingAnnouncements,
       refetchRejectedEvents,
+      refetchRejectedAnnouncements,
+      refetchHiddenAnnouncements,
       refetchEvents,
       refetchAnnouncements,
     ])
@@ -135,6 +153,8 @@ export default function HomeScreen() {
           refetchPendingEvents(),
           refetchPendingAnnouncements(),
           refetchRejectedEvents(),
+          refetchRejectedAnnouncements(),
+          refetchHiddenAnnouncements(),
         ]);
       } else {
         await Promise.all([refetchEvents(), refetchAnnouncements()]);
@@ -149,6 +169,8 @@ export default function HomeScreen() {
     refetchPendingEvents,
     refetchPendingAnnouncements,
     refetchRejectedEvents,
+    refetchRejectedAnnouncements,
+    refetchHiddenAnnouncements,
     refetchEvents,
     refetchAnnouncements,
   ]);
@@ -159,7 +181,9 @@ export default function HomeScreen() {
     (user?.role === "admin"
       ? pendingEventsLoading ||
         pendingAnnouncementsLoading ||
-        rejectedEventsLoading
+        rejectedEventsLoading ||
+        rejectedAnnouncementsLoading ||
+        hiddenAnnouncementsLoading
       : eventsLoading || announcementsLoading);
 
   const currentSemester = getCurrentSemester(user?.career, user?.semester);
@@ -167,7 +191,7 @@ export default function HomeScreen() {
   const upcomingEvents = allEvents?.slice(0, 5) || [];
   const recentAnnouncements = allAnnouncements?.slice(0, 5) || [];
 
-  const renderEventItem = ({ item, index }: { item: any, index:any }) => (
+  const renderEventItem = ({ item, index }: { item: any; index: any }) => (
     <View style={styles.horizontalCard}>
       <EventCard
         id={item.id}
@@ -190,7 +214,13 @@ export default function HomeScreen() {
 
   const renderEventListFooter = () => <CreateEventCard />;
 
-  const renderAnnouncementItem = ({ item, index }: { item: any, index:any }) => (
+  const renderAnnouncementItem = ({
+    item,
+    index,
+  }: {
+    item: any;
+    index: any;
+  }) => (
     <View style={styles.horizontalCard}>
       <AnnouncementCard
         id={item.id}
@@ -258,6 +288,34 @@ export default function HomeScreen() {
         isRejected={true}
         createdBy={item.createdBy}
         createdAt={item.createdAt}
+      />
+    </View>
+  );
+
+  const renderRejectedAnnouncementItem = ({ item }: { item: any }) => (
+    <View style={styles.horizontalCard}>
+      <AnnouncementCard
+        id={item.id}
+        image={item.image}
+        description={item.description}
+        date={item.date}
+        campus={item.campus}
+        status={item.status}
+        isRejected={true}
+      />
+    </View>
+  );
+
+  const renderHiddenAnnouncementItem = ({ item }: { item: any }) => (
+    <View style={styles.horizontalCard}>
+      <AnnouncementCard
+        id={item.id}
+        image={item.image}
+        description={item.description}
+        date={item.date}
+        campus={item.campus}
+        status={item.status}
+        isHidden={true}
       />
     </View>
   );
@@ -332,24 +390,17 @@ export default function HomeScreen() {
           )}
 
           <Section title={`Eventos Pendientes (${pendingEvents.length})`}>
-            {pendingEvents.length > 0 ? (
-              <FlatList
-                horizontal
-                data={pendingEvents}
-                renderItem={renderPendingEventItem}
-                keyExtractor={(item) => item.id}
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.horizontalListContent}
-                snapToAlignment="start"
-                decelerationRate="fast"
-              />
-            ) : (
-              <View style={styles.emptyState}>
-                <Text style={[styles.emptyStateText, { color: colors.text }]}>
-                  No hay eventos pendientes de aprobación
-                </Text>
-              </View>
-            )}
+            <FlatList
+              horizontal
+              data={pendingEvents}
+              renderItem={renderPendingEventItem}
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalListContent}
+              snapToAlignment="start"
+              decelerationRate="fast"
+              ListFooterComponent={renderEventListFooter}
+            />
           </Section>
 
           <Section title={`Eventos Rechazados (${rejectedEvents.length})`}>
@@ -376,11 +427,27 @@ export default function HomeScreen() {
           <Section
             title={`Anuncios Pendientes (${pendingAnnouncements.length})`}
           >
-            {pendingAnnouncements.length > 0 ? (
+            <FlatList
+              horizontal
+              data={pendingAnnouncements}
+              renderItem={renderPendingAnnouncementItem}
+              keyExtractor={(item) => item.id}
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.horizontalListContent}
+              snapToAlignment="start"
+              decelerationRate="fast"
+              ListFooterComponent={renderAnnouncementListFooter}
+            />
+          </Section>
+
+          <Section
+            title={`Anuncios Rechazados (${rejectedAnnouncements.length})`}
+          >
+            {rejectedAnnouncements.length > 0 ? (
               <FlatList
                 horizontal
-                data={pendingAnnouncements}
-                renderItem={renderPendingAnnouncementItem}
+                data={rejectedAnnouncements}
+                renderItem={renderRejectedAnnouncementItem}
                 keyExtractor={(item) => item.id}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={styles.horizontalListContent}
@@ -390,11 +457,33 @@ export default function HomeScreen() {
             ) : (
               <View style={styles.emptyState}>
                 <Text style={[styles.emptyStateText, { color: colors.text }]}>
-                  No hay anuncios pendientes de aprobación
+                  No hay anuncios rechazados
                 </Text>
               </View>
             )}
           </Section>
+
+          <Section title={`Anuncios Ocultos (${hiddenAnnouncements.length})`}>
+            {hiddenAnnouncements.length > 0 ? (
+              <FlatList
+                horizontal
+                data={hiddenAnnouncements}
+                renderItem={renderHiddenAnnouncementItem}
+                keyExtractor={(item) => item.id}
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.horizontalListContent}
+                snapToAlignment="start"
+                decelerationRate="fast"
+              />
+            ) : (
+              <View style={styles.emptyState}>
+                <Text style={[styles.emptyStateText, { color: colors.text }]}>
+                  No hay anuncios ocultos
+                </Text>
+              </View>
+            )}
+          </Section>
+
           <Section title="Buscar por Campus">
             <ScrollView
               horizontal
@@ -476,43 +565,31 @@ export default function HomeScreen() {
         ) : null}
 
         <Section title={`Próximos Eventos (${user?.campus || "UPB"})`}>
-          {upcomingEvents.length > 0 ? (
-            <FlatList
-              horizontal
-              data={upcomingEvents}
-              renderItem={renderEventItem}
-              keyExtractor={(item) => item.id}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.horizontalListContent}
-              snapToAlignment="start"
-              decelerationRate="fast"
-              ListFooterComponent={renderEventListFooter}
-            />
-          ) : (
-            <View style={{ flexDirection: "row" }}>
-              <CreateEventCard />
-            </View>
-          )}
+          <FlatList
+            horizontal
+            data={upcomingEvents}
+            renderItem={renderEventItem}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalListContent}
+            snapToAlignment="start"
+            decelerationRate="fast"
+            ListFooterComponent={renderEventListFooter}
+          />
         </Section>
 
         <Section title={`Anuncios (${user?.campus || "UPB"})`}>
-          {recentAnnouncements.length > 0 ? (
-            <FlatList
-              horizontal
-              data={recentAnnouncements}
-              renderItem={renderAnnouncementItem}
-              keyExtractor={(item) => item.id}
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={styles.horizontalListContent}
-              snapToAlignment="start"
-              decelerationRate="fast"
-              ListFooterComponent={renderAnnouncementListFooter}
-            />
-          ) : (
-            <View style={{ flexDirection: "row" }}>
-              <CreateAnnouncementCard />
-            </View>
-          )}
+          <FlatList
+            horizontal
+            data={recentAnnouncements}
+            renderItem={renderAnnouncementItem}
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.horizontalListContent}
+            snapToAlignment="start"
+            decelerationRate="fast"
+            ListFooterComponent={renderAnnouncementListFooter}
+          />
         </Section>
 
         <Section title="Buscar por Campus">

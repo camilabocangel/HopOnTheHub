@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useCallback } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,8 +6,10 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  Animated,
+  ActivityIndicator,
 } from "react-native";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import singleAnnouncementStyles from "../../src/styles/singleAnnouncementStyles";
@@ -27,51 +29,66 @@ import { useNavigation } from "expo-router";
 import { useUser } from "@/hooks/useUser";
 import { ScreenTransitionView } from "@/components/ScreenTransitionView";
 import { useScreenTransition } from "@/hooks/useScreenTransition";
-import { Animated } from 'react-native';
 import { AnimatedLikeButton } from "@/components/AnimatedLikeButton";
-
+import { updateDoc, doc } from "firebase/firestore";
+import { db } from "@/config/firebaseConfig";
 
 export default function SingleAnnouncementScreen() {
   const { colors } = useThemeColors();
   const params = useLocalSearchParams();
+  const router = useRouter();
   const [showMapModal, setShowMapModal] = useState(false);
   const { isAnnouncementLiked, toggleAnnouncementLikeStatus } = useLikes();
-  const { id, description, date, campus, image, content } = params;
+  const { id, description, date, campus, image, content, status } = params;
   const navigation = useNavigation();
   const screenTransition = useScreenTransition(0);
   const { user } = useUser();
   const isNormal = user ? user?.role === "normal" : false;
+  const isAdmin = user?.role === "admin";
+
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: "Anuncio",
     });
   }, [navigation]);
+
   useFocusEffect(
-      useCallback(() => {
-        screenTransition.enter({ duration: 500, delay: 100 });
-        return () => {
-          screenTransition.exit({ duration: 0 });
-        };
-      }, [])
-    );
+    useCallback(() => {
+      screenTransition.enter({ duration: 500, delay: 100 });
+      return () => {
+        screenTransition.exit({ duration: 0 });
+      };
+    }, [])
+  );
+
+  const announcementId = Array.isArray(id) ? id[0] : id;
+  const announcementDescription = Array.isArray(description)
+    ? description[0]
+    : description;
+  const announcementDate = Array.isArray(date) ? date[0] : date;
+  const announcementImage = Array.isArray(image) ? image[0] : image;
+  const announcementContent = Array.isArray(content) ? content[0] : content;
+  const announcementStatus = Array.isArray(status) ? status[0] : status;
+  const announcementCampus = Array.isArray(campus) ? campus[0] : campus;
 
   const announcementCampuses = useMemo((): CampusKey[] => {
-    if (Array.isArray(campus)) {
-      return convertToCampusKeys(campus);
-    } else if (typeof campus === "string") {
+    if (Array.isArray(announcementCampus)) {
+      return convertToCampusKeys(announcementCampus);
+    } else if (typeof announcementCampus === "string") {
       try {
-        const parsedCampus = JSON.parse(campus);
+        const parsedCampus = JSON.parse(announcementCampus);
         if (Array.isArray(parsedCampus)) {
           return convertToCampusKeys(parsedCampus);
         }
         return parseCampuses(parsedCampus);
       } catch {
-        return parseCampuses(campus);
+        return parseCampuses(announcementCampus);
       }
     }
     return ["la paz"];
-  }, [campus]);
+  }, [announcementCampus]);
 
   const campusesCoordinates = useMemo(() => {
     return getCampusesCoordinates(announcementCampuses);
@@ -94,8 +111,7 @@ export default function SingleAnnouncementScreen() {
     );
   }, [announcementCampuses]);
 
-  const announcementId = id as string;
-  const liked = isAnnouncementLiked(announcementId);
+  const liked = isAnnouncementLiked(announcementId || "");
 
   const handleLikeToggle = async () => {
     if (!announcementId) return false;
@@ -108,142 +124,246 @@ export default function SingleAnnouncementScreen() {
     return true;
   };
 
-  return (
-  <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-    <ScreenTransitionView duration={500} delay={100}>
-      <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-        <View style={singleAnnouncementStyles.container}>
-          {/* Imagen con animación de escala suave */}
-          <Animated.View 
-            style={[
-              singleAnnouncementStyles.imageContainer,
-              {
-                opacity: screenTransition.opacity,
-                transform: [{
-                  scale: screenTransition.opacity.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0.9, 1],
-                  })
-                }]
-              }
-            ]}
-          >
-            {image ? (
-              <Image
-                source={{ uri: image as string }}
-                style={singleAnnouncementStyles.image}
-                resizeMode="cover"
-              />
-            ) : (
-              <View
-                style={[
-                  singleAnnouncementStyles.placeholderImage,
-                  { backgroundColor: colors.primary },
-                ]}
-              >
-                <Text style={singleAnnouncementStyles.placeholderText}>
-                  Anuncio UPB
-                </Text>
-              </View>
-            )}
-          </Animated.View>
+  const handleApproveAnnouncement = async () => {
+    if (!announcementId) return;
 
-          <View style={singleAnnouncementStyles.content}>
-            {/* Descripción con animación */}
-            <Animated.Text
+    setActionLoading("approve");
+    try {
+      const announcementRef = doc(db, "announcements", `announcement-${announcementId}`);
+      await updateDoc(announcementRef, {
+        status: "accepted",
+        updatedAt: new Date(),
+      });
+
+      Alert.alert("Éxito", "El anuncio ha sido aprobado");
+      router.back();
+    } catch (error) {
+      console.error("Error approving announcement:", error);
+      Alert.alert("Error", "No se pudo aprobar el anuncio");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleRejectAnnouncement = async () => {
+    if (!announcementId) return;
+
+    setActionLoading("reject");
+    try {
+      const announcementRef = doc(db, "announcements", `announcement-${announcementId}`);
+      await updateDoc(announcementRef, {
+        status: "rejected",
+        updatedAt: new Date(),
+      });
+
+      Alert.alert("Éxito", "El anuncio ha sido rechazado");
+      router.back();
+    } catch (error) {
+      console.error("Error rejecting announcement:", error);
+      Alert.alert("Error", "No se pudo rechazar el anuncio");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleHideAnnouncement = async () => {
+    if (!announcementId) return;
+
+    setActionLoading("hide");
+    try {
+      const announcementRef = doc(db, "announcements", `announcement-${announcementId}`);
+      await updateDoc(announcementRef, {
+        status: "hidden",
+        updatedAt: new Date(),
+      });
+
+      Alert.alert("Éxito", "El anuncio ha sido ocultado");
+      router.back();
+    } catch (error) {
+      console.error("Error hiding announcement:", error);
+      Alert.alert("Error", "No se pudo ocultar el anuncio");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleShowAnnouncement = async () => {
+    if (!announcementId) return;
+
+    setActionLoading("show");
+    try {
+      const announcementRef = doc(db, "announcements", announcementId);
+      await updateDoc(announcementRef, {
+        status: "accepted",
+        updatedAt: new Date(),
+      });
+
+      Alert.alert("Éxito", "El anuncio ha sido mostrado");
+      router.back();
+    } catch (error) {
+      console.error("Error showing announcement:", error);
+      Alert.alert("Error", "No se pudo mostrar el anuncio");
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  if (!announcementId) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+        <View style={singleAnnouncementStyles.container}>
+          <Text
+            style={[singleAnnouncementStyles.title, { color: colors.text }]}
+          >
+            Error: Anuncio no encontrado
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <ScreenTransitionView duration={500} delay={100}>
+        <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
+          <View style={singleAnnouncementStyles.container}>
+            <Animated.View
               style={[
-                singleAnnouncementStyles.description,
-                { color: colors.text },
+                singleAnnouncementStyles.imageContainer,
                 {
                   opacity: screenTransition.opacity,
-                  transform: [{ translateY: screenTransition.translateY }]
-                }
+                  transform: [
+                    {
+                      scale: screenTransition.opacity.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.9, 1],
+                      }),
+                    },
+                  ],
+                },
               ]}
             >
-              {description as string}
-            </Animated.Text>
-
-            {/* Detalles con animación escalonada */}
-            <View style={singleAnnouncementStyles.detailsContainer}>
-              {[
-                { label: "Fecha:", value: date as string },
-                { 
-                  label: "Campus:", 
-                  value: campusDisplayText,
-                  special: true,
-                  hasSubtitle: announcementCampuses.length > 1 
-                },
-              ].map((detail, index) => (
-                <Animated.View
-                  key={detail.label}
+              {announcementImage ? (
+                <Image
+                  source={{ uri: announcementImage }}
+                  style={singleAnnouncementStyles.image}
+                  resizeMode="cover"
+                />
+              ) : (
+                <View
                   style={[
-                    singleAnnouncementStyles.detailRow,
-                    { borderBottomColor: colors.border },
-                    {
-                      opacity: screenTransition.opacity,
-                      transform: [{
-                        translateY: screenTransition.translateY.interpolate({
-                          inputRange: [0, 30],
-                          outputRange: [0, 10 - (index * 5)],
-                        })
-                      }]
-                    }
+                    singleAnnouncementStyles.placeholderImage,
+                    { backgroundColor: colors.primary },
                   ]}
                 >
-                  <Text
+                  <Text style={singleAnnouncementStyles.placeholderText}>
+                    Anuncio UPB
+                  </Text>
+                </View>
+              )}
+            </Animated.View>
+            <View style={singleAnnouncementStyles.content}>
+              <Animated.Text
+                style={[
+                  singleAnnouncementStyles.description,
+                  { color: colors.text },
+                  {
+                    opacity: screenTransition.opacity,
+                    transform: [{ translateY: screenTransition.translateY }],
+                  },
+                ]}
+              >
+                {announcementDescription}
+              </Animated.Text>
+
+              <View style={singleAnnouncementStyles.detailsContainer}>
+                {[
+                  { label: "Fecha:", value: announcementDate },
+                  {
+                    label: "Campus:",
+                    value: campusDisplayText,
+                    special: true,
+                    hasSubtitle: announcementCampuses.length > 1,
+                  },
+                ].map((detail, index) => (
+                  <Animated.View
+                    key={detail.label}
                     style={[
-                      singleAnnouncementStyles.detailLabel,
-                      { color: colors.subtitle },
+                      singleAnnouncementStyles.detailRow,
+                      { borderBottomColor: colors.border },
+                      {
+                        opacity: screenTransition.opacity,
+                        transform: [
+                          {
+                            translateY: screenTransition.translateY.interpolate(
+                              {
+                                inputRange: [0, 30],
+                                outputRange: [0, 10 - index * 5],
+                              }
+                            ),
+                          },
+                        ],
+                      },
                     ]}
                   >
-                    {detail.label}
-                  </Text>
-                  <View style={singleAnnouncementStyles.campusContainer}>
                     <Text
                       style={[
-                        singleAnnouncementStyles.detailValue,
-                        { 
-                          color: detail.special ? colors.primary : colors.text,
-                          fontWeight: detail.special ? "bold" : "normal"
-                        },
+                        singleAnnouncementStyles.detailLabel,
+                        { color: colors.subtitle },
                       ]}
                     >
-                      {detail.value}
+                      {detail.label}
                     </Text>
-                    {detail.hasSubtitle && (
+                    <View style={singleAnnouncementStyles.campusContainer}>
                       <Text
                         style={[
-                          singleAnnouncementStyles.campusSubtitle,
-                          { color: colors.subtitle },
+                          singleAnnouncementStyles.detailValue,
+                          {
+                            color: detail.special
+                              ? colors.primary
+                              : colors.text,
+                            fontWeight: detail.special ? "bold" : "normal",
+                          },
                         ]}
                       >
-                        ({announcementCampuses.length} campus)
+                        {detail.value}
                       </Text>
-                    )}
-                  </View>
-                </Animated.View>
-              ))}
+                      {detail.hasSubtitle && (
+                        <Text
+                          style={[
+                            singleAnnouncementStyles.campusSubtitle,
+                            { color: colors.subtitle },
+                          ]}
+                        >
+                          ({announcementCampuses.length} campus)
+                        </Text>
+                      )}
+                    </View>
+                  </Animated.View>
+                ))}
 
-              {isNormal && (
-                <Animated.View
-                  style={[
-                    singleAnnouncementStyles.detailRow,
-                    { borderBottomColor: colors.border },
-                    {
-                      opacity: screenTransition.opacity,
-                      transform: [{ translateY: screenTransition.translateY }]
-                    }
-                  ]}
-                >
-                  <Text
+                {isNormal && (
+                  <Animated.View
                     style={[
-                      singleAnnouncementStyles.detailLabel,
-                      { color: colors.subtitle },
+                      singleAnnouncementStyles.detailRow,
+                      { borderBottomColor: colors.border },
+                      {
+                        opacity: screenTransition.opacity,
+                        transform: [
+                          { translateY: screenTransition.translateY },
+                        ],
+                      },
                     ]}
                   >
-                    Guardar:
-                  </Text>
-                  <AnimatedLikeButton
+                    <Text
+                      style={[
+                        singleAnnouncementStyles.detailLabel,
+                        { color: colors.subtitle },
+                      ]}
+                    >
+                      Guardar:
+                    </Text>
+                    <AnimatedLikeButton
                       isLiked={liked}
                       onPress={handleLikeToggle}
                       size={24}
@@ -251,87 +371,17 @@ export default function SingleAnnouncementScreen() {
                       likedColor={colors.accent}
                       style={singleAnnouncementStyles.likeButton}
                     />
-                </Animated.View>
-              )}
-            </View>
-
-            {/* Sección de ubicación con animación */}
-            <Animated.View 
-              style={[
-                singleAnnouncementStyles.section,
-                {
-                  opacity: screenTransition.opacity,
-                  transform: [{ translateY: screenTransition.translateY }]
-                }
-              ]}
-            >
-              <Text
-                style={[
-                  singleAnnouncementStyles.sectionTitle,
-                  { color: colors.text },
-                ]}
-              >
-                Ubicación del Anuncio
-              </Text>
-              {announcementCampuses.length > 1 && (
-                <Text
-                  style={[
-                    singleAnnouncementStyles.sectionContent,
-                    {
-                      color: colors.primary,
-                      marginBottom: 8,
-                      fontWeight: "600",
-                      fontSize: 14,
-                    },
-                  ]}
-                >
-                  📍 Este anuncio aplica para {announcementCampuses.length}{" "}
-                  campus
-                </Text>
-              )}
-              <View style={singleAnnouncementStyles.mapContainer}>
-                <MapView
-                  style={singleAnnouncementStyles.smallMap}
-                  initialRegion={mapRegion}
-                  scrollEnabled={false}
-                  zoomEnabled={false}
-                  rotateEnabled={false}
-                  pitchEnabled={false}
-                >
-                  {campusesCoordinates.map((campusCoord, index) => (
-                    <Marker
-                      key={index}
-                      coordinate={{
-                        latitude: campusCoord.latitude,
-                        longitude: campusCoord.longitude,
-                      }}
-                      title={campusCoord.title}
-                      description="Ubicación del anuncio"
-                    />
-                  ))}
-                </MapView>
-
-                <TouchableOpacity
-                  style={[
-                    singleAnnouncementStyles.expandButton,
-                    { backgroundColor: colors.primary },
-                  ]}
-                  onPress={() => setShowMapModal(true)}
-                >
-                  <Ionicons name="expand" size={20} color="white" />
-                </TouchableOpacity>
+                  </Animated.View>
+                )}
               </View>
-            </Animated.View>
 
-            {/* Contenido adicional con animación */}
-            {content && (
-              <Animated.View 
+              <Animated.View
                 style={[
                   singleAnnouncementStyles.section,
                   {
                     opacity: screenTransition.opacity,
-                    transform: [{ translateY: screenTransition.translateY }]
-                  }
+                    transform: [{ translateY: screenTransition.translateY }],
+                  },
                 ]}
               >
                 <Text
@@ -340,30 +390,214 @@ export default function SingleAnnouncementScreen() {
                     { color: colors.text },
                   ]}
                 >
-                  Contenido Adicional
+                  Ubicación del Anuncio
                 </Text>
-                <Text
+                {announcementCampuses.length > 1 && (
+                  <Text
+                    style={[
+                      singleAnnouncementStyles.sectionContent,
+                      {
+                        color: colors.primary,
+                        marginBottom: 8,
+                        fontWeight: "600",
+                        fontSize: 14,
+                      },
+                    ]}
+                  >
+                    📍 Este anuncio aplica para {announcementCampuses.length}{" "}
+                    campus
+                  </Text>
+                )}
+                <View style={singleAnnouncementStyles.mapContainer}>
+                  <MapView
+                    style={singleAnnouncementStyles.smallMap}
+                    initialRegion={mapRegion}
+                    scrollEnabled={false}
+                    zoomEnabled={false}
+                    rotateEnabled={false}
+                    pitchEnabled={false}
+                  >
+                    {campusesCoordinates.map((campusCoord, index) => (
+                      <Marker
+                        key={index}
+                        coordinate={{
+                          latitude: campusCoord.latitude,
+                          longitude: campusCoord.longitude,
+                        }}
+                        title={campusCoord.title}
+                        description="Ubicación del anuncio"
+                      />
+                    ))}
+                  </MapView>
+
+                  <TouchableOpacity
+                    style={[
+                      singleAnnouncementStyles.expandButton,
+                      { backgroundColor: colors.primary },
+                    ]}
+                    onPress={() => setShowMapModal(true)}
+                  >
+                    <Ionicons name="expand" size={20} color="white" />
+                  </TouchableOpacity>
+                </View>
+              </Animated.View>
+
+              {announcementContent && (
+                <Animated.View
                   style={[
-                    singleAnnouncementStyles.sectionContent,
-                    { color: colors.text },
+                    singleAnnouncementStyles.section,
+                    {
+                      opacity: screenTransition.opacity,
+                      transform: [{ translateY: screenTransition.translateY }],
+                    },
                   ]}
                 >
-                  {content as string}
-                </Text>
+                  <Text
+                    style={[
+                      singleAnnouncementStyles.sectionTitle,
+                      { color: colors.text },
+                    ]}
+                  >
+                    Contenido Adicional
+                  </Text>
+                  <Text
+                    style={[
+                      singleAnnouncementStyles.sectionContent,
+                      { color: colors.text },
+                    ]}
+                  >
+                    {announcementContent}
+                  </Text>
+                </Animated.View>
+              )}
+            </View>
+            // En la sección de acciones de administrador, modifica los botones:
+            {isAdmin && (
+              <Animated.View
+                style={[
+                  singleAnnouncementStyles.adminActions,
+                  {
+                    opacity: screenTransition.opacity,
+                    transform: [{ translateY: screenTransition.translateY }],
+                  },
+                ]}
+              >
+                {announcementStatus === "pending" && (
+                  <>
+                    <TouchableOpacity
+                      style={[
+                        singleAnnouncementStyles.actionButton,
+                        { backgroundColor: "#4CAF50" },
+                        actionLoading === "approve" &&
+                          singleAnnouncementStyles.actionButtonDisabled,
+                      ]}
+                      onPress={handleApproveAnnouncement}
+                      disabled={actionLoading !== null}
+                    >
+                      {actionLoading === "approve" ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <>
+                          <Ionicons
+                            name="checkmark-circle"
+                            size={20}
+                            color="white"
+                          />
+                          <Text style={singleAnnouncementStyles.buttonText}>
+                            Aprobar Anuncio
+                          </Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[
+                        singleAnnouncementStyles.actionButton,
+                        { backgroundColor: "#f44336" },
+                        actionLoading === "reject" &&
+                          singleAnnouncementStyles.actionButtonDisabled,
+                      ]}
+                      onPress={handleRejectAnnouncement}
+                      disabled={actionLoading !== null}
+                    >
+                      {actionLoading === "reject" ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <>
+                          <Ionicons
+                            name="close-circle"
+                            size={20}
+                            color="white"
+                          />
+                          <Text style={singleAnnouncementStyles.buttonText}>
+                            Rechazar Anuncio
+                          </Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  </>
+                )}
+
+                {announcementStatus === "accepted" && (
+                  <TouchableOpacity
+                    style={[
+                      singleAnnouncementStyles.actionButton,
+                      { backgroundColor: "#666" },
+                      actionLoading === "hide" &&
+                        singleAnnouncementStyles.actionButtonDisabled,
+                    ]}
+                    onPress={handleHideAnnouncement}
+                    disabled={actionLoading !== null}
+                  >
+                    {actionLoading === "hide" ? (
+                      <ActivityIndicator size="small" color="white" />
+                    ) : (
+                      <>
+                        <Ionicons name="eye-off" size={20} color="white" />
+                        <Text style={singleAnnouncementStyles.buttonText}>
+                          Ocultar Anuncio
+                        </Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                )}
+
+                {announcementStatus === "hidden" && (
+                  <TouchableOpacity
+                    style={[
+                      singleAnnouncementStyles.actionButton,
+                      { backgroundColor: "#4CAF50" },
+                      actionLoading === "show" &&
+                        singleAnnouncementStyles.actionButtonDisabled,
+                    ]}
+                    onPress={handleShowAnnouncement}
+                    disabled={actionLoading !== null}
+                  >
+                    {actionLoading === "show" ? (
+                      <ActivityIndicator size="small" color="white" />
+                    ) : (
+                      <>
+                        <Ionicons name="eye" size={20} color="white" />
+                        <Text style={singleAnnouncementStyles.buttonText}>
+                          Mostrar Anuncio
+                        </Text>
+                      </>
+                    )}
+                  </TouchableOpacity>
+                )}
               </Animated.View>
             )}
           </View>
-        </View>
-      </ScrollView>
-    </ScreenTransitionView>
+        </ScrollView>
+      </ScreenTransitionView>
 
-    <MapModal
-      visible={showMapModal}
-      onClose={() => setShowMapModal(false)}
-      campuses={campusesCoordinates}
-      place="Ubicación del anuncio"
-      isMultiCampus={announcementCampuses.length > 1}
-    />
-  </SafeAreaView>
-);
+      <MapModal
+        visible={showMapModal}
+        onClose={() => setShowMapModal(false)}
+        campuses={campusesCoordinates}
+        place="Ubicación del anuncio"
+        isMultiCampus={announcementCampuses.length > 1}
+      />
+    </SafeAreaView>
+  );
 }

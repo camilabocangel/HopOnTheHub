@@ -1,4 +1,3 @@
-// components/MapModal.tsx
 import React, { useState, useEffect } from 'react';
 import {
   Modal,
@@ -50,14 +49,11 @@ export default function MapModal({
     campuses.map(c => c.title.toLowerCase() as any)
   );
 
-  // Efecto para animar marcadores cuando el modal se abre
   useEffect(() => {
     if (visible) {
-      // Resetear estado
       setSelectedMarker(null);
       resetHighlights();
       
-      // Animar entrada de marcadores después de un pequeño delay
       setTimeout(() => {
         animateMarkersIn({ duration: 600, delay: 300 });
       }, 100);

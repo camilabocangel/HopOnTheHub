@@ -59,7 +59,7 @@ export default function ProfileScreen() {
   };
 
   const handleImageError = (error: any) => {
-    console.log("Error cargando imagen de perfil:", error);
+    console.error("Error cargando imagen de perfil:", error);
   };
 
   const requestMediaPermission = useCallback(async () => {
@@ -97,7 +97,7 @@ export default function ProfileScreen() {
       quality: 0.8,
     });
 
-    if (result.canceled || !result.assets?.length) {
+    if (result.canceled || !(result.assets?.length > 0)) {
       return;
     }
 

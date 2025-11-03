@@ -1,85 +1,90 @@
-export type CampusKey = 'la paz' | 'cochabamba' | 'santa cruz';
+export type CampusKey = "la paz" | "cochabamba" | "santa cruz";
 
-const CAMPUS_COORDINATES: Record<CampusKey, { latitude: number; longitude: number; title: string }> = {
-  'la paz': { latitude: -16.57491, longitude: -68.12711, title: "La Paz" }, 
-  'cochabamba': { latitude: -17.23180, longitude: -66.22568, title: "Cochabamba" }, 
-  'santa cruz': { latitude: -17.81922, longitude: -63.23354, title: "Santa Cruz" }, 
+const CAMPUS_COORDINATES: Record<
+  CampusKey,
+  { latitude: number; longitude: number; title: string }
+> = {
+  "la paz": { latitude: -16.57491, longitude: -68.12711, title: "La Paz" },
+  cochabamba: { latitude: -17.2318, longitude: -66.22568, title: "Cochabamba" },
+  "santa cruz": {
+    latitude: -17.81922,
+    longitude: -63.23354,
+    title: "Santa Cruz",
+  },
 };
 
 export const parseCampuses = (campusString: string): CampusKey[] => {
-  if (!campusString) return ['la paz'];
-  
-  console.log("parseCampuses input:", campusString);
-  
-  // Si ya es un array (viene como string JSON)
-  if (typeof campusString === 'string' && campusString.startsWith('[')) {
+  if (!campusString) return ["la paz"];
+
+  if (typeof campusString === "string" && campusString.startsWith("[")) {
     try {
       const parsedArray = JSON.parse(campusString);
       if (Array.isArray(parsedArray)) {
         const result = convertToCampusKeys(parsedArray);
-        console.log("Parsed as JSON array:", result);
         return result;
       }
     } catch (error) {
-      console.log("Error parsing campus array:", error);
-      // Continuar con el parsing normal
+      console.error("Error parsing campus array:", error);
     }
   }
-  
+
   const normalized = campusString.toLowerCase().trim();
-  console.log("Normalized campus string:", normalized);
-  
-  if (normalized.includes('todos') || 
-      normalized.includes('all') || 
-      normalized.includes('todos los campus')) {
-    return ['la paz', 'cochabamba', 'santa cruz'];
+
+  if (
+    normalized.includes("todos") ||
+    normalized.includes("all") ||
+    normalized.includes("todos los campus")
+  ) {
+    return ["la paz", "cochabamba", "santa cruz"];
   }
-  
-  // Manejar formato "La Paz,Santa Cruz" - CORRECCIÓN PRINCIPAL
-  if (normalized.includes(',')) {
-    const campusArray = normalized.split(',').map(c => c.trim());
-    console.log("Split by comma:", campusArray);
+
+  if (normalized.includes(",")) {
+    const campusArray = normalized.split(",").map((c) => c.trim());
     const result = convertToCampusKeys(campusArray);
-    console.log("Converted campus keys:", result);
     return result;
   }
-  
-  // Si es un string simple, intentar convertirlo directamente
+
   const result = convertToCampusKeys([normalized]);
-  console.log("Converted single campus:", result);
   return result;
 };
 
 export const convertToCampusKeys = (campuses: string[]): CampusKey[] => {
   const validCampuses: CampusKey[] = [];
-  
-  campuses.forEach(campus => {
+
+  campuses.forEach((campus) => {
     const normalized = campus.toLowerCase().trim();
-    console.log("Processing campus:", campus, "normalized:", normalized);
-    
-    if (normalized === 'la paz' || normalized === 'lapaz') {
-      validCampuses.push('la paz');
-    } else if (normalized === 'cochabamba' || normalized === 'cocha') {
-      validCampuses.push('cochabamba');
-    } else if (normalized === 'santa cruz' || normalized === 'santacruz') {
-      validCampuses.push('santa cruz');
-    }
-    // Manejar casos con espacios extra o formatos inconsistentes
-    else if (normalized.includes('la paz')) {
-      validCampuses.push('la paz');
-    } else if (normalized.includes('cochabamba') || normalized.includes('cocha')) {
-      validCampuses.push('cochabamba');
-    } else if (normalized.includes('santa cruz') || normalized.includes('santacruz')) {
-      validCampuses.push('santa cruz');
+
+    if (
+      normalized === "la paz" ||
+      normalized === "lapaz" ||
+      normalized === "lapaz"
+    ) {
+      validCampuses.push("la paz");
+    } else if (
+      normalized === "cochabamba" ||
+      normalized === "cocha" ||
+      normalized.includes("cochabamba")
+    ) {
+      validCampuses.push("cochabamba");
+    } else if (
+      normalized === "santa cruz" ||
+      normalized === "santacruz" ||
+      normalized.includes("santa cruz")
+    ) {
+      validCampuses.push("santa cruz");
+    } else if (normalized === "lapaz") {
+      validCampuses.push("la paz");
+    } else if (normalized === "santacruz") {
+      validCampuses.push("santa cruz");
     }
   });
-  
-  console.log("Final valid campuses:", validCampuses);
-  return validCampuses.length > 0 ? validCampuses : ['la paz'];
+
+  const uniqueCampuses = Array.from(new Set(validCampuses));
+  return uniqueCampuses.length > 0 ? uniqueCampuses : ["la paz"];
 };
 
 export const getCampusesCoordinates = (campuses: CampusKey[]) => {
-  return campuses.map(campus => CAMPUS_COORDINATES[campus]);
+  return campuses.map((campus) => CAMPUS_COORDINATES[campus]);
 };
 
 export const getMapRegionForCampuses = (campuses: CampusKey[]) => {
@@ -92,7 +97,7 @@ export const getMapRegionForCampuses = (campuses: CampusKey[]) => {
       longitudeDelta: 0.01,
     };
   }
-  
+
   return {
     latitude: -17.20942,
     longitude: -65.80328,
@@ -103,14 +108,17 @@ export const getMapRegionForCampuses = (campuses: CampusKey[]) => {
 
 export const formatCampusName = (campus: string): string => {
   const campusMap: { [key: string]: string } = {
-    'la paz': 'La Paz',
-    'lapaz': 'La Paz',
-    'santa cruz': 'Santa Cruz',
-    'santacruz': 'Santa Cruz',
-    'cochabamba': 'Cochabamba',
-    'cocha': 'Cochabamba',
+    "la paz": "La Paz",
+    lapaz: "La Paz",
+    "santa cruz": "Santa Cruz",
+    santacruz: "Santa Cruz",
+    cochabamba: "Cochabamba",
+    cocha: "Cochabamba",
   };
-  
+
   const lowerCampus = campus.toLowerCase().trim();
-  return campusMap[lowerCampus] || campus.charAt(0).toUpperCase() + campus.slice(1).toLowerCase();
+  return (
+    campusMap[lowerCampus] ||
+    campus.charAt(0).toUpperCase() + campus.slice(1).toLowerCase()
+  );
 };

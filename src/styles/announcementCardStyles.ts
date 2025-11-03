@@ -1,6 +1,34 @@
 import { StyleSheet } from "react-native";
 
 const announcementCardStyles = StyleSheet.create({
+  rejectedBadge: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "#f44336",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  rejectedText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
+  hiddenBadge: {
+    position: "absolute",
+    top: 8,
+    right: 8,
+    backgroundColor: "#666",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  hiddenText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: "bold",
+  },
   pendingBadge: {
     position: "absolute",
     top: 8,
@@ -97,17 +125,17 @@ const announcementCardStyles = StyleSheet.create({
     fontSize: 16,
   },
   likeButtonOverlay: {
-  position: "absolute",
-  top: 10,
-  right: 10,
-  backgroundColor: "#fff",
-  borderRadius: 20,
-  padding: 6,
-  shadowColor: "#000",
-  shadowOpacity: 0.15,
-  shadowRadius: 3,
-  elevation: 2,
-},
+    position: "absolute",
+    top: 10,
+    right: 10,
+    backgroundColor: "#fff",
+    borderRadius: 20,
+    padding: 6,
+    shadowColor: "#000",
+    shadowOpacity: 0.15,
+    shadowRadius: 3,
+    elevation: 2,
+  },
 });
 
 export default announcementCardStyles;

@@ -1,6 +1,19 @@
 import { StyleSheet } from "react-native";
 
 const campusStyles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  horizontalCard: {
+    marginRight: 12,
+  },
   flatListContent: {
     paddingHorizontal: 16,
     gap: 12,

@@ -1,4 +1,3 @@
-// components/AnimatedMarker.tsx
 import React from 'react';
 import { Animated } from 'react-native';
 import { Marker } from 'react-native-maps';

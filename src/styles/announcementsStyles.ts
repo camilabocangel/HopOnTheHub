@@ -1,6 +1,16 @@
 import { StyleSheet } from "react-native";
 
 const announcementsStyles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    fontWeight: "500",
+  },
   container: {
     flex: 1,
     padding: 16,

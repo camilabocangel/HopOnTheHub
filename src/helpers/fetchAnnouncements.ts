@@ -179,3 +179,53 @@ export const fetchAllAnnouncementsByIds = async (
     return [];
   }
 };
+
+export const fetchRejectedAnnouncements = async (): Promise<Announcement[]> => {
+  await updateExpiredContentStatus();
+
+  try {
+    const announcementsRef = collection(db, "announcements");
+    const q = query(
+      announcementsRef,
+      where("status", "==", "rejected"),
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        } as Announcement)
+    );
+  } catch (error) {
+    console.error("Error fetching rejected announcements:", error);
+    return [];
+  }
+};
+
+export const fetchHiddenAnnouncements = async (): Promise<Announcement[]> => {
+  await updateExpiredContentStatus();
+
+  try {
+    const announcementsRef = collection(db, "announcements");
+    const q = query(
+      announcementsRef,
+      where("status", "==", "hidden"),
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(
+      (doc) =>
+        ({
+          id: doc.id,
+          ...doc.data(),
+        } as Announcement)
+    );
+  } catch (error) {
+    console.error("Error fetching hidden announcements:", error);
+    return [];
+  }
+};
