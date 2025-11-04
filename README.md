@@ -1,17 +1,13 @@
 # UPB Hub - Mobile App
 
-<div align="center">
-
 ![UPB Logo](assets/upb.jpg)
 
-**Una aplicación móvil para la gestión de eventos y anuncios universitarios**
+## Una aplicación móvil para la gestión de eventos y anuncios universitarios
 
 [![React Native](https://img.shields.io/badge/React_Native-0.73.6-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://reactnative.dev/)
 [![Expo](https://img.shields.io/badge/Expo-50.0.0-000020?style=for-the-badge&logo=expo&logoColor=white)](https://expo.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-10.8.0-FFCA28?style=for-the-badge&logo=firebase&logoColor=white)](https://firebase.google.com/)
-
-</div>
 
 ## 📱 Descripción
 
@@ -20,6 +16,7 @@ UPB Hub es una aplicación móvil desarrollada para la Universidad Privada Boliv
 ## ✨ Características Principales
 
 ### 📅 Para Estudiantes
+
 - Visualización de eventos y anuncios por campus
 - Sistema de "me gusta" para guardar contenido favorito
 - Notificaciones push para eventos importantes
@@ -27,6 +24,7 @@ UPB Hub es una aplicación móvil desarrollada para la Universidad Privada Boliv
 - Filtrado por campus y categorías
 
 ### 👨‍💼 Para Administradores
+
 - Panel de aprobación/rechazo de eventos y anuncios
 - Edición de contenido existente
 - Gestión de múltiples campus
@@ -36,37 +34,43 @@ UPB Hub es una aplicación móvil desarrollada para la Universidad Privada Boliv
 ## 🛠️ Tecnologías y Librerías
 
 ### Core Framework
+
 - **React Native 0.73.6** - Framework principal
 - **Expo 50.0.0** - Plataforma de desarrollo
 - **TypeScript 5.0.0** - Tipado estático
 
 ### Navegación y UI
+
 - **Expo Router** - Navegación basada en file-system
 - **React Navigation** - Navegación entre pantallas
 - **Expo Vector Icons** - Iconografía consistente
 
 ### Backend y Almacenamiento
+
 - **Firebase Firestore** - Base de datos NoSQL
 - **Firebase Auth** - Autenticación de usuarios
 - **Cloudinary** - Almacenamiento de imágenes
 
 ### Notificaciones
+
 - **Expo Notifications** - Sistema de notificaciones push
 - **Expo Device** - Detección de características del dispositivo
 
 ### UI y Estilos
+
 - **React Native Reanimated** - Animaciones fluidas
 - **React Native Maps** - Integración de mapas
 - **DateTimePicker** - Selectores de fecha y hora
 
 ### Utilidades
+
 - **Async Storage** - Almacenamiento local
 - **Expo Image Picker** - Selección de imágenes
 - **Expo Constants** - Información de la app
 
 ## ✏️ Arquitectura del Proyecto
 
-```
+```bash
 HopOnTheHub/
 ├── 📱 Configuración de la App
 │   ├── app.json                    # Configuración de Expo
@@ -195,19 +199,22 @@ HopOnTheHub/
 ## 🚀 Configuración e Instalación
 
 ### Prerrequisitos
-- Node.js 18+ 
+
+- Node.js 18+
 - npm o yarn
 - Expo CLI
 - Cuenta de Firebase
 - Cuenta de Expo
 
 ### 1. Clonar el repositorio
+
 ```bash
 git clone https://github.com/camilabocangel/HopOnTheHub
 cd HopOnTheHub
 ```
 
 ### 2. Instalar dependencias
+
 ```bash
 yarn install
 # o simplemente
@@ -215,7 +222,9 @@ yarn
 ```
 
 ### 3. Configurar variables de entorno
+
 Crear archivo `.env` en la raíz del proyecto:
+
 ```env
 EXPO_PUBLIC_FIREBASE_API_KEY=tu_api_key
 EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=tu_dominio
@@ -229,46 +238,31 @@ EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET=tu_upload_preset
 ```
 
 ### 4. Configurar Firebase
+
 1. Crear proyecto en [Firebase Console](https://console.firebase.google.com)
 2. Habilitar Authentication (Email/Password)
 3. Crear base de datos Firestore
 
 ### 5. Ejecutar la aplicación
+
 ```bash
-# Desarrollo
 yarn start
 ```
-
-## 📱 Flujo de la Aplicación
-
-### 👤 Para Estudiantes
-1. **Registro/Login** → Crear cuenta o iniciar sesión
-2. **Dashboard** → Ver eventos y anuncios de su campus
-3. **Interacción** → Dar like, ver detalles, guardar favoritos
-4. **Notificaciones** → Recibir recordatorios y actualizaciones
-
-### 👨‍💼 Para Administradores
-1. **Login** → Acceso con credenciales de admin
-2. **Panel de Control** → Revisar contenido pendiente
-3. **Moderación** → Aprobar/rechazar/editar eventos y anuncios
-4. **Gestión** → Control de múltiples campus
-
-### 🕵🏻 Para Cualquier público
-1. **Login** → Ir a Entrar sin iniciar sesion
-2. **DashBoard** → Ver eventos y anuncios
 
 ## 🔔 Sistema de Notificaciones
 
 La aplicación implementa un sistema completo de notificaciones:
 
 ### Tipos de Notificaciones
-- ** Recordatorios de eventos** - 1 hora antes del inicio
-- ** Cambios de estado** - Cuando un evento es aprobado/rechazado
-- ** Cambios de estado** - Cuando un anuncio es aprobado/rechazado y tambien cuando es ocultado y mostrado al público
+
+- **Recordatorios de eventos** - 1 hora antes del inicio
+- **Cambios de estado** - Cuando un evento es aprobado/rechazado
+- **Cambios de estado** - Cuando un anuncio es aprobado/rechazado y tambien cuando es ocultado y mostrado al público
 
 ## 📊 Estructura de Datos
 
 ### Modelo de Evento
+
 ```typescript
 type Event = {
   id: string;
@@ -293,6 +287,7 @@ type Event = {
 ```
 
 ### Modelo de Anuncio
+
 ```typescript
 type Announcement = {
   id: string;
@@ -309,6 +304,7 @@ type Announcement = {
 ```
 
 ### Modelo de Usuario
+
 ```typescript
 interface User {
   id: string;
@@ -324,25 +320,25 @@ interface User {
 
 ## 📸 Capturas de Pantalla
 
-<div align="center">
-
 ### Pantalla Principal
-![Home Screen](screenshots/home.png) 
+
+![Home Screen](screenshots/home.png)
 *Dashboard principal con eventos y anuncios*
 
 ### Detalle de Evento
+
 ![Event Detail](screenshots/event-detail.png)
 *Vista detallada de evento con mapa y acciones*
 
 ### Panel de Administración
+
 ![Admin Panel](screenshots/admin-panel.png)
 *Panel de control para administradores*
 
 ### Formulario de Evento
+
 ![Event Form](screenshots/event-form.png)
 *Formulario para crear/editar eventos*
-
-</div>
 
 ## 📄 Licencia
 
@@ -354,5 +350,3 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE.md](LICENSE.m
 - **Camila Bocangel** - [Ver Perfil en Github](https://github.com/camilabocangel)
 
 ---
-
-</div>
