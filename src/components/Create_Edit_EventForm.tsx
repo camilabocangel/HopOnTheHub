@@ -20,6 +20,10 @@ import { db } from "@/config/firebaseConfig";
 import useCreateEventStyles from "@/styles/createEventStyles";
 import { getNextEventId } from "@/helpers/eventIdGenerator";
 import { formatCampusName, parseCampuses } from "@/utils/campusUtils";
+import {
+  scheduleEventReminder,
+  usePushNotifications,
+} from "@/hooks/usePushNotifications";
 
 interface CreateEventFormProps {
   onSubmit: (eventData: any) => void;
@@ -59,6 +63,8 @@ export default function CreateEventForm({
 }: CreateEventFormProps) {
   const { colors } = useThemeColors();
   const { user } = useUser();
+  const { expoPushToken } = usePushNotifications();
+
   const styles = useCreateEventStyles();
 
   const [title, setTitle] = useState("");
@@ -187,6 +193,18 @@ export default function CreateEventForm({
     });
   };
 
+  const resetForm = () => {
+    setTitle("");
+    setDescription("");
+    setContent("");
+    setCategory("");
+    setPlace("");
+    setSelectedCampuses([user?.campus || "La Paz"]);
+    setDate(new Date());
+    setTime(new Date());
+    setModality("Presencial");
+  };
+
   const handleSubmit = async () => {
     if (
       !title.trim() ||
@@ -218,6 +236,7 @@ export default function CreateEventForm({
           locations: generateLocations(selectedCampuses),
           updatedAt: serverTimestamp(),
           createdBy: eventToEdit.createdBy || user?.name || "Usuario",
+          creatorPushToken: expoPushToken || null,
         };
 
         const formattedEventId = eventToEdit.id.startsWith("event-")
@@ -250,15 +269,26 @@ export default function CreateEventForm({
           createdBy: user?.name + " " + user?.lastName || "Usuario Desconocido",
           locations: generateLocations(selectedCampuses),
           modality: modality,
+          creatorPushToken: expoPushToken || null,
         };
 
         eventDocRef = doc(db, "events", `event-${nextId}`);
         await setDoc(eventDocRef, eventData);
 
+        const eventDateTime = new Date(
+          `${formatDate(date)}T${formatTime(time)}`
+        );
+        await scheduleEventReminder(
+          title.trim(),
+          eventDateTime,
+          `event-${nextId}`
+        );
+
         Alert.alert(
           "Éxito",
           "Evento creado correctamente. Está pendiente de aprobación."
         );
+        resetForm();
       }
 
       onSubmit({

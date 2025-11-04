@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "HopOnTheHub",
-    "slug": "HopOnTheHub",
+    "slug": "hoponthehub",
     "scheme": "HopOnTheHub",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -22,11 +22,20 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.joaquin_aguilera.hoponthehub"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-notifications"]
+    "plugins": [
+      "expo-notifications"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1490f7c9-f7ac-4913-8f77-d2521cd7b812"
+      }
+    },
+    "owner": "joaquin_aguilera"
   }
 }

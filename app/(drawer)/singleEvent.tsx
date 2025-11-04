@@ -30,6 +30,7 @@ import { useNavigation } from "expo-router";
 import { ScreenTransitionView } from "@/components/ScreenTransitionView";
 import { useScreenTransition } from "@/hooks/useScreenTransition";
 import { AnimatedLikeButton } from "@/components/AnimatedLikeButton";
+import { notifyEventStatusChange } from "@/services/notificationService";
 
 interface FirebaseTimestamp {
   seconds: number;
@@ -47,7 +48,11 @@ export default function SingleEventScreen() {
   const navigation = useNavigation();
   const screenTransition = useScreenTransition(0);
 
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [actionLoading, setActionLoading] = useState<{
+    approve?: boolean;
+    reject?: boolean;
+    cancel?: boolean;
+  }>({});
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -95,6 +100,9 @@ export default function SingleEventScreen() {
   const eventStatus = Array.isArray(status) ? status[0] : status;
   const eventCreatedBy = Array.isArray(createdBy) ? createdBy[0] : createdBy;
   const eventCreatedAt = Array.isArray(createdAt) ? createdAt[0] : createdAt;
+  const eventCreatorPushToken = Array.isArray(params.creatorPushToken)
+    ? params.creatorPushToken[0]
+    : params.creatorPushToken;
 
   const liked = isEventLiked(eventId || "");
   const isNormal = user ? user?.role === "normal" : false;
@@ -179,6 +187,7 @@ export default function SingleEventScreen() {
       createdBy: eventCreatedBy || "",
       createdAt: eventCreatedAt || "",
       firestoreId: eventId,
+      creatorPushToken: eventCreatorPushToken || null,
     };
 
     router.push({
@@ -193,10 +202,17 @@ export default function SingleEventScreen() {
   const handleApproveEvent = async () => {
     if (!eventId) return;
 
-    setActionLoading("approve");
+    setActionLoading({ approve: true });
     try {
       const success = await updateEventStatus(eventId, "accepted");
       if (success) {
+        await notifyEventStatusChange(
+          eventId,
+          eventTitle || "Tu evento",
+          "accepted",
+          eventCreatorPushToken
+        );
+
         Alert.alert(
           "Evento Aprobado",
           "El evento ha sido aprobado correctamente",
@@ -208,17 +224,24 @@ export default function SingleEventScreen() {
     } catch (error) {
       Alert.alert("Error", "No se pudo aprobar el evento");
     } finally {
-      setActionLoading(null);
+      setActionLoading({});
     }
   };
 
   const handleRejectEvent = async () => {
     if (!eventId) return;
 
-    setActionLoading("reject");
+    setActionLoading({ reject: true });
     try {
       const success = await updateEventStatus(eventId, "rejected");
       if (success) {
+        await notifyEventStatusChange(
+          eventId,
+          eventTitle || "Tu evento",
+          "rejected",
+          eventCreatorPushToken
+        );
+
         Alert.alert("Evento Rechazado", "El evento ha sido rechazado", [
           { text: "OK", onPress: () => router.back() },
         ]);
@@ -228,18 +251,25 @@ export default function SingleEventScreen() {
     } catch (error) {
       Alert.alert("Error", "No se pudo rechazar el evento");
     } finally {
-      setActionLoading(null);
+      setActionLoading({});
     }
   };
 
   const handleCancelEvent = async () => {
     if (!eventId) return;
 
-    setActionLoading("cancel");
+    setActionLoading({ cancel: true });
     try {
       const success = await updateEventStatus(eventId, "rejected");
 
       if (success) {
+        await notifyEventStatusChange(
+          eventId,
+          eventTitle || "Tu evento",
+          "rejected",
+          eventCreatorPushToken
+        );
+
         Alert.alert("Evento Cancelado", "El evento ha sido cancelado", [
           {
             text: "OK",
@@ -252,7 +282,7 @@ export default function SingleEventScreen() {
     } catch (error) {
       Alert.alert("Error", "No se pudo cancelar el evento");
     } finally {
-      setActionLoading(null);
+      setActionLoading({});
     }
   };
 
@@ -655,13 +685,13 @@ export default function SingleEventScreen() {
                       style={[
                         singleEventsStyles.actionButton,
                         { backgroundColor: "#4CAF50" },
-                        actionLoading === "accept" &&
+                        actionLoading.approve &&
                           singleEventsStyles.actionButtonDisabled,
                       ]}
                       onPress={handleApproveEvent}
-                      disabled={actionLoading !== null}
+                      disabled={actionLoading.approve}
                     >
-                      {actionLoading === "accept" ? (
+                      {actionLoading.approve ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
                         <>
@@ -681,13 +711,13 @@ export default function SingleEventScreen() {
                       style={[
                         singleEventsStyles.actionButton,
                         { backgroundColor: "#f44336" },
-                        actionLoading === "reject" &&
+                        actionLoading.reject &&
                           singleEventsStyles.actionButtonDisabled,
                       ]}
                       onPress={handleRejectEvent}
-                      disabled={actionLoading !== null}
+                      disabled={actionLoading.reject}
                     >
-                      {actionLoading === "reject" ? (
+                      {actionLoading.reject ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
                         <>
@@ -704,45 +734,44 @@ export default function SingleEventScreen() {
                     </TouchableOpacity>
                   </>
                 )}
-
                 {status === "accepted" && (
                   <>
                     <TouchableOpacity
                       style={[
                         singleEventsStyles.actionButton,
                         { backgroundColor: "#ddb503ff" },
-                        actionLoading === "cancel" &&
-                          singleEventsStyles.actionButtonDisabled,
                       ]}
                       onPress={handleEditEvent}
-                      disabled={actionLoading !== null}
                     >
-                      {actionLoading === "cancel" ? (
-                        <ActivityIndicator size="small" color="white" />
-                      ) : (
-                        <>
-                          <Ionicons
-                            name="create-outline"
-                            size={20}
-                            color="white"
-                          />
-                          <Text style={singleEventsStyles.buttonText}>
-                            Editar Evento
-                          </Text>
-                        </>
-                      )}
+                      <Ionicons name="create-outline" size={20} color="white" />
+                      <Text style={singleEventsStyles.buttonText}>
+                        Editar Evento
+                      </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[
                         singleEventsStyles.actionButton,
                         { backgroundColor: "#f44336" },
+                        actionLoading.cancel &&
+                          singleEventsStyles.actionButtonDisabled,
                       ]}
                       onPress={handleCancelEvent}
+                      disabled={actionLoading.cancel}
                     >
-                      <Ionicons name="close-circle" size={20} color="white" />
-                      <Text style={singleEventsStyles.buttonText}>
-                        Cancelar Evento
-                      </Text>
+                      {actionLoading.cancel ? (
+                        <ActivityIndicator size="small" color="white" />
+                      ) : (
+                        <>
+                          <Ionicons
+                            name="close-circle"
+                            size={20}
+                            color="white"
+                          />
+                          <Text style={singleEventsStyles.buttonText}>
+                            Cancelar Evento
+                          </Text>
+                        </>
+                      )}
                     </TouchableOpacity>
                   </>
                 )}

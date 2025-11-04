@@ -38,7 +38,6 @@ export default function EventsScreen() {
     refetch: refetchEvents,
   } = useEvents(selectedCampus);
 
-  // USAR USEFOCUSEFFECT COMO EN HOME SCREEN
   useFocusEffect(
     useCallback(() => {
       const refreshData = async () => {
@@ -130,7 +129,6 @@ export default function EventsScreen() {
     }, {});
   }, [filteredEvents, categories]);
 
-  // FUNCIÓN DE RENDERIZADO CON INDEX Y WRAPPER
   const renderEventItem = ({ item, index }: { item: any; index: number }) => (
     <View style={{ marginBottom: 16 }}>
       <EventCard
@@ -146,6 +144,9 @@ export default function EventsScreen() {
         campus={selectedCampus}
         status={item.status}
         index={index}
+        createdBy={item.createdBy}
+        createdAt={item.createdAt}
+        creatorPushToken={item.creatorPushToken}
       />
     </View>
   );

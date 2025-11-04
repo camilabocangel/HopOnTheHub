@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 import Onboarding from 'react-native-onboarding-swiper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
-import { usePushNotifications } from '@/lib/usePushNotifications';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import STEPS from '@/data/steps';
 
 export default function OnboardingScreen() {

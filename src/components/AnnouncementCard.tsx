@@ -22,6 +22,7 @@ export default function AnnouncementCard({
   isRejected = false,
   isHidden = false,
   index = 0,
+  creatorPushToken,
 }: AnnouncementCardProps) {
   const { colors } = useThemeColors();
   const { isAnnouncementLiked, toggleAnnouncementLikeStatus } = useLikes();
@@ -48,6 +49,7 @@ export default function AnnouncementCard({
           campus: Array.isArray(campus) ? JSON.stringify(campus) : campus,
           image,
           status,
+          creatorPushToken: creatorPushToken,
         },
       });
     }, 150);

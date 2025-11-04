@@ -55,7 +55,6 @@ export default function CampusScreen() {
     refetch: refetchAnnouncements,
   } = useAnnouncements(selectedCampus);
 
-  // USAR USEFOCUSEFFECT COMO EN HOME SCREEN
   useFocusEffect(
     useCallback(() => {
       const refreshData = async () => {
@@ -106,7 +105,6 @@ export default function CampusScreen() {
     ];
   }, [filteredAnnouncements]);
 
-  // FUNCIONES DE RENDERIZADO IDÉNTICAS A HOME SCREEN
   const renderEventItem = ({ item, index }: { item: any; index: number }) => {
     if ("type" in item && item.type === "see-more") {
       return (
@@ -134,6 +132,7 @@ export default function CampusScreen() {
             index={index}
             createdBy={event.createdBy}
             createdAt={event.createdAt}
+            creatorPushToken={event.creatorPushToken}
           />
         </View>
       );
@@ -160,6 +159,7 @@ export default function CampusScreen() {
             campus={announcement.campus}
             status={announcement.status}
             index={index}
+            creatorPushToken={announcement.creatorPushToken}
           />
         </View>
       );

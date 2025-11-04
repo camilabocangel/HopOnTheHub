@@ -33,7 +33,7 @@ export const palette = {
     drawerBackground: "#0F172A",
     switchTrackOn: "#FFD43B",
     switchTrackOff: "#475569",
-    switchThumb: "#1E293B",
+    switchThumb: "#be9500ff",
     map: "#ee0e0eff"
   },
 } as const;

@@ -32,6 +32,7 @@ import { useScreenTransition } from "@/hooks/useScreenTransition";
 import { AnimatedLikeButton } from "@/components/AnimatedLikeButton";
 import { updateDoc, doc } from "firebase/firestore";
 import { db } from "@/config/firebaseConfig";
+import { notifyAnnouncementStatusChange } from "@/services/notificationService";
 
 export default function SingleAnnouncementScreen() {
   const { colors } = useThemeColors();
@@ -39,14 +40,32 @@ export default function SingleAnnouncementScreen() {
   const router = useRouter();
   const [showMapModal, setShowMapModal] = useState(false);
   const { isAnnouncementLiked, toggleAnnouncementLikeStatus } = useLikes();
-  const { id, description, date, campus, image, content, status } = params;
+  const {
+    id,
+    description,
+    date,
+    campus,
+    image,
+    content,
+    status,
+    creatorPushToken,
+  } = params;
   const navigation = useNavigation();
   const screenTransition = useScreenTransition(0);
   const { user } = useUser();
   const isNormal = user ? user?.role === "normal" : false;
   const isAdmin = user?.role === "admin";
 
-  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const eventCreatorPushToken = Array.isArray(creatorPushToken)
+    ? creatorPushToken[0]
+    : creatorPushToken;
+
+  const [actionLoading, setActionLoading] = useState<{
+    approve?: boolean;
+    reject?: boolean;
+    hide?: boolean;
+    show?: boolean;
+  }>({});
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -127,13 +146,24 @@ export default function SingleAnnouncementScreen() {
   const handleApproveAnnouncement = async () => {
     if (!announcementId) return;
 
-    setActionLoading("approve");
+    setActionLoading({ approve: true });
     try {
-      const announcementRef = doc(db, "announcements", `announcement-${announcementId}`);
+      const announcementRef = doc(
+        db,
+        "announcements",
+        `announcement-${announcementId}`
+      );
       await updateDoc(announcementRef, {
         status: "accepted",
         updatedAt: new Date(),
       });
+
+      await notifyAnnouncementStatusChange(
+        announcementId,
+        announcementDescription,
+        "accepted",
+        eventCreatorPushToken
+      );
 
       Alert.alert("Éxito", "El anuncio ha sido aprobado");
       router.back();
@@ -141,20 +171,31 @@ export default function SingleAnnouncementScreen() {
       console.error("Error approving announcement:", error);
       Alert.alert("Error", "No se pudo aprobar el anuncio");
     } finally {
-      setActionLoading(null);
+      setActionLoading({});
     }
   };
 
   const handleRejectAnnouncement = async () => {
     if (!announcementId) return;
 
-    setActionLoading("reject");
+    setActionLoading({ reject: true });
     try {
-      const announcementRef = doc(db, "announcements", `announcement-${announcementId}`);
+      const announcementRef = doc(
+        db,
+        "announcements",
+        `announcement-${announcementId}`
+      );
       await updateDoc(announcementRef, {
         status: "rejected",
         updatedAt: new Date(),
       });
+
+      await notifyAnnouncementStatusChange(
+        announcementId,
+        announcementDescription,
+        "rejected",
+        eventCreatorPushToken
+      );
 
       Alert.alert("Éxito", "El anuncio ha sido rechazado");
       router.back();
@@ -162,20 +203,31 @@ export default function SingleAnnouncementScreen() {
       console.error("Error rejecting announcement:", error);
       Alert.alert("Error", "No se pudo rechazar el anuncio");
     } finally {
-      setActionLoading(null);
+      setActionLoading({});
     }
   };
 
   const handleHideAnnouncement = async () => {
     if (!announcementId) return;
 
-    setActionLoading("hide");
+    setActionLoading({ hide: true });
     try {
-      const announcementRef = doc(db, "announcements", `announcement-${announcementId}`);
+      const announcementRef = doc(
+        db,
+        "announcements",
+        `announcement-${announcementId}`
+      );
       await updateDoc(announcementRef, {
         status: "hidden",
         updatedAt: new Date(),
       });
+
+      await notifyAnnouncementStatusChange(
+        announcementId,
+        announcementDescription,
+        "hidden",
+        eventCreatorPushToken
+      );
 
       Alert.alert("Éxito", "El anuncio ha sido ocultado");
       router.back();
@@ -183,14 +235,14 @@ export default function SingleAnnouncementScreen() {
       console.error("Error hiding announcement:", error);
       Alert.alert("Error", "No se pudo ocultar el anuncio");
     } finally {
-      setActionLoading(null);
+      setActionLoading({});
     }
   };
 
   const handleShowAnnouncement = async () => {
     if (!announcementId) return;
 
-    setActionLoading("show");
+    setActionLoading({ show: true });
     try {
       const announcementRef = doc(db, "announcements", announcementId);
       await updateDoc(announcementRef, {
@@ -198,13 +250,20 @@ export default function SingleAnnouncementScreen() {
         updatedAt: new Date(),
       });
 
-      Alert.alert("Éxito", "El anuncio ha sido mostrado");
+      await notifyAnnouncementStatusChange(
+        announcementId,
+        announcementDescription,
+        "accepted",
+        eventCreatorPushToken
+      );
+
+      Alert.alert("Éxito", "El anuncio será mostrado de nuevo");
       router.back();
     } catch (error) {
       console.error("Error showing announcement:", error);
       Alert.alert("Error", "No se pudo mostrar el anuncio");
     } finally {
-      setActionLoading(null);
+      setActionLoading({});
     }
   };
 
@@ -471,7 +530,6 @@ export default function SingleAnnouncementScreen() {
                 </Animated.View>
               )}
             </View>
-            // En la sección de acciones de administrador, modifica los botones:
             {isAdmin && (
               <Animated.View
                 style={[
@@ -488,13 +546,13 @@ export default function SingleAnnouncementScreen() {
                       style={[
                         singleAnnouncementStyles.actionButton,
                         { backgroundColor: "#4CAF50" },
-                        actionLoading === "approve" &&
+                        actionLoading.approve &&
                           singleAnnouncementStyles.actionButtonDisabled,
                       ]}
                       onPress={handleApproveAnnouncement}
-                      disabled={actionLoading !== null}
+                      disabled={actionLoading.approve}
                     >
-                      {actionLoading === "approve" ? (
+                      {actionLoading.approve ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
                         <>
@@ -514,13 +572,13 @@ export default function SingleAnnouncementScreen() {
                       style={[
                         singleAnnouncementStyles.actionButton,
                         { backgroundColor: "#f44336" },
-                        actionLoading === "reject" &&
+                        actionLoading.reject &&
                           singleAnnouncementStyles.actionButtonDisabled,
                       ]}
                       onPress={handleRejectAnnouncement}
-                      disabled={actionLoading !== null}
+                      disabled={actionLoading.reject}
                     >
-                      {actionLoading === "reject" ? (
+                      {actionLoading.reject ? (
                         <ActivityIndicator size="small" color="white" />
                       ) : (
                         <>
@@ -543,13 +601,13 @@ export default function SingleAnnouncementScreen() {
                     style={[
                       singleAnnouncementStyles.actionButton,
                       { backgroundColor: "#666" },
-                      actionLoading === "hide" &&
+                      actionLoading.hide &&
                         singleAnnouncementStyles.actionButtonDisabled,
                     ]}
                     onPress={handleHideAnnouncement}
-                    disabled={actionLoading !== null}
+                    disabled={actionLoading.hide}
                   >
-                    {actionLoading === "hide" ? (
+                    {actionLoading.hide ? (
                       <ActivityIndicator size="small" color="white" />
                     ) : (
                       <>
@@ -567,13 +625,13 @@ export default function SingleAnnouncementScreen() {
                     style={[
                       singleAnnouncementStyles.actionButton,
                       { backgroundColor: "#4CAF50" },
-                      actionLoading === "show" &&
+                      actionLoading.show &&
                         singleAnnouncementStyles.actionButtonDisabled,
                     ]}
                     onPress={handleShowAnnouncement}
-                    disabled={actionLoading !== null}
+                    disabled={actionLoading.show}
                   >
-                    {actionLoading === "show" ? (
+                    {actionLoading.show ? (
                       <ActivityIndicator size="small" color="white" />
                     ) : (
                       <>

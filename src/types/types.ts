@@ -12,6 +12,7 @@ export type User = {
   likedEvents: string[];
   likedAnnouncements: string[];
   createdAt: any;
+  pushToken?: string;
 };
 
 export type Career = {
@@ -37,10 +38,11 @@ export type Announcement = {
   content: string;
   likes: string[];
   createdAt?: any;
+  creatorPushToken?: string;
 };
 
 export interface AnnouncementCardProps {
-  id: string; 
+  id: string;
   image: string;
   description: string;
   date: string;
@@ -50,6 +52,7 @@ export interface AnnouncementCardProps {
   isRejected?: boolean;
   isHidden?: boolean;
   index?: number;
+  creatorPushToken?: string;
 }
 
 export type Event = {
@@ -70,6 +73,7 @@ export type Event = {
   createdBy?: string;
   locations: { lat: number; lng: number }[];
   modality: string;
+  creatorPushToken?: string;
 };
 
 export type EventCardProps = {
@@ -89,6 +93,7 @@ export type EventCardProps = {
   isRejected?: boolean;
   createdBy?: string;
   createdAt?: any;
+  creatorPushToken?: string;
 };
 
 export interface RegisterFormData {

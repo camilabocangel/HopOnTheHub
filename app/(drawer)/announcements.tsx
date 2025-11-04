@@ -38,7 +38,6 @@ export default function AnnouncementsScreen() {
     refetch: refetchAnnouncements,
   } = useAnnouncements(selectedCampus);
 
-  // USAR USEFOCUSEFFECT COMO EN HOME SCREEN
   useFocusEffect(
     useCallback(() => {
       const refreshData = async () => {
@@ -113,7 +112,6 @@ export default function AnnouncementsScreen() {
     return filtered;
   }, [campusAnnouncements, searchQuery, dateFilter]);
 
-  // FUNCIÓN DE RENDERIZADO CON INDEX Y WRAPPER
   const renderAnnouncementItem = ({
     item,
     index,
@@ -130,6 +128,7 @@ export default function AnnouncementsScreen() {
         campus={item.campus}
         status={item.status}
         index={index}
+        creatorPushToken={item.creatorPushToken}
       />
     </View>
   );

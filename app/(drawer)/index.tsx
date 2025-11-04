@@ -1,4 +1,4 @@
-import React from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ScrollView,
   View,
@@ -34,6 +34,7 @@ import CreateAnnouncementCard from "@/components/CreateAnnouncementCard";
 import { importAnnouncementsToFirebase } from "@/scripts/importAnnouncementsToFirebase";
 import { importEventsToFirebase } from "@/scripts/importEventsToFirebase";
 import { importCareersToFirebase } from "@/scripts/importCareersToFirebase";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 const { height, width } = Dimensions.get("window");
 
@@ -112,11 +113,11 @@ export default function HomeScreen() {
     refetch: refetchHiddenAnnouncements,
   } = useHiddenAnnouncements();
 
-  const [refreshing, setRefreshing] = React.useState(false);
-  const [initialLoad, setInitialLoad] = React.useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [initialLoad, setInitialLoad] = useState(true);
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       const refreshData = async () => {
         if (user?.role === "admin") {
           await Promise.all([
@@ -145,7 +146,7 @@ export default function HomeScreen() {
     ])
   );
 
-  const onRefresh = React.useCallback(async () => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
       if (user?.role === "admin") {
@@ -208,6 +209,7 @@ export default function HomeScreen() {
         index={index}
         createdBy={item.createdBy}
         createdAt={item.createdAt}
+        creatorPushToken={item.creatorPushToken}
       />
     </View>
   );
@@ -230,6 +232,7 @@ export default function HomeScreen() {
         campus={item.campus}
         status={item.status}
         index={index}
+        creatorPushToken={item.creatorPushToken}
       />
     </View>
   );
@@ -253,6 +256,7 @@ export default function HomeScreen() {
         isPending={true}
         createdBy={item.createdBy}
         createdAt={item.createdAt}
+        creatorPushToken={item.creatorPushToken}
       />
     </View>
   );
@@ -267,6 +271,7 @@ export default function HomeScreen() {
         campus={item.campus}
         status={item.status}
         isPending={true}
+        creatorPushToken={item.creatorPushToken}
       />
     </View>
   );
@@ -288,6 +293,7 @@ export default function HomeScreen() {
         isRejected={true}
         createdBy={item.createdBy}
         createdAt={item.createdAt}
+        creatorPushToken={item.creatorPushToken}
       />
     </View>
   );
@@ -302,6 +308,7 @@ export default function HomeScreen() {
         campus={item.campus}
         status={item.status}
         isRejected={true}
+        creatorPushToken={item.creatorPushToken}
       />
     </View>
   );
@@ -316,6 +323,7 @@ export default function HomeScreen() {
         campus={item.campus}
         status={item.status}
         isHidden={true}
+        creatorPushToken={item.creatorPushToken}
       />
     </View>
   );

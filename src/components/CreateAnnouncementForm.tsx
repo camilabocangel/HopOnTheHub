@@ -22,6 +22,7 @@ import {
 import { db } from "@/config/firebaseConfig";
 import useCreateAnnouncementStyles from "@/styles/createAnnouncementStyles";
 import { getNextAnnouncementId } from "@/helpers/announcementIdGenerator";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 interface CreateAnnouncementFormProps {
   onSubmit: (announcementData: any) => void;
@@ -39,6 +40,8 @@ export default function CreateAnnouncementForm({
 }: CreateAnnouncementFormProps) {
   const { colors } = useThemeColors();
   const { user } = useUser();
+  const { expoPushToken } = usePushNotifications();
+
   const styles = useCreateAnnouncementStyles();
 
   const [description, setDescription] = useState("");
@@ -64,6 +67,13 @@ export default function CreateAnnouncementForm({
     return date.toISOString().split("T")[0];
   };
 
+  const resetForm = () => {
+    setDescription("");
+    setContent("");
+    setSelectedCampuses([user?.campus || "La Paz"]);
+    setDate(new Date());
+  };
+
   const handleSubmit = async () => {
     if (!description.trim() || selectedCampuses.length === 0) {
       Alert.alert("Error", "Por favor completa todos los campos obligatorios");
@@ -87,6 +97,7 @@ export default function CreateAnnouncementForm({
         likes: [],
         createdAt: serverTimestamp(),
         createdBy: user?.name + " " + user?.lastName || "Usuario Desconocido",
+        creatorPushToken: expoPushToken || null,
       };
 
       const announcementRef = doc(db, "announcements", firestoreId);
@@ -97,10 +108,7 @@ export default function CreateAnnouncementForm({
         "Anuncio creado correctamente. Está pendiente de aprobación."
       );
 
-      setDescription("");
-      setContent("");
-      setSelectedCampuses([user?.campus || "La Paz"]);
-      setDate(new Date());
+      resetForm();
 
       onSubmit(announcementData);
     } catch (error) {

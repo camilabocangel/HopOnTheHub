@@ -100,7 +100,7 @@ export default function ProfileScreen() {
       quality: 0.8,
     });
 
-    if (result.canceled || !result.assets || result.assets.length === 0) {
+    if (result.canceled || !result.assets || result.assets.length) {
       return;
     }
 
@@ -193,6 +193,28 @@ export default function ProfileScreen() {
           >
             <Text style={styles.logoutText}>Iniciar Sesión</Text>
           </TouchableOpacity>
+        </View>
+        <View style={styles.container}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Configuraciones
+          </Text>
+
+          <View style={styles.preferenceRow}>
+            <Text style={[styles.preferenceLabel, { color: colors.text }]}>
+              Modo oscuro
+            </Text>
+            <Switch
+              value={isDarkMode}
+              onValueChange={handleThemeToggle}
+              trackColor={{
+                false: colors.switchTrackOff,
+                true: colors.switchTrackOn,
+              }}
+              thumbColor={isDarkMode ? colors.switchThumb : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+            />
+          </View>
+
         </View>
       </SafeAreaView>
     );
@@ -338,12 +360,10 @@ export default function ProfileScreen() {
               value={isDarkMode}
               onValueChange={handleThemeToggle}
               trackColor={{
-                false: colors.switchTrackOff || "#767577",
-                true: colors.switchTrackOn || colors.primary,
+                false: colors.switchTrackOff,
+                true: colors.switchTrackOn,
               }}
-              thumbColor={
-                isDarkMode ? colors.switchThumb || "#f4f3f4" : "#f4f3f4"
-              }
+              thumbColor={isDarkMode ? colors.switchThumb : "#f4f3f4"}
               ios_backgroundColor="#3e3e3e"
             />
           </View>

@@ -2,6 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 export function usePushNotifications() {
   const [expoPushToken, setExpoPushToken] = useState<string>('');
@@ -47,6 +58,7 @@ export function usePushNotifications() {
     notification,
     sendPushNotification,
     scheduleLocalNotification,
+    scheduleEventReminder,
   };
 }
 
@@ -80,36 +92,118 @@ async function registerForPushNotificationsAsync(): Promise<string | undefined> 
   return token;
 }
 
-async function sendPushNotification(expoPushToken: string) {
+export async function sendPushNotification(
+  expoPushToken: string, 
+  title: string, 
+  body: string, 
+  data?: any
+) {
   console.log('Sending push notification to token:', expoPushToken);
   if (!expoPushToken) return;
 
   const message = {
     to: expoPushToken,
     sound: 'default',
-    title: '¡Hola Bola!',
-    body: 'Esto es un push de prueba ',
-    data: { screen: 'home' },
+    title,
+    body,
+    data: data || {},
   };
 
-  await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
+  try {
+    const response = await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
+    
+    const result = await response.json();
+    console.log('Notification sent successfully:', result);
+    return result;
+  } catch (error) {
+    console.error('Error sending notification:', error);
+    throw error;
+  }
+}
+
+export async function sendPushNotificationToMultiple(
+  tokens: string[], 
+  title: string, 
+  body: string, 
+  data?: any
+) {
+  const messages = tokens.map(token => ({
+    to: token,
+    sound: 'default',
+    title,
+    body,
+    data: data || {},
+  }));
+
+  try {
+    const response = await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(messages),
+    });
+    
+    const result = await response.json();
+    console.log('Notifications sent successfully:', result);
+    return result;
+  } catch (error) {
+    console.error('Error sending notifications:', error);
+    throw error;
+  }
+}
+
+export async function scheduleEventReminder(
+  eventTitle: string,
+  eventDate: Date,
+  eventId: string
+) {
+  const reminderDate = new Date(eventDate.getTime() - 60 * 60 * 1000);
+  
+  if (reminderDate <= new Date()) {
+    console.log('Event reminder date has already passed');
+    return;
+  }
+
+  await Notifications.scheduleNotificationAsync({
+    content: {
+      title: 'Recordatorio de Evento',
+      body: `El evento "${eventTitle}" comienza en 1 hora`,
+      sound: 'default',
+      data: { 
+        eventId,
+        type: 'event_reminder',
+        screen: 'event-details'
+      },
     },
-    body: JSON.stringify(message),
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DATE,
+      date: reminderDate,
+    },
   });
 }
 
-async function scheduleLocalNotification() {
+async function scheduleLocalNotification(
+  title: string,
+  body: string,
+  data?: any
+) {
   await Notifications.scheduleNotificationAsync({
     content: {
-      title: 'Recordatorio',
-      body: 'Esto es una notificación local de prueba',
+      title,
+      body,
       sound: 'default',
-      data: { local: true },
+      data: data || {},
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
