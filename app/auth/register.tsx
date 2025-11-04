@@ -161,7 +161,7 @@ export default function RegisterScreen() {
 
       await setDoc(doc(db, "users", uid), userData);
 
-      console.log('Token de notificaciones guardado:', expoPushToken);
+      console.log("Token de notificaciones guardado:", expoPushToken);
 
       Alert.alert(
         "Registro exitoso",

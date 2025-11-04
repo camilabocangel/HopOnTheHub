@@ -12,7 +12,7 @@ import {
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
-import singleEventsStyles from "@/styles/sinlgeEventStyles";
+import singleEventsStyles from "@/styles/singleEventStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MapModal from "@/components/MapModal";
 import MapView, { Marker } from "react-native-maps";

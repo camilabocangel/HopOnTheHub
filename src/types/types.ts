@@ -36,7 +36,6 @@ export type Announcement = {
   date: string;
   campus: string[];
   content: string;
-  likes: string[];
   createdAt?: any;
   creatorPushToken?: string;
 };
@@ -68,7 +67,6 @@ export type Event = {
   image: string;
   content: string;
   attendees: string[];
-  likes: string[];
   createdAt?: any;
   createdBy?: string;
   locations: { lat: number; lng: number }[];

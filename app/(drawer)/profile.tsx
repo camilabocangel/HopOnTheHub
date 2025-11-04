@@ -100,7 +100,7 @@ export default function ProfileScreen() {
       quality: 0.8,
     });
 
-    if (result.canceled || !result.assets || result.assets.length) {
+    if (result.canceled || !result.assets || result.assets.length === 0) {
       return;
     }
 
@@ -214,7 +214,6 @@ export default function ProfileScreen() {
               ios_backgroundColor="#3e3e3e"
             />
           </View>
-
         </View>
       </SafeAreaView>
     );

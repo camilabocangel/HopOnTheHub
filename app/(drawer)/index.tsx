@@ -380,7 +380,7 @@ export default function HomeScreen() {
             </View>
           </View>
 
-          {__DEV__ && (
+          {/* {__DEV__ && (
             <TouchableOpacity
               onPress={handleImport}
               style={{
@@ -395,7 +395,7 @@ export default function HomeScreen() {
             >
               <Text style={{ color: "white", fontSize: 12 }}>Import Data</Text>
             </TouchableOpacity>
-          )}
+          )} */}
 
           <Section title={`Eventos Pendientes (${pendingEvents.length})`}>
             <FlatList

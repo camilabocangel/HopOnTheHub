@@ -60,7 +60,7 @@ export default function CareersScreen() {
                   <Link
                     key={career.id}
                     href={{
-                      pathname: "/(drawer)/career",
+                      pathname: "/(drawer)/subjects",
                       params: {
                         name: career.name,
                         id: career.id,

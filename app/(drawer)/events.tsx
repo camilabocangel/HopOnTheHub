@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
-import { useLocalSearchParams, useFocusEffect } from "expo-router";
+import { useLocalSearchParams, useFocusEffect, useNavigation } from "expo-router";
 import Section from "../../src/components/Section";
 import EventCard from "../../src/components/EventCard";
 import { SearchBar } from "../../src/components/SearchBar";
@@ -31,6 +31,14 @@ export default function EventsScreen() {
 
   const campusParam = Array.isArray(campus) ? campus[0] : campus;
   const selectedCampus = campusParam || user?.campus || "Cochabamba";
+
+  const navigation = useNavigation();
+  
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        title: "Sección de Eventos",
+      });
+    }, [navigation]);
 
   const {
     events: campusEvents,

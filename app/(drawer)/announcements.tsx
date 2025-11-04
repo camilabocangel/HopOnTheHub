@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useCallback } from "react";
+import React, { useMemo, useState, useCallback, useLayoutEffect } from "react";
 import {
   View,
   Text,
@@ -7,7 +7,11 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
-import { useLocalSearchParams, useFocusEffect } from "expo-router";
+import {
+  useLocalSearchParams,
+  useFocusEffect,
+  useNavigation,
+} from "expo-router";
 import Section from "../../src/components/Section";
 import AnnouncementCard from "../../src/components/AnnouncementCard";
 import { SearchBar } from "../../src/components/SearchBar";
@@ -37,6 +41,14 @@ export default function AnnouncementsScreen() {
     loading: announcementsLoading,
     refetch: refetchAnnouncements,
   } = useAnnouncements(selectedCampus);
+
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: "Sección de Anuncios",
+    });
+  }, [navigation]);
 
   useFocusEffect(
     useCallback(() => {
