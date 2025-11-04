@@ -668,111 +668,135 @@ export default function SingleEventScreen() {
               >
                 {status === "pending" && (
                   <>
-                    <TouchableOpacity
-                      style={[
-                        singleEventsStyles.actionButton,
-                        { backgroundColor: "#ddb503ff" },
-                      ]}
-                      onPress={handleEditEvent}
-                    >
-                      <Ionicons name="create-outline" size={20} color="white" />
-                      <Text style={singleEventsStyles.buttonText}>
-                        Editar Evento
-                      </Text>
-                    </TouchableOpacity>
+                    <View style={singleEventsStyles.editButtonContainer}>
+                      <TouchableOpacity
+                        style={[
+                          singleEventsStyles.actionButton,
+                          singleEventsStyles.editButton,
+                          { backgroundColor: "#ddb503ff" },
+                        ]}
+                        onPress={handleEditEvent}
+                      >
+                        <Ionicons
+                          name="create-outline"
+                          size={20}
+                          color="white"
+                        />
+                        <Text style={singleEventsStyles.buttonText}>
+                          Editar Evento
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
 
-                    <TouchableOpacity
-                      style={[
-                        singleEventsStyles.actionButton,
-                        { backgroundColor: "#4CAF50" },
-                        actionLoading.approve &&
-                          singleEventsStyles.actionButtonDisabled,
-                      ]}
-                      onPress={handleApproveEvent}
-                      disabled={actionLoading.approve}
-                    >
-                      {actionLoading.approve ? (
-                        <ActivityIndicator size="small" color="white" />
-                      ) : (
-                        <>
-                          <Ionicons
-                            name="checkmark-circle"
-                            size={20}
-                            color="white"
-                          />
-                          <Text style={singleEventsStyles.buttonText}>
-                            Aceptar Evento
-                          </Text>
-                        </>
-                      )}
-                    </TouchableOpacity>
+                    <View style={singleEventsStyles.rowButtonsContainer}>
+                      <TouchableOpacity
+                        style={[
+                          singleEventsStyles.actionButton,
+                          singleEventsStyles.rowButton,
+                          { backgroundColor: "#4CAF50" },
+                          actionLoading.approve &&
+                            singleEventsStyles.actionButtonDisabled,
+                        ]}
+                        onPress={handleApproveEvent}
+                        disabled={actionLoading.approve}
+                      >
+                        {actionLoading.approve ? (
+                          <ActivityIndicator size="small" color="white" />
+                        ) : (
+                          <>
+                            <Ionicons
+                              name="checkmark-circle"
+                              size={20}
+                              color="white"
+                            />
+                            <Text style={singleEventsStyles.buttonText}>
+                              Aceptar
+                            </Text>
+                          </>
+                        )}
+                      </TouchableOpacity>
 
-                    <TouchableOpacity
-                      style={[
-                        singleEventsStyles.actionButton,
-                        { backgroundColor: "#f44336" },
-                        actionLoading.reject &&
-                          singleEventsStyles.actionButtonDisabled,
-                      ]}
-                      onPress={handleRejectEvent}
-                      disabled={actionLoading.reject}
-                    >
-                      {actionLoading.reject ? (
-                        <ActivityIndicator size="small" color="white" />
-                      ) : (
-                        <>
-                          <Ionicons
-                            name="close-circle"
-                            size={20}
-                            color="white"
-                          />
-                          <Text style={singleEventsStyles.buttonText}>
-                            Rechazar Evento
-                          </Text>
-                        </>
-                      )}
-                    </TouchableOpacity>
+                      <TouchableOpacity
+                        style={[
+                          singleEventsStyles.actionButton,
+                          singleEventsStyles.rowButton,
+                          { backgroundColor: "#f44336" },
+                          actionLoading.reject &&
+                            singleEventsStyles.actionButtonDisabled,
+                        ]}
+                        onPress={handleRejectEvent}
+                        disabled={actionLoading.reject}
+                      >
+                        {actionLoading.reject ? (
+                          <ActivityIndicator size="small" color="white" />
+                        ) : (
+                          <>
+                            <Ionicons
+                              name="close-circle"
+                              size={20}
+                              color="white"
+                            />
+                            <Text style={singleEventsStyles.buttonText}>
+                              Rechazar
+                            </Text>
+                          </>
+                        )}
+                      </TouchableOpacity>
+                    </View>
                   </>
                 )}
                 {status === "accepted" && (
                   <>
-                    <TouchableOpacity
-                      style={[
-                        singleEventsStyles.actionButton,
-                        { backgroundColor: "#ddb503ff" },
-                      ]}
-                      onPress={handleEditEvent}
-                    >
-                      <Ionicons name="create-outline" size={20} color="white" />
-                      <Text style={singleEventsStyles.buttonText}>
-                        Editar Evento
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={[
-                        singleEventsStyles.actionButton,
-                        { backgroundColor: "#f44336" },
-                        actionLoading.cancel &&
-                          singleEventsStyles.actionButtonDisabled,
-                      ]}
-                      onPress={handleCancelEvent}
-                      disabled={actionLoading.cancel}
-                    >
-                      {actionLoading.cancel ? (
-                        <ActivityIndicator size="small" color="white" />
-                      ) : (
-                        <>
+                    {eventStatus !== "rejected" && (
+                      <View style={singleEventsStyles.editButtonContainer}>
+                        <TouchableOpacity
+                          style={[
+                            singleEventsStyles.actionButton,
+                            singleEventsStyles.editButton,
+                            { backgroundColor: "#ddb503ff" },
+                          ]}
+                          onPress={handleEditEvent}
+                        >
                           <Ionicons
-                            name="close-circle"
+                            name="create-outline"
                             size={20}
                             color="white"
                           />
                           <Text style={singleEventsStyles.buttonText}>
-                            Cancelar Evento
+                            Editar Evento
                           </Text>
-                        </>
-                      )}
-                    </TouchableOpacity>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+
+                    <View style={singleEventsStyles.rowButtonsContainer}>
+                      <TouchableOpacity
+                        style={[
+                          singleEventsStyles.actionButton,
+                          singleEventsStyles.rowButton,
+                          { backgroundColor: "#f44336" },
+                          actionLoading.cancel &&
+                            singleEventsStyles.actionButtonDisabled,
+                        ]}
+                        onPress={handleCancelEvent}
+                        disabled={actionLoading.cancel}
+                      >
+                        {actionLoading.cancel ? (
+                          <ActivityIndicator size="small" color="white" />
+                        ) : (
+                          <>
+                            <Ionicons
+                              name="close-circle"
+                              size={20}
+                              color="white"
+                            />
+                            <Text style={singleEventsStyles.buttonText}>
+                              Cancelar Evento
+                            </Text>
+                          </>
+                        )}
+                      </TouchableOpacity>
+                    </View>
                   </>
                 )}
               </Animated.View>

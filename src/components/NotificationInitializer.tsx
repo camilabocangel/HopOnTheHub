@@ -1,4 +1,3 @@
-// components/NotificationInitializer.tsx
 import { useEffect } from 'react';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { useUser } from '@/hooks/useUser';
@@ -21,5 +20,5 @@ export const NotificationInitializer = () => {
     initializeNotifications();
   }, [expoPushToken, user?.id]);
 
-  return null; // Este componente no renderiza nada
+  return null; 
 };

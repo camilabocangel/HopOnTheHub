@@ -1,4 +1,3 @@
-// components/GeneralMapModal.tsx
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   Modal,
@@ -15,7 +14,6 @@ import { useEvents } from '@/hooks/useEvents';
 import { useUser } from '@/hooks/useUser';
 import * as Location from 'expo-location';
 
-// Componentes modulares
 import { generalMapStyles } from '@/styles/generalMapStyles';
 import { MapHeader } from './MapHeader';
 import { MapFilters } from './MapFilters';
@@ -45,14 +43,12 @@ export default function GeneralMapModal({ visible, onClose }: GeneralMapModalPro
   const mapRef = useRef<MapView>(null);
   const { events: allEvents, loading: eventsLoading } = useEvents();
 
-  // Función para normalizar el campus
   const normalizeCampus = (campus: any): string => {
     if (Array.isArray(campus)) return campus[0] || 'la paz';
     if (typeof campus === 'string') return campus;
     return 'la paz';
   };
 
-  // Función para obtener el campus key normalizado
   const getCampusKey = (campus: any): keyof typeof CAMPUS_COORDINATES => {
     const normalized = normalizeCampus(campus).toLowerCase();
     if (normalized.includes('la paz') || normalized === 'lapaz') return 'la paz';
@@ -61,7 +57,6 @@ export default function GeneralMapModal({ visible, onClose }: GeneralMapModalPro
     return 'la paz';
   };
 
-  // Filtrar eventos aceptados y mapear coordenadas
   const eventsWithCoordinates = useMemo(() => {
     return allEvents
       .filter(event => event.status === 'accepted')
@@ -78,7 +73,6 @@ export default function GeneralMapModal({ visible, onClose }: GeneralMapModalPro
       });
   }, [allEvents]);
 
-  // Obtener categorías y fechas únicas
   const categories = useMemo(() => {
     return Array.from(new Set(eventsWithCoordinates.map(event => event.category))).filter(Boolean);
   }, [eventsWithCoordinates]);
@@ -87,7 +81,6 @@ export default function GeneralMapModal({ visible, onClose }: GeneralMapModalPro
     return Array.from(new Set(eventsWithCoordinates.map(event => event.date))).filter(Boolean);
   }, [eventsWithCoordinates]);
 
-  // Filtrar eventos
   const filteredEvents = useMemo(() => {
     return eventsWithCoordinates.filter(event => {
       if (selectedCampus && event.campusKey !== selectedCampus) return false;
@@ -97,7 +90,6 @@ export default function GeneralMapModal({ visible, onClose }: GeneralMapModalPro
     });
   }, [eventsWithCoordinates, selectedCampus, selectedCategory, selectedDate]);
 
-  // Agrupar eventos por campus para los marcadores
   const campusEvents = useMemo(() => {
     return Object.entries(CAMPUS_COORDINATES).map(([campusName, coords]) => {
       const campusEventsCount = filteredEvents.filter(event => event.campusKey === campusName).length;
@@ -208,7 +200,6 @@ export default function GeneralMapModal({ visible, onClose }: GeneralMapModalPro
         />
 
         <View style={generalMapStyles.content}>
-          {/* Mapa */}
           <View style={[
             generalMapStyles.mapContainer, 
             showEventsPanel && generalMapStyles.mapWithPanel
@@ -248,7 +239,6 @@ export default function GeneralMapModal({ visible, onClose }: GeneralMapModalPro
             </TouchableOpacity>
           </View>
 
-          {/* Panel de eventos */}
           {showEventsPanel && (
             <EventsPanel
               events={filteredEvents}

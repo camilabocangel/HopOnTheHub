@@ -1,4 +1,3 @@
-// components/MapFilters.tsx
 import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -38,7 +37,6 @@ export function MapFilters({
 
   return (
     <View style={[generalMapStyles.filtersContainer, { backgroundColor: colors.surface }]}>
-      {/* Fila 1: Campus */}
       <View style={generalMapStyles.filterRow}>
         <Text style={[generalMapStyles.filterLabel, { color: colors.text }]}>Campus:</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={generalMapStyles.filterOptions}>
@@ -60,7 +58,6 @@ export function MapFilters({
         </ScrollView>
       </View>
 
-      {/* Fila 2: Categoría */}
       {categories.length > 0 && (
         <View style={generalMapStyles.filterRow}>
           <Text style={[generalMapStyles.filterLabel, { color: colors.text }]}>Categoría:</Text>
@@ -82,7 +79,6 @@ export function MapFilters({
         </View>
       )}
 
-      {/* Fila 3: Fecha */}
       {dates.length > 0 && (
         <View style={generalMapStyles.filterRow}>
           <Text style={[generalMapStyles.filterLabel, { color: colors.text }]}>Fecha:</Text>
@@ -104,7 +100,6 @@ export function MapFilters({
         </View>
       )}
 
-      {/* Fila 4: Botón limpiar */}
       {(selectedCampus || selectedCategory || selectedDate) && (
         <View style={[generalMapStyles.filterRow, { justifyContent: 'flex-end' }]}>
           <TouchableOpacity

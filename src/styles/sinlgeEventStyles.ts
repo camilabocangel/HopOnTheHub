@@ -1,9 +1,53 @@
 import { StyleSheet } from "react-native";
 
 const singleEventsStyles = StyleSheet.create({
+    adminActions: {
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
+    gap: 16,
+  },
+  
+  editButtonContainer: {
+    width: "100%",
+  },
+  
+  editButton: {
+    width: "100%",
+  },
+  
+  rowButtonsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+    width: "100%",
+  },
+  
+  rowButton: {
+    flex: 1,
+  },
+  
+  actionButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    gap: 8,
+  },
+  
+  buttonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  
   actionButtonDisabled: {
     opacity: 0.6,
   },
+
   container: {
     flex: 1,
   },
@@ -93,30 +137,7 @@ const singleEventsStyles = StyleSheet.create({
   likeButton: {
     padding: 4,
   },
-  adminActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    paddingVertical: 20,
-    borderTopWidth: 1,
-    borderTopColor: "#e0e0e0",
-    gap: 12,
-  },
-  actionButton: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    gap: 8,
-  },
-  buttonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "600",
-  },
+
 });
 
 export default singleEventsStyles;

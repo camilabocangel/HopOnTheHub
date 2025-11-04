@@ -50,7 +50,7 @@ const CustomDrawerContent = ({ onOpenMap, ...props }: any) => {
 
       <DrawerItem
         label={"Mapa de Eventos"}
-        onPress={onOpenMap} // ← llamamos a la función del padre
+        onPress={onOpenMap}
         activeTintColor={colors.primary}
         inactiveTintColor={colors.text}
         labelStyle={{ fontWeight: "600" }}
@@ -106,7 +106,6 @@ const DrawerLayout = () => {
         <Drawer.Screen name="favorites" options={{ drawerLabel: "Favoritos", title: "Mis Favoritos" }} />
       </Drawer>
 
-      {/* Aquí sí renderizamos el modal */}
       <GeneralMapModal visible={showGeneralMap} onClose={() => setShowGeneralMap(false)} />
     </>
   );

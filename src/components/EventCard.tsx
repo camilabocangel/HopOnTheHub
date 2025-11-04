@@ -1,4 +1,3 @@
-// components/EventCard.tsx - actualiza las props y el handlePress
 import React, { useEffect } from "react";
 import { TouchableOpacity, View, Text, Image, Alert } from "react-native";
 import { router } from "expo-router";
@@ -34,7 +33,7 @@ export default function EventCard({
   index = 0,
   createdBy,
   createdAt,
-  creatorPushToken, // AGREGAR ESTA PROP
+  creatorPushToken,
 }: EventCardProps) {
   const { colors } = useThemeColors();
   const { isEventLiked, toggleEventLikeStatus } = useLikes();
@@ -96,7 +95,7 @@ export default function EventCard({
           status,
           createdBy: createdBy || "",
           createdAt: formattedCreatedAt,
-          creatorPushToken: creatorPushToken || "", // PASAR EL TOKEN
+          creatorPushToken: creatorPushToken || "",
         },
       });
     }, 150);

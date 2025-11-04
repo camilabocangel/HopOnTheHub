@@ -1,4 +1,3 @@
-// services/notificationService.ts
 import { sendPushNotification } from "@/hooks/usePushNotifications";
 
 export const notifyEventStatusChange = async (

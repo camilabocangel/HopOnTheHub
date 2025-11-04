@@ -1,4 +1,3 @@
-// hooks/useUser.ts
 import { useFirestoreUser } from "./useFirestoreUser";
 import { signOut } from "firebase/auth";
 import { auth } from "@/config/firebaseConfig";
