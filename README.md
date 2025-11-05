@@ -17,6 +17,7 @@
 UPB Hub es una aplicación móvil desarrollada para la Universidad Privada Boliviana que centraliza la gestión y visualización de eventos y anuncios universitarios. La aplicación permite a estudiantes y administradores crear, editar, aprobar y gestionar contenido institucional de manera eficiente.
 
 ## ✨ Características Principales
+
 - Visualización de eventos y anuncios por campus
 - Sistema de "me gusta" para guardar contenido favorito
 - Notificaciones para eventos creados
@@ -45,12 +46,12 @@ UPB Hub es una aplicación móvil desarrollada para la Universidad Privada Boliv
 
 ### Core Framework
 
->>>>>>> develop
 - **React Native 0.73.6** - Framework principal
 - **Expo 50.0.0** - Plataforma de desarrollo
 - **TypeScript 5.0.0** - Tipado estático
 
 ### Navegación y UI
+
 - **Expo Router** - Navegación basada en file-system
 - **React Navigation** - Navegación entre pantallas
 - **Expo Vector Icons** - Iconografía consistente
@@ -68,6 +69,7 @@ UPB Hub es una aplicación móvil desarrollada para la Universidad Privada Boliv
 - **Expo Device** - Detección de características del dispositivo
 
 ### UI y Estilos
+
 - **React Native Reanimated** - Animaciones fluidas
 - **React Native Maps** - Integración de mapas
 - **DateTimePicker** - Selectores de fecha y hora
