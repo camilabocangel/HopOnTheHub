@@ -48,13 +48,15 @@ const CustomDrawerContent = ({ onOpenMap, ...props }: any) => {
         />
       )}
 
-      <DrawerItem
-        label={"Mapa de Eventos"}
-        onPress={onOpenMap}
-        activeTintColor={colors.primary}
-        inactiveTintColor={colors.text}
-        labelStyle={{ fontWeight: "600" }}
-      />
+      {user && (
+        <DrawerItem
+          label={"Mapa de Eventos"}
+          onPress={onOpenMap}
+          activeTintColor={colors.primary}
+          inactiveTintColor={colors.text}
+          labelStyle={{ fontWeight: "600" }}
+        />
+      )}
 
       <DrawerItem
         label={"Perfil"}
@@ -97,16 +99,34 @@ const DrawerLayout = () => {
           },
         }}
         drawerContent={(props) => (
-          <CustomDrawerContent {...props} onOpenMap={() => setShowGeneralMap(true)} />
+          <CustomDrawerContent
+            {...props}
+            onOpenMap={() => setShowGeneralMap(true)}
+          />
         )}
       >
-        <Drawer.Screen name="index" options={{ drawerLabel: "Inicio", title: "UPBHub" }} />
-        <Drawer.Screen name="profile" options={{ drawerLabel: "Perfil", title: "Perfil" }} />
-        <Drawer.Screen name="careers" options={{ drawerLabel: "Carreras", title: "Carreras" }} />
-        <Drawer.Screen name="favorites" options={{ drawerLabel: "Favoritos", title: "Mis Favoritos" }} />
+        <Drawer.Screen
+          name="index"
+          options={{ drawerLabel: "Inicio", title: "UPBHub" }}
+        />
+        <Drawer.Screen
+          name="profile"
+          options={{ drawerLabel: "Perfil", title: "Perfil" }}
+        />
+        <Drawer.Screen
+          name="careers"
+          options={{ drawerLabel: "Carreras", title: "Carreras" }}
+        />
+        <Drawer.Screen
+          name="favorites"
+          options={{ drawerLabel: "Favoritos", title: "Mis Favoritos" }}
+        />
       </Drawer>
 
-      <GeneralMapModal visible={showGeneralMap} onClose={() => setShowGeneralMap(false)} />
+      <GeneralMapModal
+        visible={showGeneralMap}
+        onClose={() => setShowGeneralMap(false)}
+      />
     </>
   );
 };
