@@ -1,0 +1,140 @@
+import { StyleSheet } from "react-native";
+
+export const homeStyles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  emptyState: {
+    padding: 20,
+    alignItems: "center",
+  },
+  emptyStateText: {
+    fontSize: 14,
+    textAlign: "center",
+    opacity: 0.7,
+  },
+  heroOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  heroTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  heroSubtitle: {
+    fontSize: 16,
+    color: "white",
+    textAlign: "center",
+    opacity: 0.9,
+  },
+  statsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingHorizontal: 10,
+  },
+  statCard: {
+    alignItems: "center",
+    padding: 20,
+    borderRadius: 12,
+    minWidth: 120,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    textAlign: "center",
+    opacity: 0.8,
+  },
+  hero: {
+    height: 200,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#1a1a1a",
+  },
+  heroImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: "100%",
+    height: "100%",
+  },
+  horizontalListContent: {
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  horizontalCard: {
+    marginRight: 12,
+  },
+  row: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    paddingVertical: 12,
+  },
+  headerRow: {
+    flexDirection: "row",
+    borderBottomWidth: 2,
+    borderColor: "#666",
+    backgroundColor: "#333",
+  },
+  dataRow: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderColor: "#444",
+  },
+  headerCell: {
+    width: 120,
+    fontWeight: "bold",
+    padding: 12,
+    textAlign: "center",
+    borderRightWidth: 1,
+    borderColor: "#555",
+  },
+  cell: {
+    width: 120,
+    padding: 8,
+    textAlign: "center",
+    borderRightWidth: 1,
+    borderColor: "#444",
+  },
+  careerCard: {
+    width: 220,
+    height: 100,
+    borderRadius: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+    padding: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  careerText: {
+    fontWeight: "700",
+    fontSize: 16,
+    textAlign: "center",
+  },
+});
